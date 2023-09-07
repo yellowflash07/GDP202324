@@ -1,4 +1,5 @@
 //https://www.glfw.org/docs/latest/quick.html
+//http://graphics.stanford.edu/data/3Dscanrep/
 
 #include <glad/glad.h>
 #define GLFW_INCLUDE_NONE
@@ -17,15 +18,33 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-static const struct
+//static const struct
+//{
+//    float x, y;
+//    float r, g, b;
+//} vertices[3] =
+//{
+//    { -0.6f, -0.4f, 1.f, 0.f, 0.f },        // Red
+//    {  0.6f, -0.4f, 0.f, 1.f, 0.f },        // Green
+//    {   0.f,  0.6f, 0.f, 0.f, 1.f }         // Blue
+//};
+
+struct sVertex
 {
     float x, y;
     float r, g, b;
-} vertices[3] =
+};
+
+const unsigned int NUM_OF_VERTICES = 6;
+sVertex vertices[NUM_OF_VERTICES] =
 {
-    { -0.6f, -0.4f, 1.f, 0.f, 0.f },
-    {  0.6f, -0.4f, 0.f, 1.f, 0.f },
-    {   0.f,  0.6f, 0.f, 0.f, 1.f }
+    { -0.6f, -0.4f, 1.f, 0.f, 0.f },        // Red
+    {  0.6f, -0.4f, 0.f, 1.f, 0.f },        // Green
+    {   0.f,  0.6f, 0.f, 0.f, 1.f },         // Blue
+    /* Same, just +1 in the x axis */
+    {  0.4f, -0.4f, 0.f, 1.f, 0.f },        // Red
+    {  1.6f, -0.4f, 0.f, 0.f, 1.f },        // Green
+    {  1.0f,  0.6f, 1.f, 0.f, 0.f }         // Blue
 };
 
 static const char* vertex_shader_text =
@@ -92,7 +111,14 @@ int main(void)
 
     glGenBuffers(1, &vertex_buffer);
     glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+//    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+    unsigned int size_of_sVertex = sizeof(sVertex);
+    unsigned int number_of_bytes_in_array = size_of_sVertex * NUM_OF_VERTICES;
+
+    glBufferData(GL_ARRAY_BUFFER, number_of_bytes_in_array, vertices, GL_STATIC_DRAW);
+
 
     vertex_shader = glCreateShader(GL_VERTEX_SHADER);
     glShaderSource(vertex_shader, 1, &vertex_shader_text, NULL);
@@ -117,6 +143,9 @@ int main(void)
     glEnableVertexAttribArray(vcol_location);
     glVertexAttribPointer(vcol_location, 3, GL_FLOAT, GL_FALSE,
                           sizeof(vertices[0]), (void*)(sizeof(float) * 2));
+
+    glm::vec3 cameraEye = glm::vec3(0.0, 0.0, -4.0f);
+
 
     while (!glfwWindowShouldClose(window))
     {
@@ -147,9 +176,11 @@ int main(void)
 
         v = glm::mat4(1.0f);
 
-        glm::vec3 cameraEye = glm::vec3(0.0, 0.0, -4.0f);
+//        glm::vec3 cameraEye = glm::vec3(0.0, 0.0, -4.0f);
         glm::vec3 cameraTarget = glm::vec3(0.0f, 0.0f, 0.0f);
         glm::vec3 upVector = glm::vec3(0.0f, 1.0f, 0.0f);
+
+        cameraEye.z += 0.001f;
 
         v = glm::lookAt(cameraEye,
                         cameraTarget,
@@ -162,7 +193,10 @@ int main(void)
         //glUniformMatrix4fv(mvp_location, 1, GL_FALSE, (const GLfloat*) mvp);
         glUniformMatrix4fv(mvp_location, 1, GL_FALSE, glm::value_ptr(mvp));
 
-        glDrawArrays(GL_TRIANGLES, 0, 3);
+//        glPolygonMode(GL_FRONT_AND_BACK, GL_POINT /*GL_LINE*/ /*GL_FILL*/);
+        glPointSize(10.0f);
+
+        glDrawArrays(GL_TRIANGLES, 0, 6);
 
         glfwSwapBuffers(window);
         glfwPollEvents();
