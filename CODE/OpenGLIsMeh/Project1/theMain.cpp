@@ -29,33 +29,34 @@
 //    {   0.f,  0.6f, 0.f, 0.f, 1.f }         // Blue
 //};
 
+
 struct sVertex
 {
-    float x, y;
-    float r, g, b;
+    float x, y, z;      // vec2
+    float r, g, b;      // vec3
 };
 
 const unsigned int NUM_OF_VERTICES = 6;
 sVertex vertices[NUM_OF_VERTICES] =
 {
-    { -0.6f, -0.4f, 1.f, 0.f, 0.f },        // Red
-    {  0.6f, -0.4f, 0.f, 1.f, 0.f },        // Green
-    {   0.f,  0.6f, 0.f, 0.f, 1.f },         // Blue
+    { -0.6f, -0.4f, 0.0f,   1.0f, 0.0f, 0.0f },        // Red
+    {  0.6f, -0.4f, 0.0f,   0.0f, 1.0f, 0.0f },        // Green
+    {   0.f,  0.6f, 0.0f,   0.0f, 0.0f, 1.0f },         // Blue
     /* Same, just +1 in the x axis */
-    {  0.4f, -0.4f, 0.f, 1.f, 0.f },        // Red
-    {  1.6f, -0.4f, 0.f, 0.f, 1.f },        // Green
-    {  1.0f,  0.6f, 1.f, 0.f, 0.f }         // Blue
+    {  0.4f, -0.4f, 0.0f,   0.0f, 1.0f, 0.0f },        // Red
+    {  1.6f, -0.4f, 0.0f,   0.0f, 0.0f, 1.0f },        // Green
+    {  1.0f,  0.6f, 0.0f,   1.0f, 0.0f, 0.0f }         // Blue
 };
 
 static const char* vertex_shader_text =
 "#version 110\n"
 "uniform mat4 MVP;\n"
 "attribute vec3 vCol;\n"
-"attribute vec2 vPos;\n"
+"attribute vec3 vPos;\n"
 "varying vec3 color;\n"
 "void main()\n"
 "{\n"
-"    gl_Position = MVP * vec4(vPos, 0.0, 1.0);\n"
+"    gl_Position = MVP * vec4(vPos, 1.0);\n"
 "    color = vCol;\n"
 "}\n";
 
@@ -83,8 +84,8 @@ int main(void)
     std::cout << "About to blow you mind with OpenGL!" << std::endl;
 
     GLFWwindow* window;
-    GLuint vertex_buffer, vertex_shader, fragment_shader, program;
-    GLint mvp_location, vpos_location, vcol_location;
+    GLuint vertex_buffer, vertex_shader, fragment_shader;//v , program;
+    GLint mvp_location;// , vpos_location, vcol_location;
 
     glfwSetErrorCallback(error_callback);
 
@@ -128,24 +129,35 @@ int main(void)
     glShaderSource(fragment_shader, 1, &fragment_shader_text, NULL);
     glCompileShader(fragment_shader);
 
-    program = glCreateProgram();
+    GLuint program = glCreateProgram();
     glAttachShader(program, vertex_shader);
     glAttachShader(program, fragment_shader);
     glLinkProgram(program);
 
     mvp_location = glGetUniformLocation(program, "MVP");
-    vpos_location = glGetAttribLocation(program, "vPos");
-    vcol_location = glGetAttribLocation(program, "vCol");
 
+    GLint vpos_location = glGetAttribLocation(program, "vPos");
+    GLint vcol_location = glGetAttribLocation(program, "vCol");
+
+//    int sizeofsVertex = sizeof(sVertex);
     glEnableVertexAttribArray(vpos_location);
-    glVertexAttribPointer(vpos_location, 2, GL_FLOAT, GL_FALSE,
-                          sizeof(vertices[0]), (void*)0);
+    glVertexAttribPointer(vpos_location,
+                          3,                        // 2 floats 
+                          GL_FLOAT, 
+                          GL_FALSE,         
+                          sizeof(sVertex),                   //  sizeof(vertices[0]),
+                          (void*) offsetof(sVertex, x) );    //  (void*)0);
+
     glEnableVertexAttribArray(vcol_location);
-    glVertexAttribPointer(vcol_location, 3, GL_FLOAT, GL_FALSE,
-                          sizeof(vertices[0]), (void*)(sizeof(float) * 2));
+    glVertexAttribPointer(vcol_location, 
+                          3, 
+                          GL_FLOAT, 
+                          GL_FALSE,
+                          sizeof(sVertex),                  //  sizeof(vertices[0]),
+                          (void*) offsetof(sVertex, r));    //  (void*)(sizeof(float) * 2));
 
     glm::vec3 cameraEye = glm::vec3(0.0, 0.0, -4.0f);
-
+    float yaxisRotation = 0.0f;
 
     while (!glfwWindowShouldClose(window))
     {
@@ -165,8 +177,18 @@ int main(void)
 
         //mat4x4_rotate_Z(m, m, (float) glfwGetTime());
         glm::mat4 rotateZ = glm::rotate(glm::mat4(1.0f),
-                                        (float)glfwGetTime(),
+                                        -0.5f, // (float)glfwGetTime(),
                                         glm::vec3(0.0f, 0.0, 1.0f));
+
+        yaxisRotation += 0.01f;
+        glm::mat4 rotateY = glm::rotate(glm::mat4(1.0f),
+                                        yaxisRotation, // (float)glfwGetTime(),
+                                        glm::vec3(0.0f, 1.0, 0.0f));
+
+
+        m = m * rotateZ;
+        m = m * rotateY;
+//        m = m * rotateZ;
 
         //mat4x4_ortho(p, -ratio, ratio, -1.f, 1.f, 1.f, -1.f);
         p = glm::perspective(0.6f,
@@ -180,7 +202,7 @@ int main(void)
         glm::vec3 cameraTarget = glm::vec3(0.0f, 0.0f, 0.0f);
         glm::vec3 upVector = glm::vec3(0.0f, 1.0f, 0.0f);
 
-        cameraEye.z += 0.001f;
+//        cameraEye.z += 0.001f;
 
         v = glm::lookAt(cameraEye,
                         cameraTarget,
