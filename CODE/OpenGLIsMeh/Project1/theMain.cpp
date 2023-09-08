@@ -5,6 +5,8 @@
 #define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
 #include <iostream>
+#include <fstream>      // C++ file IO (secret: it's a wraper for the c IO)
+
 
 //#include "linmath.h"
 #include <glm/glm.hpp>
@@ -17,6 +19,7 @@
 
 #include <stdlib.h>
 #include <stdio.h>
+#include <string>
 
 //static const struct
 //{
@@ -28,6 +31,8 @@
 //    {  0.6f, -0.4f, 0.f, 1.f, 0.f },        // Green
 //    {   0.f,  0.6f, 0.f, 0.f, 1.f }         // Blue
 //};
+
+
 
 
 struct sVertex
@@ -78,6 +83,90 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
     if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
         glfwSetWindowShouldClose(window, GLFW_TRUE);
 }
+
+// This most closely matches the ply file for the bunny
+struct sVertexPlyFile
+{
+    float x;
+    float y;
+    float z;
+};
+
+unsigned int g_numberOfVertices = 0;
+unsigned int g_numberOfTriangles = 0;
+
+bool LoadTheFile(std::string theFileName)
+{
+    //sVertexPlyFile p;       p.x = 0.0f;     p.y = 1.0f; p.z = 2.0f;
+    //std::cout << p.x;
+
+    //sVertexPlyFile q;
+    //std::cout << "Type in the x: ";
+    //std::cin >> q.x;
+
+    // Input Filestream 
+    std::ifstream theBunnyFile("bun_zipper_res2_xyz.ply");
+    if ( ! theBunnyFile.is_open() )
+    {
+        // didn't open the file.
+        return false;
+    }
+
+    std::string temp;
+    while (theBunnyFile >> temp)
+    {
+        if (temp == "vertex")
+        {
+            break;
+        }
+    };
+    //element vertex 8171
+    theBunnyFile >> g_numberOfVertices;
+
+
+    while (theBunnyFile >> temp)
+    {
+        if (temp == "face")
+        {
+            break;
+        }
+    };
+    //element vertex 8171
+    theBunnyFile >> g_numberOfTriangles;
+
+    while (theBunnyFile >> temp)
+    {
+        if (temp == "end_header")
+        {
+            break;
+        }
+    };
+
+
+    // Allocate enough space to hold the vertices
+//    sVertex vertices[8171];                 // Stack
+
+    sVertex x;
+    sVertex* px;
+
+    // Dynamically allocate memory on the heap;
+    sVertexPlyFile* pTheVerticesFile = new sVertexPlyFile[g_numberOfVertices];
+
+    // -0.036872 0.127727 0.00440925 
+    for ( unsigned int index = 0; index != g_numberOfVertices; index++ )
+    {
+        sVertexPlyFile tempVertex;
+        theBunnyFile >> tempVertex.x;                //std::cin >> a.x;
+        theBunnyFile >> tempVertex.y;                //std::cin >> a.y;
+        theBunnyFile >> tempVertex.z;                //std::cin >> a.z;
+
+        pTheVerticesFile[index] = tempVertex;
+    }
+
+    return true;
+}
+
+
 
 int main(void)
 {
@@ -156,8 +245,23 @@ int main(void)
                           sizeof(sVertex),                  //  sizeof(vertices[0]),
                           (void*) offsetof(sVertex, r));    //  (void*)(sizeof(float) * 2));
 
+
+
+    if ( ! LoadTheFile("Hey") )
+    {
+        std::cout << "Error: didn't load the file." << std::endl;
+        std::cout << "How sad." << std::endl;
+        return -1;
+    }
+
+
+
+
+
     glm::vec3 cameraEye = glm::vec3(0.0, 0.0, -4.0f);
     float yaxisRotation = 0.0f;
+
+    double lastTime = glfwGetTime();
 
     while (!glfwWindowShouldClose(window))
     {
@@ -176,17 +280,24 @@ int main(void)
         m = glm::mat4(1.0f);
 
         //mat4x4_rotate_Z(m, m, (float) glfwGetTime());
-        glm::mat4 rotateZ = glm::rotate(glm::mat4(1.0f),
-                                        -0.5f, // (float)glfwGetTime(),
-                                        glm::vec3(0.0f, 0.0, 1.0f));
+//        glm::mat4 rotateZ = glm::rotate(glm::mat4(1.0f),
+//                                        -0.5f, // (float)glfwGetTime(),
+//                                        glm::vec3(0.0f, 0.0, 1.0f));
 
-        yaxisRotation += 0.01f;
+        double currentTime = glfwGetTime();
+        double deltaTime = currentTime - lastTime;
+        std::cout << deltaTime << std::endl;
+        lastTime = currentTime;
+
+//        yaxisRotation += 0.01f;
+//        yaxisRotation += ( (2.0 * 3.1415) * deltaTime );
+
         glm::mat4 rotateY = glm::rotate(glm::mat4(1.0f),
                                         yaxisRotation, // (float)glfwGetTime(),
                                         glm::vec3(0.0f, 1.0, 0.0f));
 
 
-        m = m * rotateZ;
+//        m = m * rotateZ;
         m = m * rotateY;
 //        m = m * rotateZ;
 
