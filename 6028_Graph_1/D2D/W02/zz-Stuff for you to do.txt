@@ -1,0 +1,5 @@
+See if you can load a different model
+See if you can load a model with different colours.
+ -- Set the bunny to be Red, blue, whatever
+ -- Maybe a rainbow bunny (each vertex is different)
+ -- Make stripes on the bunny

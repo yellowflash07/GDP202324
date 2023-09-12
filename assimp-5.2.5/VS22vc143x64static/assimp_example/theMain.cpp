@@ -64,7 +64,9 @@ bool DoTheImportThing(const std::string& pFile) {
 
 int main(int argc, char* argv[])
 {
-    if ( DoTheImportThing("bathtub.ply") )
+//    if ( DoTheImportThing("bathtub.ply") )
+//    if ( DoTheImportThing("spongebob_model_v39v39.obj") )
+    if ( DoTheImportThing("spongebob_model_v39v39.FBX") )
     {
         std::cout << "Loaded OK" << std::endl;
     }
