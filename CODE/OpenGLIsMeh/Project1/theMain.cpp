@@ -147,6 +147,23 @@ struct sTrianglePlyFile
 unsigned int g_numberOfVertices = 0;
 unsigned int g_numberOfTriangles = 0;
 
+
+void ChangeColor(sVertex vert, float min, float max)
+{
+    if (vert.y > min && vert.y < max)
+    {
+        vert.r = 1.0f;
+        vert.g = 1.0f;
+        vert.b = 1.0f;
+    }
+    else
+    {
+        vert.r = 0.01f;
+        vert.g = 0.01f;
+        vert.b = 0.01f;
+    }
+}
+
 bool LoadTheFile_PlyXYZ(std::string theFileName)
 {
 //    property float x
@@ -276,7 +293,18 @@ bool LoadTheFile_PlyXYZ(std::string theFileName)
     g_NumberOfVerticesToDraw = g_numberOfTriangles * 3;
     pVertices = new sVertex[g_NumberOfVerticesToDraw];
 
+    float r, g, b;
+    r = 1.0f;
+    g = 1.0f;
+    b = 1.0f;
+
     unsigned int vertIndex = 0;
+    unsigned int vertGap = 2;
+    float minStripeGap[] = { 0.01f, 0.12};
+    float maxStripeGap[] = { 0.05f, 0.14};
+
+
+
     for (unsigned int triIndex = 0; triIndex != g_numberOfTriangles; triIndex++)
     {
         // 3 1582 1581 2063 
@@ -284,27 +312,84 @@ bool LoadTheFile_PlyXYZ(std::string theFileName)
         pVertices[vertIndex + 0].y =  pTheVerticesFile[ pTheTriangles[triIndex].v0 ].y;
         pVertices[vertIndex + 0].z =  pTheVerticesFile[ pTheTriangles[triIndex].v0 ].z;
 
-        pVertices[vertIndex + 0].r = 1.0f;
-        pVertices[vertIndex + 0].g = 1.0f;
-        pVertices[vertIndex + 0].b = 1.0f;
+//
+        for (int i = 0; i < vertGap; i++)
+        {
+            if (pVertices[vertIndex + 0].y > minStripeGap[i] && pVertices[vertIndex + 0].y < maxStripeGap[i])
+            {
+                pVertices[vertIndex + 0].r = 1.0f;
+                pVertices[vertIndex + 0].g = 1.0f;
+                pVertices[vertIndex + 0].b = 1.0f;
+            }
+            else
+            {
+                pVertices[vertIndex + 0].r = 1.0f;
+                pVertices[vertIndex + 0].g = 0.01f;
+                pVertices[vertIndex + 0].b = 0.01f;
+            }
+        }
+
+       
 
         pVertices[vertIndex + 1].x =  pTheVerticesFile[ pTheTriangles[triIndex].v1 ].x;
         pVertices[vertIndex + 1].y =  pTheVerticesFile[ pTheTriangles[triIndex].v1 ].y;
         pVertices[vertIndex + 1].z =  pTheVerticesFile[ pTheTriangles[triIndex].v1 ].z;
 
-        pVertices[vertIndex + 1].r = 1.0f;
-        pVertices[vertIndex + 1].g = 1.0f;
-        pVertices[vertIndex + 1].b = 1.0f;
+        for (int i = 0; i < vertGap; i++)
+        {
+
+                if (pVertices[vertIndex + 1].y > minStripeGap[i] && pVertices[vertIndex + 1].y < maxStripeGap[i])
+                {
+                    pVertices[vertIndex + 1].r = 1.0f;
+                    pVertices[vertIndex + 1].g = 1.0f;
+                    pVertices[vertIndex + 1].b = 1.0f;
+                }
+                else
+                {
+                    pVertices[vertIndex + 1].r = 1.0f;
+                    pVertices[vertIndex + 1].g = 0.01f;
+                    pVertices[vertIndex + 1].b = 0.01f;
+                }
+
+        }
+
+        //pVertices[vertIndex + 1].r = r;
+        //pVertices[vertIndex + 1].g = g;
+        //pVertices[vertIndex + 1].b = b;
 
         pVertices[vertIndex + 2].x =  pTheVerticesFile[ pTheTriangles[triIndex].v2 ].x;
         pVertices[vertIndex + 2].y =  pTheVerticesFile[ pTheTriangles[triIndex].v2 ].y;
         pVertices[vertIndex + 2].z =  pTheVerticesFile[ pTheTriangles[triIndex].v2 ].z;
 
-        pVertices[vertIndex + 2].r = 1.0f;
-        pVertices[vertIndex + 2].g = 1.0f;
-        pVertices[vertIndex + 2].b = 1.0f;
+        for (int i = 0; i < vertGap; i++)
+        {
+
+                if (pVertices[vertIndex + 2].y > minStripeGap[i] && pVertices[vertIndex + 2].y < maxStripeGap[i])
+                {
+                    pVertices[vertIndex + 2].r = 1.0f;
+                    pVertices[vertIndex + 2].g = 1.0f;
+                    pVertices[vertIndex + 2].b = 1.0f;
+                }
+                else
+                {
+                    pVertices[vertIndex + 2].r = 1.0f;
+                    pVertices[vertIndex + 2].g = 0.01f;
+                    pVertices[vertIndex + 2].b = 0.01f;
+                }
+
+        }
+
+        /*pVertices[vertIndex + 2].r = r;
+        pVertices[vertIndex + 2].g = g;
+        pVertices[vertIndex + 2].b = b;*/
 
         vertIndex += 3;
+      //  if(stripe)
+        //stripeThreshold += (1.0f/ g_numberOfTriangles) * 0.2f;
+
+        //r += 1.0f / g_numberOfTriangles; //r *= 0.5f;
+        //g += 1.0f/ g_numberOfTriangles;
+        //b += 1.0f/ g_numberOfTriangles;
     }
 
     return true;
@@ -515,8 +600,8 @@ int main(void)
     glfwSwapInterval(1);
 
 
-//    if (!LoadTheFile_PlyXYZ("Hey"))
-     if (!LoadTheFile_Ply_XYZ_N_RGBA("Hey"))
+    if (!LoadTheFile_PlyXYZ("Hey"))
+     //if (!LoadTheFile_Ply_XYZ_N_RGBA("Hey"))
      {
 
         std::cout << "Error: didn't load the file." << std::endl;
@@ -581,13 +666,15 @@ int main(void)
 
 
 
-//    glm::vec3 cameraEye = glm::vec3(10.0, 5.0, -15.0f);
+    //glm::vec3 cameraEye = glm::vec3(10.0, 5.0, -4.0f);
     float yaxisRotation = 0.0f;
 
     double lastTime = glfwGetTime();
 
     while (!glfwWindowShouldClose(window))
     {
+        unsigned int vertIndex = 0;
+
         float ratio;
         int width, height;
 //        mat4x4 m, p, mvp;
@@ -612,7 +699,7 @@ int main(void)
 
         double currentTime = glfwGetTime();
         double deltaTime = currentTime - lastTime;
-        std::cout << deltaTime << std::endl;
+     //   std::cout << deltaTime << std::endl;
         lastTime = currentTime;
 
 //        yaxisRotation += 0.01f;
@@ -635,7 +722,7 @@ int main(void)
 
         v = glm::mat4(1.0f);
 
-//        glm::vec3 cameraEye = glm::vec3(0.0, 0.0, -4.0f);
+        glm::vec3 cameraEye = glm::vec3(0, 0, -0.5f);
         glm::vec3 cameraTarget = glm::vec3(0.0f, 0.0f, 0.0f);
         glm::vec3 upVector = glm::vec3(0.0f, 1.0f, 0.0f);
 
@@ -652,6 +739,8 @@ int main(void)
         //glUniformMatrix4fv(mvp_location, 1, GL_FALSE, (const GLfloat*) mvp);
         glUniformMatrix4fv(mvp_location, 1, GL_FALSE, glm::value_ptr(mvp));
 
+
+  
 //        glPolygonMode(GL_FRONT_AND_BACK, GL_POINT /*GL_LINE*/ /*GL_FILL*/);
         glPolygonMode(GL_FRONT_AND_BACK, GL_FILL /*GL_LINE*/ /*GL_FILL*/);
 //        glPointSize(10.0f);
