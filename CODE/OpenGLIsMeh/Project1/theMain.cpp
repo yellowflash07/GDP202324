@@ -332,9 +332,9 @@ bool LoadTheFile_PlyXYZ(std::string theFileName)
 //        pVertices[vertIndex].z *= 10.0f;
 
         // Rotate the model around the x axis
-        pVertices[vertIndex].x *= 10.0f;
-        pVertices[vertIndex].y *= 10.f;
-        pVertices[vertIndex].z *= 10.0f;
+//        pVertices[vertIndex].x *= 10.0f;
+//        pVertices[vertIndex].y *= 10.f;
+//        pVertices[vertIndex].z *= 10.0f;
 
     }
 
@@ -616,6 +616,7 @@ int main(void)
 
 // 
 
+
     mvp_location = glGetUniformLocation(shaderProgramID, "MVP");
 
     GLint vpos_location = glGetAttribLocation(shaderProgramID, "vPos");
@@ -715,6 +716,12 @@ int main(void)
 
         //glUniformMatrix4fv(mvp_location, 1, GL_FALSE, (const GLfloat*) mvp);
         glUniformMatrix4fv(mvp_location, 1, GL_FALSE, glm::value_ptr(mvp));
+
+
+        //uniform vec3 modelOffset;
+        GLint modelOffset_UL = glGetUniformLocation(shaderProgramID, "modelOffset");
+
+        glUniform3f(modelOffset_UL, -0.1f, 0.0f, 0.0f);
 
 //        glPolygonMode(GL_FRONT_AND_BACK, GL_POINT /*GL_LINE*/ /*GL_FILL*/);
         glPolygonMode(GL_FRONT_AND_BACK, GL_FILL /*GL_LINE*/ /*GL_FILL*/);
