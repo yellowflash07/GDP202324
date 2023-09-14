@@ -1,9 +1,10 @@
 //https://www.glfw.org/docs/latest/quick.html
 //http://graphics.stanford.edu/data/3Dscanrep/
 
-#include <glad/glad.h>
-#define GLFW_INCLUDE_NONE
-#include <GLFW/glfw3.h>
+#include "OpenGLCommon.h"
+//#include <glad/glad.h>
+//#define GLFW_INCLUDE_NONE
+//#include <GLFW/glfw3.h>
 #include <iostream>
 #include <fstream>      // C++ file IO (secret: it's a wraper for the c IO)
 #include <sstream>      // like a string builder
@@ -21,6 +22,8 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string>
+
+#include "Basic Shader Manager/cShaderManager.h"
 
 //static const struct
 //{
@@ -57,27 +60,27 @@ struct sVertex
 unsigned int g_NumberOfVerticesToDraw = 0;
 sVertex* pVertices = NULL;      // 0 or nullptr
 
-static const char* vertex_shader_text =
-"#version 110\n"
-"uniform mat4 MVP;\n"
-"attribute vec3 vCol;\n"
-"attribute vec3 vPos;\n"
-"varying vec3 color;\n"
-"void main()\n"
-"{\n"
-"    gl_Position = MVP * vec4(vPos, 1.0);\n"
-"    color = vCol;\n"
-"}\n";
+//static const char* vertex_shader_text =
+//"#version 110\n"
+//"uniform mat4 MVP;\n"
+//"attribute vec3 vCol;\n"
+//"attribute vec3 vPos;\n"
+//"varying vec3 color;\n"
+//"void main()\n"
+//"{\n"
+//"    gl_Position = MVP * vec4(vPos, 1.0);\n"
+//"    color = vCol;\n"
+//"}\n";
+//
+//static const char* fragment_shader_text =
+//"#version 110\n"
+//"varying vec3 color;\n"
+//"void main()\n"
+//"{\n"
+//"    gl_FragColor = vec4(color, 1.0);\n"
+//"}\n";
 
-static const char* fragment_shader_text =
-"#version 110\n"
-"varying vec3 color;\n"
-"void main()\n"
-"{\n"
-"    gl_FragColor = vec4(color, 1.0);\n"
-"}\n";
-
-glm::vec3 cameraEye = glm::vec3(10.0, 5.0, -15.0f);
+glm::vec3 cameraEye = glm::vec3(0.0, 0.0, -0.4f);
 
 
 static void error_callback(int error, const char* description)
@@ -147,6 +150,11 @@ struct sTrianglePlyFile
 unsigned int g_numberOfVertices = 0;
 unsigned int g_numberOfTriangles = 0;
 
+void AddStripes()
+{
+
+}
+
 bool LoadTheFile_PlyXYZ(std::string theFileName)
 {
 //    property float x
@@ -202,8 +210,8 @@ bool LoadTheFile_PlyXYZ(std::string theFileName)
     // Allocate enough space to hold the vertices
 //    sVertex vertices[8171];                 // Stack
 
-    sVertex x;      // STACK based variable (on the stack)
-    sVertex* px;    // Pointer variable.
+//    sVertex x;      // STACK based variable (on the stack)
+//    sVertex* px;    // Pointer variable.
 
 //    int y = 5;
 //
@@ -285,27 +293,37 @@ bool LoadTheFile_PlyXYZ(std::string theFileName)
         pVertices[vertIndex + 0].z =  pTheVerticesFile[ pTheTriangles[triIndex].v0 ].z;
 
         pVertices[vertIndex + 0].r = 1.0f;
-        pVertices[vertIndex + 0].g = 1.0f;
-        pVertices[vertIndex + 0].b = 1.0f;
+        pVertices[vertIndex + 0].g = 0.0f;
+        pVertices[vertIndex + 0].b = 0.0f;
 
         pVertices[vertIndex + 1].x =  pTheVerticesFile[ pTheTriangles[triIndex].v1 ].x;
         pVertices[vertIndex + 1].y =  pTheVerticesFile[ pTheTriangles[triIndex].v1 ].y;
         pVertices[vertIndex + 1].z =  pTheVerticesFile[ pTheTriangles[triIndex].v1 ].z;
 
-        pVertices[vertIndex + 1].r = 1.0f;
+        pVertices[vertIndex + 1].r = 0.0f;
         pVertices[vertIndex + 1].g = 1.0f;
-        pVertices[vertIndex + 1].b = 1.0f;
+        pVertices[vertIndex + 1].b = 0.0f;
 
         pVertices[vertIndex + 2].x =  pTheVerticesFile[ pTheTriangles[triIndex].v2 ].x;
         pVertices[vertIndex + 2].y =  pTheVerticesFile[ pTheTriangles[triIndex].v2 ].y;
         pVertices[vertIndex + 2].z =  pTheVerticesFile[ pTheTriangles[triIndex].v2 ].z;
 
-        pVertices[vertIndex + 2].r = 1.0f;
-        pVertices[vertIndex + 2].g = 1.0f;
+        pVertices[vertIndex + 2].r = 0.0f;
+        pVertices[vertIndex + 2].g = 0.0f;
         pVertices[vertIndex + 2].b = 1.0f;
 
         vertIndex += 3;
     }
+
+    // 1. Found extents (lowest and highest axis)
+    // 2. Got the delta (difference) of those two
+    // 3. Made an array with high-low range for each stripe
+    // 4. Compare each vertex with this array (step 3), change colour
+
+    // 1. Make an array or RGB stripes (width, etc.)
+    // 2. Divide x by spacing (including remainder) by number of colours
+    //    in array. 
+    // 3. Compare each vertex and colour 
 
     return true;
 }
@@ -366,8 +384,8 @@ bool LoadTheFile_Ply_XYZ_N_RGBA(std::string theFileName)
     // Allocate enough space to hold the vertices
 //    sVertex vertices[8171];                 // Stack
 
-    sVertex x;      // STACK based variable (on the stack)
-    sVertex* px;    // Pointer variable.
+//    sVertex x;      // STACK based variable (on the stack)
+//    sVertex* px;    // Pointer variable.
 
 //    int y = 5;
 //
@@ -490,7 +508,7 @@ int main(void)
     std::cout << "About to blow you mind with OpenGL!" << std::endl;
 
     GLFWwindow* window;
-    GLuint vertex_buffer, vertex_shader, fragment_shader;//v , program;
+    GLuint vertex_buffer; //, vertex_shader, fragment_shader;//v , program;
     GLint mvp_location;// , vpos_location, vcol_location;
 
     glfwSetErrorCallback(error_callback);
@@ -515,8 +533,8 @@ int main(void)
     glfwSwapInterval(1);
 
 
-//    if (!LoadTheFile_PlyXYZ("Hey"))
-     if (!LoadTheFile_Ply_XYZ_N_RGBA("Hey"))
+    if (!LoadTheFile_PlyXYZ("Hey"))
+//     if (!LoadTheFile_Ply_XYZ_N_RGBA("Hey"))
      {
 
         std::cout << "Error: didn't load the file." << std::endl;
@@ -539,24 +557,45 @@ int main(void)
 //    glBufferData(GL_ARRAY_BUFFER, number_of_bytes_in_array, vertices, GL_STATIC_DRAW);
     glBufferData(GL_ARRAY_BUFFER, number_of_bytes_in_array, pVertices, GL_STATIC_DRAW);
 
+//    cShaderManager ShaderThing;
+    cShaderManager* pShaderThing = new cShaderManager();
 
-    vertex_shader = glCreateShader(GL_VERTEX_SHADER);
-    glShaderSource(vertex_shader, 1, &vertex_shader_text, NULL);
-    glCompileShader(vertex_shader);
+    cShaderManager::cShader vertexShader;
+    vertexShader.fileName = "vertexShader01.glsl";
 
-    fragment_shader = glCreateShader(GL_FRAGMENT_SHADER);
-    glShaderSource(fragment_shader, 1, &fragment_shader_text, NULL);
-    glCompileShader(fragment_shader);
+    cShaderManager::cShader fragmentShader;
+    fragmentShader.fileName = "fragmentShader01.glsl";
 
-    GLuint program = glCreateProgram();
-    glAttachShader(program, vertex_shader);
-    glAttachShader(program, fragment_shader);
-    glLinkProgram(program);
+    if ( ! pShaderThing->createProgramFromFile("shader01", vertexShader, fragmentShader ) )
+    {
+        std::cout << "Error: Couldn't compile or link:" << std::endl;
+        std::cout << pShaderThing->getLastError();
+        return -1;
+    }
 
-    mvp_location = glGetUniformLocation(program, "MVP");
+    GLuint shaderProgramID = pShaderThing->getIDFromFriendlyName("shader01");
 
-    GLint vpos_location = glGetAttribLocation(program, "vPos");
-    GLint vcol_location = glGetAttribLocation(program, "vCol");
+    // Load and compile shader part
+
+//    vertex_shader = glCreateShader(GL_VERTEX_SHADER);
+//    glShaderSource(vertex_shader, 1, &vertex_shader_text, NULL);
+//    glCompileShader(vertex_shader);
+//
+//    fragment_shader = glCreateShader(GL_FRAGMENT_SHADER);
+//    glShaderSource(fragment_shader, 1, &fragment_shader_text, NULL);
+//    glCompileShader(fragment_shader);
+//
+//    GLuint program = glCreateProgram();
+//    glAttachShader(program, vertex_shader);
+//    glAttachShader(program, fragment_shader);
+//    glLinkProgram(program);
+
+// 
+
+    mvp_location = glGetUniformLocation(shaderProgramID, "MVP");
+
+    GLint vpos_location = glGetAttribLocation(shaderProgramID, "vPos");
+    GLint vcol_location = glGetAttribLocation(shaderProgramID, "vCol");
 
 //    int sizeofsVertex = sizeof(sVertex);
     glEnableVertexAttribArray(vpos_location);
@@ -612,7 +651,7 @@ int main(void)
 
         double currentTime = glfwGetTime();
         double deltaTime = currentTime - lastTime;
-        std::cout << deltaTime << std::endl;
+//        std::cout << deltaTime << std::endl;
         lastTime = currentTime;
 
 //        yaxisRotation += 0.01f;
@@ -648,7 +687,8 @@ int main(void)
        //mat4x4_mul(mvp, p, m);
         mvp = p * v * m;
 
-        glUseProgram(program);
+        glUseProgram(shaderProgramID);
+
         //glUniformMatrix4fv(mvp_location, 1, GL_FALSE, (const GLfloat*) mvp);
         glUniformMatrix4fv(mvp_location, 1, GL_FALSE, glm::value_ptr(mvp));
 

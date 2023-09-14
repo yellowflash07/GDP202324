@@ -138,8 +138,14 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Basic Shader Manager\cShader.cpp" />
+    <ClCompile Include="Basic Shader Manager\cShaderManager.cpp" />
     <ClCompile Include="glad.c" />
     <ClCompile Include="theMain.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Basic Shader Manager\cShaderManager.h" />
+    <ClInclude Include="OpenGLCommon.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
