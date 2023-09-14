@@ -140,11 +140,15 @@
   <ItemGroup>
     <ClCompile Include="Basic Shader Manager\cShader.cpp" />
     <ClCompile Include="Basic Shader Manager\cShaderManager.cpp" />
+    <ClCompile Include="cMesh.cpp" />
+    <ClCompile Include="cVAOManager\cVAOManager.cpp" />
     <ClCompile Include="glad.c" />
     <ClCompile Include="theMain.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Basic Shader Manager\cShaderManager.h" />
+    <ClInclude Include="cMesh.h" />
+    <ClInclude Include="cVAOManager\cVAOManager.h" />
     <ClInclude Include="OpenGLCommon.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

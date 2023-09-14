@@ -3,8 +3,8 @@
 
 uniform mat4 MVP;
 
-uniform vec3 modelScale;
-uniform vec3 modelOffset;
+//uniform vec3 modelScale;
+//uniform vec3 modelOffset;
 
 in vec3 vCol;		// was 'attribute' from vertex buffer
 in vec3 vPos;
@@ -15,14 +15,11 @@ void main()
 {
 	vec3 finalPos = vPos;
 	
-	finalPos.x += modelOffset.x;
-	finalPos.y += modelOffset.y;
-	finalPos.z += modelOffset.z;
 	
 	gl_Position = MVP * vec4(finalPos, 1.0);
 	
 	// bunny goes from -0.07 to 0.07
-	vec3 stripeColour = vCol;
+	vec3 finalColour = vCol;
 	
 //	if ( vPos.y < 0.0 )
 //	{
@@ -34,5 +31,5 @@ void main()
 //	}
 	
 	
-	color = stripeColour;
+	color = finalColour;
 }

@@ -8,6 +8,7 @@
 #include <iostream>
 #include <fstream>      // C++ file IO (secret: it's a wraper for the c IO)
 #include <sstream>      // like a string builder
+#include <vector>       // Aka a "smart array"
 
 
 //#include "linmath.h"
@@ -24,6 +25,9 @@
 #include <string>
 
 #include "Basic Shader Manager/cShaderManager.h"
+#include "cVAOManager/cVAOManager.h"
+
+#include "cMesh.h"
 
 //static const struct
 //{
@@ -38,12 +42,12 @@
 
 
 
-
-struct sVertex
-{
-    float x, y, z;      // vec2
-    float r, g, b;      // vec3
-};
+// This is now in the VAO Manager class
+//struct sVertex
+//{
+//    float x, y, z;      // vec2
+//    float r, g, b;      // vec3
+//};
 
 //const unsigned int NUM_OF_VERTICES = 6;
 //sVertex vertices[NUM_OF_VERTICES] =
@@ -81,7 +85,7 @@ sVertex* pVertices = NULL;      // 0 or nullptr
 //"}\n";
 
 
-glm::vec3 cameraEye = glm::vec3(0.0, 0.0, +0.4f);
+glm::vec3 cameraEye = glm::vec3(0.0, 0.0, +10.0f);
 glm::vec3 cameraTarget = glm::vec3(0.0f, 0.0f, 0.0f);
 glm::vec3 upVector = glm::vec3(0.0f, 1.0f, 0.0f);
 
@@ -557,8 +561,8 @@ int main(void)
     glfwSwapInterval(1);
 
 
-    if (!LoadTheFile_PlyXYZ("Hey"))
-//     if (!LoadTheFile_Ply_XYZ_N_RGBA("Hey"))
+//    if (!LoadTheFile_PlyXYZ("Hey"))
+     if (!LoadTheFile_Ply_XYZ_N_RGBA("Hey"))
      {
 
         std::cout << "Error: didn't load the file." << std::endl;
@@ -597,7 +601,20 @@ int main(void)
         return -1;
     }
 
+
+//
     GLuint shaderProgramID = pShaderThing->getIDFromFriendlyName("shader01");
+
+    cVAOManager* pMeshManager = new cVAOManager();
+
+    sModelDrawInfo bunnyDrawingInfo;
+    pMeshManager->LoadModelIntoVAO("bun_zipper_res2_xyz.ply",
+                                   bunnyDrawingInfo, shaderProgramID);
+
+    sModelDrawInfo bathtubDrawingInfo;
+    pMeshManager->LoadModelIntoVAO("bathtub.ply",
+                                   bathtubDrawingInfo, shaderProgramID);
+
 
     // Load and compile shader part
 
@@ -640,8 +657,29 @@ int main(void)
                           (void*) offsetof(sVertex, r));    //  (void*)(sizeof(float) * 2));
 
 
+    // Add some models to the "scene"
+    cMesh bunny1;   
+    bunny1.meshName = "bun_zipper_res2_xyz.ply";
+    bunny1.position = glm::vec3(-1.0f, 0.0f, 0.0f);
+    bunny1.scale = 10.0f;
+    bunny1.orientation.x = glm::radians(45.0f);
 
+    cMesh bunny2;
+    bunny2.meshName = "bun_zipper_res2_xyz.ply";
+    bunny2.position = glm::vec3(1.0f, 0.0f, 0.0f);
+    bunny2.scale = 7.5f;
+    bunny2.orientation.y = glm::radians(135.0f);
 
+    cMesh bathtub;
+    bathtub.meshName = "bathtub.ply";
+    //bunny2.position = glm::vec3(1.0f, 0.0f, 0.0f);
+    bathtub.scale = 0.75f;
+
+    // Smart array of cMesh object
+    std::vector<cMesh> vecMeshesToDraw;
+    vecMeshesToDraw.push_back(bunny1);
+    vecMeshesToDraw.push_back(bunny2);
+    vecMeshesToDraw.push_back(bathtub);
 
 
 
@@ -655,7 +693,10 @@ int main(void)
         float ratio;
         int width, height;
 //        mat4x4 m, p, mvp;
-        glm::mat4 m, p, v, mvp;
+        glm::mat4 matModel;         // "model" or "world" matrix
+        glm::mat4 matProjection;    // "projection"
+        glm::mat4 matView;          // "view" or "camera"
+        glm::mat4 mvp;
 
         glfwGetFramebufferSize(window, &width, &height);
         ratio = width / (float)height;
@@ -666,68 +707,120 @@ int main(void)
         // While drawing a pixel, see if the pixel that's already there is closer or not?
         glEnable(GL_DEPTH_TEST);
 
+        // *********************************************************************
+        // Draw all the objects
+        for ( unsigned int index = 0; index != vecMeshesToDraw.size(); index++ )
+        {
+
+            cMesh currentMesh = vecMeshesToDraw[index];
+
         //         mat4x4_identity(m);
-        m = glm::mat4(1.0f);
-
-        //mat4x4_rotate_Z(m, m, (float) glfwGetTime());
-//        glm::mat4 rotateZ = glm::rotate(glm::mat4(1.0f),
-//                                        -0.5f, // (float)glfwGetTime(),
-//                                        glm::vec3(0.0f, 0.0, 1.0f));
-
-        double currentTime = glfwGetTime();
-        double deltaTime = currentTime - lastTime;
-//        std::cout << deltaTime << std::endl;
-        lastTime = currentTime;
-
-//        yaxisRotation += 0.01f;
-//        yaxisRotation += ( (2.0 * 3.1415) * deltaTime );
-
-        glm::mat4 rotateY = glm::rotate(glm::mat4(1.0f),
-                                        yaxisRotation, // (float)glfwGetTime(),
-                                        glm::vec3(0.0f, 1.0, 0.0f));
+            matModel = glm::mat4(1.0f);
 
 
-//        m = m * rotateZ;
-        m = m * rotateY;
-//        m = m * rotateZ;
-
-        //mat4x4_ortho(p, -ratio, ratio, -1.f, 1.f, 1.f, -1.f);
-        p = glm::perspective(0.6f,
-                             ratio,
-                             0.1f,
-                             1000.0f);
-
-        v = glm::mat4(1.0f);
-
-//        glm::vec3 cameraEye = glm::vec3(0.0, 0.0, -4.0f);
-//        glm::vec3 cameraTarget = glm::vec3(0.0f, 0.0f, 0.0f);
-//        glm::vec3 upVector = glm::vec3(0.0f, 1.0f, 0.0f);
-
-//        cameraEye.z += 0.001f;
-
-        v = glm::lookAt(cameraEye,
-                        cameraTarget,
-                        upVector);
-
-       //mat4x4_mul(mvp, p, m);
-        mvp = p * v * m;
-
-        glUseProgram(shaderProgramID);
-
-        //glUniformMatrix4fv(mvp_location, 1, GL_FALSE, (const GLfloat*) mvp);
-        glUniformMatrix4fv(mvp_location, 1, GL_FALSE, glm::value_ptr(mvp));
+            double currentTime = glfwGetTime();
+            double deltaTime = currentTime - lastTime;
+    //        std::cout << deltaTime << std::endl;
+            lastTime = currentTime;
 
 
-        //uniform vec3 modelOffset;
-        GLint modelOffset_UL = glGetUniformLocation(shaderProgramID, "modelOffset");
+            // Translation
+            glm::mat4 matTranslate = glm::translate(glm::mat4(1.0f),
+                                                    glm::vec3(currentMesh.position.x,
+                                                              currentMesh.position.y,
+                                                              currentMesh.position.z));
 
-        glUniform3f(modelOffset_UL, -0.1f, 0.0f, 0.0f);
 
-//        glPolygonMode(GL_FRONT_AND_BACK, GL_POINT /*GL_LINE*/ /*GL_FILL*/);
-        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL /*GL_LINE*/ /*GL_FILL*/);
-//        glPointSize(10.0f);
+               // Rotation matrix generation
+            glm::mat4 matRotateX = glm::rotate(glm::mat4(1.0f),
+                                               currentMesh.orientation.x, // (float)glfwGetTime(),
+                                               glm::vec3(1.0f, 0.0, 0.0f));
 
-        glDrawArrays(GL_TRIANGLES, 0, g_NumberOfVerticesToDraw);
+
+            glm::mat4 matRotateY = glm::rotate(glm::mat4(1.0f),
+                                               currentMesh.orientation.y, // (float)glfwGetTime(),
+                                               glm::vec3(0.0f, 1.0, 0.0f));
+
+            glm::mat4 matRotateZ = glm::rotate(glm::mat4(1.0f),
+                                               currentMesh.orientation.z, // (float)glfwGetTime(),
+                                               glm::vec3(0.0f, 0.0, 1.0f));
+
+               // Scaling matrix
+            glm::mat4 matScale = glm::scale(glm::mat4(1.0f),
+                                            glm::vec3(currentMesh.scale, 
+                                                      currentMesh.scale, 
+                                                      currentMesh.scale));
+            //--------------------------------------------------------------
+
+            // Combine all these transformation
+            matModel = matModel * matTranslate;
+
+            matModel = matModel * matRotateX;
+            matModel = matModel * matRotateY;
+            matModel = matModel * matRotateZ;
+
+            matModel = matModel * matScale;
+
+    //        m = m * rotateZ;
+    //        m = m * rotateY;
+    //        m = m * rotateZ;
+
+            //mat4x4_ortho(p, -ratio, ratio, -1.f, 1.f, 1.f, -1.f);
+            matProjection = glm::perspective(0.6f,
+                                             ratio,
+                                             0.1f,
+                                             1000.0f);
+
+    //        glm::vec3 cameraEye = glm::vec3(0.0, 0.0, -4.0f);
+    //        glm::vec3 cameraTarget = glm::vec3(0.0f, 0.0f, 0.0f);
+    //        glm::vec3 upVector = glm::vec3(0.0f, 1.0f, 0.0f);
+
+    //        cameraEye.z += 0.001f;
+
+            matView = glm::lookAt(cameraEye,
+                                  cameraTarget,
+                                  upVector);
+
+           //mat4x4_mul(mvp, p, m);
+            mvp = matProjection * matView * matModel;
+
+            glUseProgram(shaderProgramID);
+
+            //glUniformMatrix4fv(mvp_location, 1, GL_FALSE, (const GLfloat*) mvp);
+            glUniformMatrix4fv(mvp_location, 1, GL_FALSE, glm::value_ptr(mvp));
+
+
+            //uniform vec3 modelOffset;
+//            GLint modelOffset_UL = glGetUniformLocation(shaderProgramID, "modelOffset");
+
+//            glUniform3f(modelOffset_UL, -0.1f, 0.0f, 0.0f);
+
+    //        glPolygonMode(GL_FRONT_AND_BACK, GL_POINT /*GL_LINE*/ /*GL_FILL*/);
+            glPolygonMode(GL_FRONT_AND_BACK, GL_FILL /*GL_LINE*/ /*GL_FILL*/);
+    //        glPointSize(10.0f);
+
+ //           glDrawArrays(GL_TRIANGLES, 0, g_NumberOfVerticesToDraw);
+
+            sModelDrawInfo modelInfo;
+            if ( pMeshManager->FindDrawInfoByModelName(currentMesh.meshName, modelInfo) )
+            {
+                // Found it!!!
+
+                glBindVertexArray(modelInfo.VAO_ID); 		//  enable VAO (and everything else)
+                glDrawElements(GL_TRIANGLES, 
+                               modelInfo.numberOfIndices, 
+                               GL_UNSIGNED_INT, 
+                               0);
+                glBindVertexArray(0); 			            // disable VAO (and everything else)
+
+            }
+
+
+        }//for ( unsigned int index
+        // *********************************************************************
+
+
+
 
         glfwSwapBuffers(window);
         glfwPollEvents();

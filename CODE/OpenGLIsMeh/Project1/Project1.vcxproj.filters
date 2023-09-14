@@ -16,6 +16,12 @@
     <Filter Include="ShaderManager">
       <UniqueIdentifier>{259c8837-5282-4da7-a1d4-a2fb0d85f5f1}</UniqueIdentifier>
     </Filter>
+    <Filter Include="cMesh">
+      <UniqueIdentifier>{8588b2db-782d-4859-8e76-647535a93c03}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="MeshObjectManager">
+      <UniqueIdentifier>{01d67596-ebe7-4daa-a748-6d5f0a30a8bf}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="theMain.cpp">
@@ -30,6 +36,12 @@
     <ClCompile Include="Basic Shader Manager\cShaderManager.cpp">
       <Filter>ShaderManager</Filter>
     </ClCompile>
+    <ClCompile Include="cMesh.cpp">
+      <Filter>cMesh</Filter>
+    </ClCompile>
+    <ClCompile Include="cVAOManager\cVAOManager.cpp">
+      <Filter>MeshObjectManager</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Basic Shader Manager\cShaderManager.h">
@@ -37,6 +49,12 @@
     </ClInclude>
     <ClInclude Include="OpenGLCommon.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="cMesh.h">
+      <Filter>cMesh</Filter>
+    </ClInclude>
+    <ClInclude Include="cVAOManager\cVAOManager.h">
+      <Filter>MeshObjectManager</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
