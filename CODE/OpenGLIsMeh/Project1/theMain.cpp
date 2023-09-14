@@ -80,7 +80,10 @@ sVertex* pVertices = NULL;      // 0 or nullptr
 //"    gl_FragColor = vec4(color, 1.0);\n"
 //"}\n";
 
-glm::vec3 cameraEye = glm::vec3(0.0, 0.0, -0.4f);
+
+glm::vec3 cameraEye = glm::vec3(0.0, 0.0, +0.4f);
+glm::vec3 cameraTarget = glm::vec3(0.0f, 0.0f, 0.0f);
+glm::vec3 upVector = glm::vec3(0.0f, 1.0f, 0.0f);
 
 
 static void error_callback(int error, const char* description)
@@ -314,6 +317,27 @@ bool LoadTheFile_PlyXYZ(std::string theFileName)
 
         vertIndex += 3;
     }
+
+    // Manipulate the mode
+    for (unsigned int vertIndex = 0; vertIndex != g_NumberOfVerticesToDraw; vertIndex++)
+    {
+        // Translation in space (aka adding)
+//        pVertices[vertIndex].x += 0.0f;
+//        pVertices[vertIndex].y -= 0.1f;
+//        pVertices[vertIndex].z = 0.0f;
+
+        // Scale the model
+//        pVertices[vertIndex].x *= 10.0f;
+//        pVertices[vertIndex].y *= 10.f;
+//        pVertices[vertIndex].z *= 10.0f;
+
+        // Rotate the model around the x axis
+        pVertices[vertIndex].x *= 10.0f;
+        pVertices[vertIndex].y *= 10.f;
+        pVertices[vertIndex].z *= 10.0f;
+
+    }
+
 
     // 1. Found extents (lowest and highest axis)
     // 2. Got the delta (difference) of those two
@@ -675,8 +699,8 @@ int main(void)
         v = glm::mat4(1.0f);
 
 //        glm::vec3 cameraEye = glm::vec3(0.0, 0.0, -4.0f);
-        glm::vec3 cameraTarget = glm::vec3(0.0f, 0.0f, 0.0f);
-        glm::vec3 upVector = glm::vec3(0.0f, 1.0f, 0.0f);
+//        glm::vec3 cameraTarget = glm::vec3(0.0f, 0.0f, 0.0f);
+//        glm::vec3 upVector = glm::vec3(0.0f, 1.0f, 0.0f);
 
 //        cameraEye.z += 0.001f;
 
