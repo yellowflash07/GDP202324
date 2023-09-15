@@ -10,6 +10,7 @@
 #include <sstream>
 #include <fstream>
 
+
 sModelDrawInfo::sModelDrawInfo()
 {
 	this->VAO_ID = 0;
@@ -109,19 +110,26 @@ bool cVAOManager::LoadModelIntoVAO(
 
 	GLint vpos_location = glGetAttribLocation(shaderProgramID, "vPos");	// program
 	GLint vcol_location = glGetAttribLocation(shaderProgramID, "vCol");	// program;
+	GLint vNormal_location = glGetAttribLocation(shaderProgramID, "vNormal");	// program;
 
 	// Set the vertex attributes for this shader
-	glEnableVertexAttribArray(vpos_location);	// vPos
-	glVertexAttribPointer( vpos_location, 3,		// vPos
+	glEnableVertexAttribArray(vpos_location);	    // vPos
+	glVertexAttribPointer( vpos_location, 4,		// vPos
 						   GL_FLOAT, GL_FALSE,
-						   sizeof(float) * 6, 
-						   ( void* )0);
+						   sizeof(sVertex), 
+						   ( void* ) offsetof(sVertex, x));
 
-	glEnableVertexAttribArray(vcol_location);	// vCol
-	glVertexAttribPointer( vcol_location, 3,		// vCol
+	glEnableVertexAttribArray(vcol_location);	    // vCol
+	glVertexAttribPointer( vcol_location, 4,		// vCol
 						   GL_FLOAT, GL_FALSE,
-						   sizeof(float) * 6, 
-						   ( void* )( sizeof(float) * 3 ));
+                          sizeof(sVertex),
+						   ( void* ) offsetof(sVertex, r));
+
+	glEnableVertexAttribArray(vNormal_location);	// vNormal
+	glVertexAttribPointer(vNormal_location, 4,		// vNormal
+						   GL_FLOAT, GL_FALSE,
+                           sizeof(sVertex),
+						   ( void* ) offsetof(sVertex, nx));
 
 	// Now that all the parts are set up, set the VAO to zero
 	glBindVertexArray(0);
@@ -131,6 +139,7 @@ bool cVAOManager::LoadModelIntoVAO(
 
 	glDisableVertexAttribArray(vpos_location);
 	glDisableVertexAttribArray(vcol_location);
+	glDisableVertexAttribArray(vNormal_location);
 
 
 	// Store the draw information into the map
@@ -340,15 +349,18 @@ bool cVAOManager::m_LoadTheFile_Ply_XYZ_N_RGBA(std::string theFileName, sModelDr
         drawInfo.pVertices[vertIndex].x = pTheVerticesFile[vertIndex].x;
         drawInfo.pVertices[vertIndex].y = pTheVerticesFile[vertIndex].y;
         drawInfo.pVertices[vertIndex].z = pTheVerticesFile[vertIndex].z;
+        drawInfo.pVertices[vertIndex].w = 1.0f;
 
-//        drawInfo.pVertices[vertIndex].nx = pTheVerticesFile[vertIndex].nx;
-//        drawInfo.pVertices[vertIndex].ny = pTheVerticesFile[vertIndex].ny;
-//        drawInfo.pVertices[vertIndex].nz = pTheVerticesFile[vertIndex].nz;
+
+        drawInfo.pVertices[vertIndex].nx = pTheVerticesFile[vertIndex].nx;
+        drawInfo.pVertices[vertIndex].ny = pTheVerticesFile[vertIndex].ny;
+        drawInfo.pVertices[vertIndex].nz = pTheVerticesFile[vertIndex].nz;
+        drawInfo.pVertices[vertIndex].nw = 1.0f;
 
         drawInfo.pVertices[vertIndex].r = pTheVerticesFile[vertIndex].r;
         drawInfo.pVertices[vertIndex].g = pTheVerticesFile[vertIndex].g;
         drawInfo.pVertices[vertIndex].b = pTheVerticesFile[vertIndex].b;
-//        drawInfo.pVertices[vertIndex].a = pTheVerticesFile[vertIndex].a;
+        drawInfo.pVertices[vertIndex].a = pTheVerticesFile[vertIndex].a;
     }
 
     // Allocate an array for all the indices (which is 3x the number of triangles)

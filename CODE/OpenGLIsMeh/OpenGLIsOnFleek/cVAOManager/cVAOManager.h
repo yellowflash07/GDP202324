@@ -12,8 +12,11 @@
 // So dictated from THE SHADER
 struct sVertex
 {
-	float x, y, z;		
-	float r, g, b;
+//	float x, y, z;		
+//	float r, g, b;
+	float x, y, z, w;		// w 'cause math
+	float r, g, b, a;
+	float nx, ny, nz, nw;	// Won't use nw
 };
 
 

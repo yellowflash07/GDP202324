@@ -12,7 +12,6 @@
 //
 extern std::vector<cMesh> g_vecMeshesToDraw;
 
-
 bool SaveVectorSceneToFile( std::string saveFileName )
 {
 
