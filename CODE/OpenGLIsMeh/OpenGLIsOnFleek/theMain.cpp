@@ -29,66 +29,16 @@
 
 #include "cMesh.h"
 
-//static const struct
-//{
-//    float x, y;
-//    float r, g, b;
-//} vertices[3] =
-//{
-//    { -0.6f, -0.4f, 1.f, 0.f, 0.f },        // Red
-//    {  0.6f, -0.4f, 0.f, 1.f, 0.f },        // Green
-//    {   0.f,  0.6f, 0.f, 0.f, 1.f }         // Blue
-//};
-
-
-
-// This is now in the VAO Manager class
-//struct sVertex
-//{
-//    float x, y, z;      // vec2
-//    float r, g, b;      // vec3
-//};
-
-//const unsigned int NUM_OF_VERTICES = 6;
-//sVertex vertices[NUM_OF_VERTICES] =
-//{
-//    { -0.6f, -0.4f, 0.0f,   1.0f, 0.0f, 0.0f },        // Red
-//    {  0.6f, -0.4f, 0.0f,   0.0f, 1.0f, 0.0f },        // Green
-//    {   0.f,  0.6f, 0.0f,   0.0f, 0.0f, 1.0f },         // Blue
-//    /* Same, just +1 in the x axis */
-//    {  0.4f, -0.4f, 0.0f,   0.0f, 1.0f, 0.0f },        // Red
-//    {  1.6f, -0.4f, 0.0f,   0.0f, 0.0f, 1.0f },        // Green
-//    {  1.0f,  0.6f, 0.0f,   1.0f, 0.0f, 0.0f }         // Blue
-//};
-
-// Now in the VAO Manager
-//unsigned int g_NumberOfVerticesToDraw = 0;
-//sVertex* pVertices = NULL;      // 0 or nullptr
-
-//static const char* vertex_shader_text =
-//"#version 110\n"
-//"uniform mat4 MVP;\n"
-//"attribute vec3 vCol;\n"
-//"attribute vec3 vPos;\n"
-//"varying vec3 color;\n"
-//"void main()\n"
-//"{\n"
-//"    gl_Position = MVP * vec4(vPos, 1.0);\n"
-//"    color = vCol;\n"
-//"}\n";
-//
-//static const char* fragment_shader_text =
-//"#version 110\n"
-//"varying vec3 color;\n"
-//"void main()\n"
-//"{\n"
-//"    gl_FragColor = vec4(color, 1.0);\n"
-//"}\n";
-
-
 glm::vec3 cameraEye = glm::vec3(0.0, 0.0, +10.0f);
 glm::vec3 cameraTarget = glm::vec3(0.0f, 0.0f, 0.0f);
 glm::vec3 upVector = glm::vec3(0.0f, 1.0f, 0.0f);
+
+
+// Smart array of cMesh object
+std::vector<cMesh> g_vecMeshesToDraw;
+
+// Function signature
+bool SaveVectorSceneToFile(std::string saveFileName);
 
 
 static void error_callback(int error, const char* description)
@@ -102,6 +52,12 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
     if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
     {
         glfwSetWindowShouldClose(window, GLFW_TRUE);
+    }
+
+    if (key == GLFW_KEY_F10 && action)
+    {
+        // Save the scene to a file
+        SaveVectorSceneToFile("myscene.txt");
     }
 
     const float CAMERA_MOVEMENT_SPEED = 0.1f;
@@ -133,35 +89,16 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
     {
         cameraEye.y += CAMERA_MOVEMENT_SPEED;
     }     
+
+
+ 
+
+
     return;
 }
 
-//// This most closely matches the ply file for the bunny
-//struct sVertexPlyFile
-//{
-//    float x;
-//    float y;
-//    float z;
-//    float nx, ny, nz;
-//    float r, g, b, a;
-//};
-//
-//struct sTrianglePlyFile
-//{
-////    sVertexPlyFile verts[3];
-////    unsigned int vertIndexes[3];
-//    // Vertices of the triangles
-//    unsigned int v0, v1, v2;
-//};
 
 
-unsigned int g_numberOfVertices = 0;
-unsigned int g_numberOfTriangles = 0;
-
-void AddStripes()
-{
-
-}
 
 // The format for the original bunny with only XYZ
 //bool LoadTheFile_PlyXYZ(std::string theFileName)
@@ -538,7 +475,7 @@ int main(void)
     std::cout << "About to blow you mind with OpenGL!" << std::endl;
 
     GLFWwindow* window;
-    GLuint vertex_buffer; //, vertex_shader, fragment_shader;//v , program;
+//    GLuint vertex_buffer; //, vertex_shader, fragment_shader;//v , program;
     GLint mvp_location;// , vpos_location, vcol_location;
 
     glfwSetErrorCallback(error_callback);
@@ -684,11 +621,11 @@ int main(void)
     //bunny2.position = glm::vec3(1.0f, 0.0f, 0.0f);
     bathtub.scale = 0.25f;
 
-    // Smart array of cMesh object
-    std::vector<cMesh> vecMeshesToDraw;
-    vecMeshesToDraw.push_back(bunny1);
-    vecMeshesToDraw.push_back(bunny2);
-    vecMeshesToDraw.push_back(bathtub);
+//    // Smart array of cMesh object
+//    std::vector<cMesh> vecMeshesToDraw;
+    g_vecMeshesToDraw.push_back(bunny1);
+    g_vecMeshesToDraw.push_back(bunny2);
+    g_vecMeshesToDraw.push_back(bathtub);
 
 
 
@@ -718,10 +655,10 @@ int main(void)
 
         // *********************************************************************
         // Draw all the objects
-        for ( unsigned int index = 0; index != vecMeshesToDraw.size(); index++ )
+        for ( unsigned int index = 0; index != g_vecMeshesToDraw.size(); index++ )
         {
 
-            cMesh currentMesh = vecMeshesToDraw[index];
+            cMesh currentMesh = g_vecMeshesToDraw[index];
 
         //         mat4x4_identity(m);
             matModel = glm::mat4(1.0f);
@@ -854,3 +791,5 @@ int main(void)
     glfwTerminate();
     exit(EXIT_SUCCESS);
 }
+
+

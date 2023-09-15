@@ -42,6 +42,9 @@
     <ClCompile Include="cVAOManager\cVAOManager.cpp">
       <Filter>MeshObjectManager</Filter>
     </ClCompile>
+    <ClCompile Include="ScenePersistence.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Basic Shader Manager\cShaderManager.h">
