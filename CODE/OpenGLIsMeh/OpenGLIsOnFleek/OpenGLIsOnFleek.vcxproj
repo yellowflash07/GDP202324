@@ -152,6 +152,10 @@
     <ClInclude Include="cVAOManager\cVAOManager.h" />
     <ClInclude Include="OpenGLCommon.h" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="fragmentShader01.glsl" />
+    <None Include="vertexShader01.glsl" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

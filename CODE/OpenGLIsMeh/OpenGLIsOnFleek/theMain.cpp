@@ -549,15 +549,22 @@ int main(void)
     sModelDrawInfo bunnyDrawingInfo;
     pMeshManager->LoadModelIntoVAO("bun_zipper_res2_xyz_n_rgba.ply",
                                    bunnyDrawingInfo, shaderProgramID);
+    std::cout << "Loaded: " << bunnyDrawingInfo.numberOfVertices << " vertices" << std::endl;
 
     sModelDrawInfo bathtubDrawingInfo;
     pMeshManager->LoadModelIntoVAO("bathtub_xyz_n_rgba.ply",
                                    bathtubDrawingInfo, shaderProgramID);
+    std::cout << "Loaded: " << bathtubDrawingInfo.numberOfVertices << " vertices" << std::endl;
 
-    sModelDrawInfo BOPModel;
-    pMeshManager->LoadModelIntoVAO("BirdOfPrey_xyz_n_rgba.ply",
-                                   BOPModel, shaderProgramID);
+    sModelDrawInfo terrainDrawingInfo;
+    pMeshManager->LoadModelIntoVAO("Terrain_xyz_n_rgba.ply",
+                                   terrainDrawingInfo, shaderProgramID);
+    std::cout << "Loaded: " << terrainDrawingInfo.numberOfVertices << " vertices" << std::endl;
 
+//    sModelDrawInfo BOPModel;
+//    pMeshManager->LoadModelIntoVAO("BirdOfPrey_xyz_n_rgba.ply",
+//                                   BOPModel, shaderProgramID);
+//
 
     // Load and compile shader part
 
@@ -577,7 +584,6 @@ int main(void)
 // 
 
 
-    mvp_location = glGetUniformLocation(shaderProgramID, "MVP");
 
 //    GLint vpos_location = glGetAttribLocation(shaderProgramID, "vPos");
 //    GLint vcol_location = glGetAttribLocation(shaderProgramID, "vCol");
@@ -621,11 +627,18 @@ int main(void)
     //bunny2.position = glm::vec3(1.0f, 0.0f, 0.0f);
     bathtub.scale = 0.25f;
 
+    cMesh terrain;
+    terrain.meshName = "Terrain_xyz_n_rgba.ply";
+    //bunny2.position = glm::vec3(1.0f, 0.0f, 0.0f);
+    terrain.scale = 1.0f;
+    terrain.position.y = -25.0f;
+
 //    // Smart array of cMesh object
 //    std::vector<cMesh> vecMeshesToDraw;
     g_vecMeshesToDraw.push_back(bunny1);
     g_vecMeshesToDraw.push_back(bunny2);
     g_vecMeshesToDraw.push_back(bathtub);
+    g_vecMeshesToDraw.push_back(terrain);
 
 
 
@@ -652,6 +665,26 @@ int main(void)
 
         // While drawing a pixel, see if the pixel that's already there is closer or not?
         glEnable(GL_DEPTH_TEST);
+        // (Usually) the default - does NOT draw "back facing" triangles
+        glCullFace(GL_BACK);
+
+
+        //uniform vec3 directionalLightColour;
+        // rgb are the rgb of the light colour
+        //uniform vec4 directionalLight_Direction_power;
+        GLint lightColour_UL = glGetUniformLocation(shaderProgramID, "directionalLightColour");
+        GLint lightDirectionPower_UL = glGetUniformLocation(shaderProgramID, "directionalLight_Direction_power");
+
+        glUniform3f(lightColour_UL, 1.0f, 1.0f, 1.0f);  // White light
+//        glm::vec3 lightDirection = glm::vec3(0.0f, -1.0f, 0.0f);
+        // Down, to the right (+ve X) and along +ve z, too
+        glm::vec3 lightDirection = glm::vec3(1.0f, -1.0f, 1.0f);
+        lightDirection = glm::normalize(lightDirection);
+
+        float lightBrightness = 1.0f;       
+        glUniform4f(lightDirectionPower_UL, lightDirection.x, lightDirection.y, lightDirection.z,
+                    lightBrightness);
+
 
         // *********************************************************************
         // Draw all the objects
@@ -732,8 +765,15 @@ int main(void)
 
             glUseProgram(shaderProgramID);
 
+            mvp_location = glGetUniformLocation(shaderProgramID, "MVP");
             //glUniformMatrix4fv(mvp_location, 1, GL_FALSE, (const GLfloat*) mvp);
             glUniformMatrix4fv(mvp_location, 1, GL_FALSE, glm::value_ptr(mvp));
+
+            // Also calculate and pass the "inverse transpose" for the model matrix
+            glm::mat4 matModel_InverseTranspose = glm::inverse(glm::transpose(matModel));
+            // uniform mat4 matModel_IT;
+            GLint matModel_IT_UL = glGetUniformLocation(shaderProgramID, "matModel_IT");
+            glUniformMatrix4fv(matModel_IT_UL, 1, GL_FALSE, glm::value_ptr(matModel_InverseTranspose));
 
 
             //uniform vec3 modelOffset;
@@ -742,7 +782,7 @@ int main(void)
 //            glUniform3f(modelOffset_UL, -0.1f, 0.0f, 0.0f);
 
     //        glPolygonMode(GL_FRONT_AND_BACK, GL_POINT /*GL_LINE*/ /*GL_FILL*/);
-            glPolygonMode(GL_FRONT_AND_BACK, GL_FILL /*GL_LINE*/ /*GL_FILL*/);
+            glPolygonMode(GL_FRONT_AND_BACK, GL_FILL /*GL_LINE*/ /*GL_POINT*/);
     //        glPointSize(10.0f);
 
  //           glDrawArrays(GL_TRIANGLES, 0, g_NumberOfVerticesToDraw);

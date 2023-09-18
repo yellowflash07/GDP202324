@@ -16,8 +16,6 @@ public:
 	glm::vec3 position;
 	glm::vec3 orientation;
 	float scale;
-	// No code
-	void KillAllHumans(void);
 };
 
 #endif

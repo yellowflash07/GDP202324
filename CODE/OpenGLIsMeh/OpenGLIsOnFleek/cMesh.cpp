@@ -15,9 +15,9 @@ cMesh::~cMesh()
 
 }
 
-void cMesh::KillAllHumans(void)
-{
-	std::cout << "Kill all humans!" << std::endl;
-	return;
-}
+//void cMesh::KillAllHumans(void)
+//{
+//	std::cout << "Kill all humans!" << std::endl;
+//	return;
+//}
 

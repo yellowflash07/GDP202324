@@ -22,6 +22,9 @@
     <Filter Include="MeshObjectManager">
       <UniqueIdentifier>{01d67596-ebe7-4daa-a748-6d5f0a30a8bf}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ShaderManager\Shaders">
+      <UniqueIdentifier>{c38c5f13-6225-419e-a6fd-53fb34fe99fb}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="theMain.cpp">
@@ -59,5 +62,13 @@
     <ClInclude Include="cVAOManager\cVAOManager.h">
       <Filter>MeshObjectManager</Filter>
     </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="fragmentShader01.glsl">
+      <Filter>ShaderManager\Shaders</Filter>
+    </None>
+    <None Include="vertexShader01.glsl">
+      <Filter>ShaderManager\Shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>
