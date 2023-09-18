@@ -36,6 +36,8 @@ glm::vec3 upVector = glm::vec3(0.0f, 1.0f, 0.0f);
 
 // Smart array of cMesh object
 std::vector<cMesh> g_vecMeshesToDraw;
+// 
+int g_selectedMesh = 0;
 
 // Function signature
 bool SaveVectorSceneToFile(std::string saveFileName);
@@ -61,36 +63,100 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
     }
 
     const float CAMERA_MOVEMENT_SPEED = 0.1f;
+    const float OBJECT_MOVEMENT_SPEED = 0.01f;
 
-    if ( key == GLFW_KEY_A && action )
+    // Is the shift key down
+    if ( mods == GLFW_MOD_SHIFT )
     {
-        cameraEye.x -= CAMERA_MOVEMENT_SPEED;
-    }
-    if ( key == GLFW_KEY_D && action )
-    {
-        cameraEye.x += CAMERA_MOVEMENT_SPEED;
+        // Shift key ONLY is down
     }
 
-    if ( key == GLFW_KEY_W && action )
+    // & will "mask" off the mod leaving the shift
+    if ( ( mods & GLFW_MOD_SHIFT ) == GLFW_MOD_SHIFT )
     {
-        cameraEye.z += CAMERA_MOVEMENT_SPEED;
+        // Shift key down (ignores other keys)
+
+        if (key == GLFW_KEY_A )
+        {
+            ::g_vecMeshesToDraw[::g_selectedMesh].position.x -= OBJECT_MOVEMENT_SPEED;
+        }
+        if (key == GLFW_KEY_D )
+        {
+            ::g_vecMeshesToDraw[::g_selectedMesh].position.x += OBJECT_MOVEMENT_SPEED;
+        }
+
+        if (key == GLFW_KEY_W )
+        {
+            ::g_vecMeshesToDraw[::g_selectedMesh].position.z += OBJECT_MOVEMENT_SPEED;
+        }
+        if (key == GLFW_KEY_S )
+        {
+            ::g_vecMeshesToDraw[::g_selectedMesh].position.z -= OBJECT_MOVEMENT_SPEED;
+        }
+
+
+        if (key == GLFW_KEY_Q )
+        {
+            ::g_vecMeshesToDraw[::g_selectedMesh].position.y -= OBJECT_MOVEMENT_SPEED;
+        }
+        if (key == GLFW_KEY_E )
+        {
+            ::g_vecMeshesToDraw[::g_selectedMesh].position.y += OBJECT_MOVEMENT_SPEED;
+        }
+
+        // Select another model
+        if ( key == GLFW_KEY_PAGE_UP )
+        {
+            ::g_selectedMesh++;
+            if ( ::g_selectedMesh > ::g_vecMeshesToDraw.size() )
+            {
+                ::g_selectedMesh = 0;
+            }
+            std::cout << "Selcted model: " << ::g_selectedMesh << std::endl;
+        }
+        if ( key == GLFW_KEY_PAGE_DOWN )
+        {
+            ::g_selectedMesh--;
+            if (::g_selectedMesh < 0 )
+            {
+                ::g_selectedMesh = (::g_vecMeshesToDraw.size() - 1);
+            }
+            std::cout << "Selcted model: " << ::g_selectedMesh << std::endl;
+        }
     }
-    if ( key == GLFW_KEY_S && action )
+    else
     {
-        cameraEye.z -= CAMERA_MOVEMENT_SPEED;
-    }    
+        // Shift key is NOT down
+
+        if ( key == GLFW_KEY_A && action )
+        {
+            cameraEye.x -= CAMERA_MOVEMENT_SPEED;
+        }
+        if ( key == GLFW_KEY_D && action )
+        {
+            cameraEye.x += CAMERA_MOVEMENT_SPEED;
+        }
+
+        if ( key == GLFW_KEY_W && action )
+        {
+            cameraEye.z += CAMERA_MOVEMENT_SPEED;
+        }
+        if ( key == GLFW_KEY_S && action )
+        {
+            cameraEye.z -= CAMERA_MOVEMENT_SPEED;
+        }    
     
 
-    if ( key == GLFW_KEY_Q && action )
-    {
-        cameraEye.y -= CAMERA_MOVEMENT_SPEED;
-    }
-    if ( key == GLFW_KEY_E && action )
-    {
-        cameraEye.y += CAMERA_MOVEMENT_SPEED;
-    }     
+        if ( key == GLFW_KEY_Q && action )
+        {
+            cameraEye.y -= CAMERA_MOVEMENT_SPEED;
+        }
+        if ( key == GLFW_KEY_E && action )
+        {
+            cameraEye.y += CAMERA_MOVEMENT_SPEED;
+        }     
 
-
+    }// if ( ( mods & GLFW_MOD_SHIFT ) == GLFW_MOD_SHIFT )
  
 
 
