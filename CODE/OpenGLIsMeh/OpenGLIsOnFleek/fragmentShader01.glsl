@@ -11,12 +11,20 @@ uniform vec3 directionalLightColour;
 uniform vec4 directionalLight_Direction_power;
 // xyz is the normalized direction, w = power (between 0 and 1)
 
+// If true, then passes the colour without calculating lighting
+uniform bool bDoNotLight;
 
 void main()
 {
 //	gl_FragColor = vec4(color, 1.0);
 
 	vec4 vertexRGBA = colour;
+	
+	if ( bDoNotLight )
+	{
+		outputColour = vertexRGBA;
+		return;
+	}
 	
 	// *************************************
 	// For now, just trust Michael

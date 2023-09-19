@@ -4,9 +4,13 @@
 // Constructor: Called on creation   c'tor
 cMesh::cMesh()
 {
-	position = glm::vec3(0.0f, 0.0f, 0.0f);
-	orientation = glm::vec3(0.0f, 0.0f, 0.0f);
-	scale = 1.0f;
+//	this->position = glm::vec3(0.0f, 0.0f, 0.0f);
+	this->orientation = glm::vec3(0.0f, 0.0f, 0.0f);
+	this->scale = 1.0f;
+
+	this->bIsWireframe = false;
+	this->bDoNotLight = false;
+
 }
 
 // Destructor: Called on deletion   d'tor

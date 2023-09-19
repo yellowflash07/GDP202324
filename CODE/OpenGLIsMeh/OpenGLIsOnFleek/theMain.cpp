@@ -29,8 +29,8 @@
 
 #include "cMesh.h"
 
-glm::vec3 cameraEye = glm::vec3(0.0, 0.0, +10.0f);
-glm::vec3 cameraTarget = glm::vec3(0.0f, 0.0f, 0.0f);
+glm::vec3 cameraEye = glm::vec3(0.0, 5.0, +90.0f);
+glm::vec3 cameraTarget = glm::vec3(0.0f, 5.0f, 0.0f);
 glm::vec3 upVector = glm::vec3(0.0f, 1.0f, 0.0f);
 
 
@@ -41,6 +41,16 @@ int g_selectedMesh = 0;
 
 // Function signature
 bool SaveVectorSceneToFile(std::string saveFileName);
+
+void DoPhysicUpdate(double deltaTime);
+
+// https://stackoverflow.com/questions/5289613/generate-random-float-between-two-floats
+float getRandomFloat(float a, float b) {
+    float random = ((float)rand()) / (float)RAND_MAX;
+    float diff = b - a;
+    float r = random * diff;
+    return a + r;
+}
 
 
 static void error_callback(int error, const char* description)
@@ -62,7 +72,7 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
         SaveVectorSceneToFile("myscene.txt");
     }
 
-    const float CAMERA_MOVEMENT_SPEED = 0.1f;
+    const float CAMERA_MOVEMENT_SPEED = 1.0f;
     const float OBJECT_MOVEMENT_SPEED = 0.01f;
 
     // Is the shift key down
@@ -78,30 +88,30 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
 
         if (key == GLFW_KEY_A )
         {
-            ::g_vecMeshesToDraw[::g_selectedMesh].position.x -= OBJECT_MOVEMENT_SPEED;
+            ::g_vecMeshesToDraw[::g_selectedMesh].physProps.position.x -= OBJECT_MOVEMENT_SPEED;
         }
         if (key == GLFW_KEY_D )
         {
-            ::g_vecMeshesToDraw[::g_selectedMesh].position.x += OBJECT_MOVEMENT_SPEED;
+            ::g_vecMeshesToDraw[::g_selectedMesh].physProps.position.x += OBJECT_MOVEMENT_SPEED;
         }
 
         if (key == GLFW_KEY_W )
         {
-            ::g_vecMeshesToDraw[::g_selectedMesh].position.z += OBJECT_MOVEMENT_SPEED;
+            ::g_vecMeshesToDraw[::g_selectedMesh].physProps.position.z += OBJECT_MOVEMENT_SPEED;
         }
         if (key == GLFW_KEY_S )
         {
-            ::g_vecMeshesToDraw[::g_selectedMesh].position.z -= OBJECT_MOVEMENT_SPEED;
+            ::g_vecMeshesToDraw[::g_selectedMesh].physProps.position.z -= OBJECT_MOVEMENT_SPEED;
         }
 
 
         if (key == GLFW_KEY_Q )
         {
-            ::g_vecMeshesToDraw[::g_selectedMesh].position.y -= OBJECT_MOVEMENT_SPEED;
+            ::g_vecMeshesToDraw[::g_selectedMesh].physProps.position.y -= OBJECT_MOVEMENT_SPEED;
         }
         if (key == GLFW_KEY_E )
         {
-            ::g_vecMeshesToDraw[::g_selectedMesh].position.y += OBJECT_MOVEMENT_SPEED;
+            ::g_vecMeshesToDraw[::g_selectedMesh].physProps.position.y += OBJECT_MOVEMENT_SPEED;
         }
 
         // Select another model
@@ -119,7 +129,7 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
             ::g_selectedMesh--;
             if (::g_selectedMesh < 0 )
             {
-                ::g_selectedMesh = (::g_vecMeshesToDraw.size() - 1);
+                ::g_selectedMesh = ((int)::g_vecMeshesToDraw.size() - 1);
             }
             std::cout << "Selcted model: " << ::g_selectedMesh << std::endl;
         }
@@ -163,377 +173,6 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
     return;
 }
 
-
-
-
-// The format for the original bunny with only XYZ
-//bool LoadTheFile_PlyXYZ(std::string theFileName)
-//{
-////    property float x
-////    property float y
-////    property float z
-//
-//    //sVertexPlyFile p;       p.x = 0.0f;     p.y = 1.0f; p.z = 2.0f;
-//    //std::cout << p.x;
-//
-//    //sVertexPlyFile q;
-//    //std::cout << "Type in the x: ";
-//    //std::cin >> q.x;
-//
-//    // Input Filestream 
-//    std::ifstream theBunnyFile("bun_zipper_res2_xyz.ply");
-//    if ( ! theBunnyFile.is_open() )
-//    {
-//        // didn't open the file.
-//        return false;
-//    }
-//
-//    std::string temp;
-//    while (theBunnyFile >> temp)
-//    {
-//        if (temp == "vertex")
-//        {
-//            break;
-//        }
-//    };
-//    //element vertex 8171
-//    theBunnyFile >> g_numberOfVertices;
-//
-//
-//    while (theBunnyFile >> temp)
-//    {
-//        if (temp == "face")
-//        {
-//            break;
-//        }
-//    };
-//    //element vertex 8171
-//    theBunnyFile >> g_numberOfTriangles;
-//
-//    while (theBunnyFile >> temp)
-//    {
-//        if (temp == "end_header")
-//        {
-//            break;
-//        }
-//    };
-//
-//
-//    // Allocate enough space to hold the vertices
-////    sVertex vertices[8171];                 // Stack
-//
-////    sVertex x;      // STACK based variable (on the stack)
-////    sVertex* px;    // Pointer variable.
-//
-////    int y = 5;
-////
-////    int* py = new int();
-////    *py = 5;
-//
-//
-//    // Dynamically allocate memory on the heap;
-//    sVertexPlyFile* pTheVerticesFile = new sVertexPlyFile[g_numberOfVertices];
-//
-//    // -0.036872 0.127727 0.00440925 
-//    for ( unsigned int index = 0; index != g_numberOfVertices; index++ )
-//    {
-//        sVertexPlyFile tempVertex;
-//        theBunnyFile >> tempVertex.x;                //std::cin >> a.x;
-//        theBunnyFile >> tempVertex.y;                //std::cin >> a.y;
-//        theBunnyFile >> tempVertex.z;                //std::cin >> a.z;
-//
-//        pTheVerticesFile[index] = tempVertex;
-//    }
-//
-//
-//    sTrianglePlyFile* pTheTriangles = new sTrianglePlyFile[g_numberOfTriangles];
-//
-//    // 3 3495 3549 3548 
-//    for ( unsigned int index = 0; index != g_numberOfTriangles; index++ )
-//    {
-//        sTrianglePlyFile tempTriangle;
-//
-//        unsigned int discard;
-//        theBunnyFile >> discard;            // 3
-//        theBunnyFile >> tempTriangle.v0;                //std::cin >> a.x;
-//        theBunnyFile >> tempTriangle.v1;                //std::cin >> a.y;
-//        theBunnyFile >> tempTriangle.v2;                //std::cin >> a.z;
-//
-//        pTheTriangles[index] = tempTriangle;
-//    }
-//
-//
-//    // Now allocate the array that the shader is going to use
-////    g_NumberOfVerticesToDraw = 6;
-////    pVertices = new sVertex[g_NumberOfVerticesToDraw];
-////
-////    pVertices[0] = { -0.6f, -0.4f, 0.0f, 1.0f, 0.0f, 0.0f };
-////    pVertices[1] = { 0.6f, -0.4f, 0.0f,   0.0f, 1.0f, 0.0f };
-////    pVertices[2] = { 0.f,  0.6f, 0.0f,   0.0f, 0.0f, 1.0f };
-////    pVertices[3] = { 0.4f, -0.4f, 0.0f,   0.0f, 1.0f, 0.0f };
-////    pVertices[4] = { 1.6f, -0.4f, 0.0f,   0.0f, 0.0f, 1.0f };
-////    pVertices[5] = { 1.0f,  0.6f, 0.0f,   1.0f, 0.0f, 0.0f };
-//
-////    g_NumberOfVerticesToDraw = g_numberOfVertices;
-////    pVertices = new sVertex[g_NumberOfVerticesToDraw];
-////
-////    // Copy from the array we filled from the file to the array that that 
-////    //  shader (video card) will use...
-////
-////    for (unsigned int index = 0; index != g_numberOfVertices; index++)
-////    {
-////        // Left is the array going to the video
-////        // Right is the array from the file
-////        pVertices[index].x = pTheVerticesFile[index].x;
-////        pVertices[index].y = pTheVerticesFile[index].y;
-////        pVertices[index].z = pTheVerticesFile[index].z;
-////
-////        pVertices[index].r = 1.0f;
-////        pVertices[index].g = 1.0f;
-////        pVertices[index].b = 1.0f;
-////    }
-//// 
-//    g_NumberOfVerticesToDraw = g_numberOfTriangles * 3;
-//    pVertices = new sVertex[g_NumberOfVerticesToDraw];
-//
-//    unsigned int vertIndex = 0;
-//    for (unsigned int triIndex = 0; triIndex != g_numberOfTriangles; triIndex++)
-//    {
-//        // 3 1582 1581 2063 
-//        pVertices[vertIndex + 0].x =  pTheVerticesFile[ pTheTriangles[triIndex].v0 ].x;
-//        pVertices[vertIndex + 0].y =  pTheVerticesFile[ pTheTriangles[triIndex].v0 ].y;
-//        pVertices[vertIndex + 0].z =  pTheVerticesFile[ pTheTriangles[triIndex].v0 ].z;
-//
-//        pVertices[vertIndex + 0].r = 1.0f;
-//        pVertices[vertIndex + 0].g = 0.0f;
-//        pVertices[vertIndex + 0].b = 0.0f;
-//
-//        pVertices[vertIndex + 1].x =  pTheVerticesFile[ pTheTriangles[triIndex].v1 ].x;
-//        pVertices[vertIndex + 1].y =  pTheVerticesFile[ pTheTriangles[triIndex].v1 ].y;
-//        pVertices[vertIndex + 1].z =  pTheVerticesFile[ pTheTriangles[triIndex].v1 ].z;
-//
-//        pVertices[vertIndex + 1].r = 0.0f;
-//        pVertices[vertIndex + 1].g = 1.0f;
-//        pVertices[vertIndex + 1].b = 0.0f;
-//
-//        pVertices[vertIndex + 2].x =  pTheVerticesFile[ pTheTriangles[triIndex].v2 ].x;
-//        pVertices[vertIndex + 2].y =  pTheVerticesFile[ pTheTriangles[triIndex].v2 ].y;
-//        pVertices[vertIndex + 2].z =  pTheVerticesFile[ pTheTriangles[triIndex].v2 ].z;
-//
-//        pVertices[vertIndex + 2].r = 0.0f;
-//        pVertices[vertIndex + 2].g = 0.0f;
-//        pVertices[vertIndex + 2].b = 1.0f;
-//
-//        vertIndex += 3;
-//    }
-//
-//    // Manipulate the mode
-//    for (unsigned int vertIndex = 0; vertIndex != g_NumberOfVerticesToDraw; vertIndex++)
-//    {
-//        // Translation in space (aka adding)
-////        pVertices[vertIndex].x += 0.0f;
-////        pVertices[vertIndex].y -= 0.1f;
-////        pVertices[vertIndex].z = 0.0f;
-//
-//        // Scale the model
-////        pVertices[vertIndex].x *= 10.0f;
-////        pVertices[vertIndex].y *= 10.f;
-////        pVertices[vertIndex].z *= 10.0f;
-//
-//        // Rotate the model around the x axis
-////        pVertices[vertIndex].x *= 10.0f;
-////        pVertices[vertIndex].y *= 10.f;
-////        pVertices[vertIndex].z *= 10.0f;
-//
-//    }
-//
-//
-//    // 1. Found extents (lowest and highest axis)
-//    // 2. Got the delta (difference) of those two
-//    // 3. Made an array with high-low range for each stripe
-//    // 4. Compare each vertex with this array (step 3), change colour
-//
-//    // 1. Make an array or RGB stripes (width, etc.)
-//    // 2. Divide x by spacing (including remainder) by number of colours
-//    //    in array. 
-//    // 3. Compare each vertex and colour 
-//
-//    return true;
-//}
-
-// For the bathtub model that has normals and colours
-//bool LoadTheFile_Ply_XYZ_N_RGBA(std::string theFileName)
-//{
-////    property float x
-////    property float y
-////    property float z
-//
-//    //sVertexPlyFile p;       p.x = 0.0f;     p.y = 1.0f; p.z = 2.0f;
-//    //std::cout << p.x;
-//
-//    //sVertexPlyFile q;
-//    //std::cout << "Type in the x: ";
-//    //std::cin >> q.x;
-//
-//    // Input Filestream 
-//    std::ifstream theBunnyFile("bathtub.ply");
-//    if (!theBunnyFile.is_open())
-//    {
-//        // didn't open the file.
-//        return false;
-//    }
-//
-//    std::string temp;
-//    while (theBunnyFile >> temp)
-//    {
-//        if (temp == "vertex")
-//        {
-//            break;
-//        }
-//    };
-//    //element vertex 8171
-//    theBunnyFile >> g_numberOfVertices;
-//
-//
-//    while (theBunnyFile >> temp)
-//    {
-//        if (temp == "face")
-//        {
-//            break;
-//        }
-//    };
-//    //element vertex 8171
-//    theBunnyFile >> g_numberOfTriangles;
-//
-//    while (theBunnyFile >> temp)
-//    {
-//        if (temp == "end_header")
-//        {
-//            break;
-//        }
-//    };
-//
-//
-//    // Allocate enough space to hold the vertices
-////    sVertex vertices[8171];                 // Stack
-//
-////    sVertex x;      // STACK based variable (on the stack)
-////    sVertex* px;    // Pointer variable.
-//
-////    int y = 5;
-////
-////    int* py = new int();
-////    *py = 5;
-//
-//
-//    // Dynamically allocate memory on the heap;
-//    sVertexPlyFile* pTheVerticesFile = new sVertexPlyFile[g_numberOfVertices];
-//
-//    // -0.036872 0.127727 0.00440925 
-//    for (unsigned int index = 0; index != g_numberOfVertices; index++)
-//    {
-//        sVertexPlyFile tempVertex;
-//        theBunnyFile >> tempVertex.x;                //std::cin >> a.x;
-//        theBunnyFile >> tempVertex.y;                //std::cin >> a.y;
-//        theBunnyFile >> tempVertex.z;                //std::cin >> a.z;
-//
-//        theBunnyFile >> tempVertex.nx;
-//        theBunnyFile >> tempVertex.ny;
-//        theBunnyFile >> tempVertex.nz;
-//
-//        theBunnyFile >> tempVertex.r;       tempVertex.r /= 255.0f;
-//        theBunnyFile >> tempVertex.g;       tempVertex.g /= 255.0f;
-//        theBunnyFile >> tempVertex.b;       tempVertex.b /= 255.0f;
-//        theBunnyFile >> tempVertex.a;       tempVertex.a /= 255.0f;
-//
-//
-//        pTheVerticesFile[index] = tempVertex;
-//    }
-//
-//
-//    sTrianglePlyFile* pTheTriangles = new sTrianglePlyFile[g_numberOfTriangles];
-//
-//    // 3 3495 3549 3548 
-//    for (unsigned int index = 0; index != g_numberOfTriangles; index++)
-//    {
-//        sTrianglePlyFile tempTriangle;
-//
-//        unsigned int discard;
-//        theBunnyFile >> discard;            // 3
-//        theBunnyFile >> tempTriangle.v0;                //std::cin >> a.x;
-//        theBunnyFile >> tempTriangle.v1;                //std::cin >> a.y;
-//        theBunnyFile >> tempTriangle.v2;                //std::cin >> a.z;
-//
-//        pTheTriangles[index] = tempTriangle;
-//    }
-//
-//
-//    // Now allocate the array that the shader is going to use
-////    g_NumberOfVerticesToDraw = 6;
-////    pVertices = new sVertex[g_NumberOfVerticesToDraw];
-////
-////    pVertices[0] = { -0.6f, -0.4f, 0.0f, 1.0f, 0.0f, 0.0f };
-////    pVertices[1] = { 0.6f, -0.4f, 0.0f,   0.0f, 1.0f, 0.0f };
-////    pVertices[2] = { 0.f,  0.6f, 0.0f,   0.0f, 0.0f, 1.0f };
-////    pVertices[3] = { 0.4f, -0.4f, 0.0f,   0.0f, 1.0f, 0.0f };
-////    pVertices[4] = { 1.6f, -0.4f, 0.0f,   0.0f, 0.0f, 1.0f };
-////    pVertices[5] = { 1.0f,  0.6f, 0.0f,   1.0f, 0.0f, 0.0f };
-//
-////    g_NumberOfVerticesToDraw = g_numberOfVertices;
-////    pVertices = new sVertex[g_NumberOfVerticesToDraw];
-////
-////    // Copy from the array we filled from the file to the array that that 
-////    //  shader (video card) will use...
-////
-////    for (unsigned int index = 0; index != g_numberOfVertices; index++)
-////    {
-////        // Left is the array going to the video
-////        // Right is the array from the file
-////        pVertices[index].x = pTheVerticesFile[index].x;
-////        pVertices[index].y = pTheVerticesFile[index].y;
-////        pVertices[index].z = pTheVerticesFile[index].z;
-////
-////        pVertices[index].r = 1.0f;
-////        pVertices[index].g = 1.0f;
-////        pVertices[index].b = 1.0f;
-////    }
-//// 
-//    g_NumberOfVerticesToDraw = g_numberOfTriangles * 3;
-//    pVertices = new sVertex[g_NumberOfVerticesToDraw];
-//
-//    unsigned int vertIndex = 0;
-//    for (unsigned int triIndex = 0; triIndex != g_numberOfTriangles; triIndex++)
-//    {
-//        // 3 1582 1581 2063 
-//        pVertices[vertIndex + 0].x = pTheVerticesFile[pTheTriangles[triIndex].v0].x;
-//        pVertices[vertIndex + 0].y = pTheVerticesFile[pTheTriangles[triIndex].v0].y;
-//        pVertices[vertIndex + 0].z = pTheVerticesFile[pTheTriangles[triIndex].v0].z;
-//
-//        pVertices[vertIndex + 0].r = pTheVerticesFile[pTheTriangles[triIndex].v0].r;
-//        pVertices[vertIndex + 0].g = pTheVerticesFile[pTheTriangles[triIndex].v0].g;
-//        pVertices[vertIndex + 0].b = pTheVerticesFile[pTheTriangles[triIndex].v0].b;
-//
-//        pVertices[vertIndex + 1].x = pTheVerticesFile[pTheTriangles[triIndex].v1].x;
-//        pVertices[vertIndex + 1].y = pTheVerticesFile[pTheTriangles[triIndex].v1].y;
-//        pVertices[vertIndex + 1].z = pTheVerticesFile[pTheTriangles[triIndex].v1].z;
-//
-//        pVertices[vertIndex + 1].r = pTheVerticesFile[pTheTriangles[triIndex].v1].r;
-//        pVertices[vertIndex + 1].g = pTheVerticesFile[pTheTriangles[triIndex].v1].g;
-//        pVertices[vertIndex + 1].b = pTheVerticesFile[pTheTriangles[triIndex].v1].b;
-//
-//        pVertices[vertIndex + 2].x = pTheVerticesFile[pTheTriangles[triIndex].v2].x;
-//        pVertices[vertIndex + 2].y = pTheVerticesFile[pTheTriangles[triIndex].v2].y;
-//        pVertices[vertIndex + 2].z = pTheVerticesFile[pTheTriangles[triIndex].v2].z;
-//
-//        pVertices[vertIndex + 2].r = pTheVerticesFile[pTheTriangles[triIndex].v2].r;
-//        pVertices[vertIndex + 2].g = pTheVerticesFile[pTheTriangles[triIndex].v2].g;
-//        pVertices[vertIndex + 2].b = pTheVerticesFile[pTheTriangles[triIndex].v2].b;
-//
-//        vertIndex += 3;
-//    }
-//
-//    return true;
-//}
 
 
 int main(void)
@@ -612,20 +251,30 @@ int main(void)
 
     cVAOManager* pMeshManager = new cVAOManager();
 
-    sModelDrawInfo bunnyDrawingInfo;
-    pMeshManager->LoadModelIntoVAO("bun_zipper_res2_xyz_n_rgba.ply",
-                                   bunnyDrawingInfo, shaderProgramID);
-    std::cout << "Loaded: " << bunnyDrawingInfo.numberOfVertices << " vertices" << std::endl;
+    //sModelDrawInfo bunnyDrawingInfo;
+    //pMeshManager->LoadModelIntoVAO("bun_zipper_res2_xyz_n_rgba.ply",
+    //                               bunnyDrawingInfo, shaderProgramID);
+    //std::cout << "Loaded: " << bunnyDrawingInfo.numberOfVertices << " vertices" << std::endl;
 
-    sModelDrawInfo bathtubDrawingInfo;
-    pMeshManager->LoadModelIntoVAO("bathtub_xyz_n_rgba.ply",
-                                   bathtubDrawingInfo, shaderProgramID);
-    std::cout << "Loaded: " << bathtubDrawingInfo.numberOfVertices << " vertices" << std::endl;
+    //sModelDrawInfo bathtubDrawingInfo;
+    //pMeshManager->LoadModelIntoVAO("bathtub_xyz_n_rgba.ply",
+    //                               bathtubDrawingInfo, shaderProgramID);
+    //std::cout << "Loaded: " << bathtubDrawingInfo.numberOfVertices << " vertices" << std::endl;
 
-    sModelDrawInfo terrainDrawingInfo;
-    pMeshManager->LoadModelIntoVAO("Terrain_xyz_n_rgba.ply",
-                                   terrainDrawingInfo, shaderProgramID);
-    std::cout << "Loaded: " << terrainDrawingInfo.numberOfVertices << " vertices" << std::endl;
+    //sModelDrawInfo terrainDrawingInfo;
+    //pMeshManager->LoadModelIntoVAO("Terrain_xyz_n_rgba.ply",
+    //                               terrainDrawingInfo, shaderProgramID);
+    //std::cout << "Loaded: " << terrainDrawingInfo.numberOfVertices << " vertices" << std::endl;
+
+    sModelDrawInfo gridDrawingInfo;
+    pMeshManager->LoadModelIntoVAO("Flat_Grid_100x100.ply",
+                                   gridDrawingInfo, shaderProgramID);
+    std::cout << "Loaded: " << gridDrawingInfo.numberOfVertices << " vertices" << std::endl;
+
+    sModelDrawInfo sphereDrawingInfo;
+    pMeshManager->LoadModelIntoVAO("Sphere_1_unit_Radius.ply",
+                                   sphereDrawingInfo, shaderProgramID);
+    std::cout << "Loaded: " << sphereDrawingInfo.numberOfVertices << " vertices" << std::endl;
 
 //    sModelDrawInfo BOPModel;
 //    pMeshManager->LoadModelIntoVAO("BirdOfPrey_xyz_n_rgba.ply",
@@ -649,62 +298,81 @@ int main(void)
 
 // 
 
-
-
-//    GLint vpos_location = glGetAttribLocation(shaderProgramID, "vPos");
-//    GLint vcol_location = glGetAttribLocation(shaderProgramID, "vCol");
-//
-////    int sizeofsVertex = sizeof(sVertex);
-//    glEnableVertexAttribArray(vpos_location);
-//    glVertexAttribPointer(vpos_location,
-//                          3,                        // 2 floats 
-//                          GL_FLOAT, 
-//                          GL_FALSE,         
-//                          sizeof(sVertex),                   //  sizeof(vertices[0]),
-//                          (void*) offsetof(sVertex, x) );    //  (void*)0);
-//
-//    glEnableVertexAttribArray(vcol_location);
-//    glVertexAttribPointer(vcol_location, 
-//                          3, 
-//                          GL_FLOAT, 
-//                          GL_FALSE,
-//                          sizeof(sVertex),                  //  sizeof(vertices[0]),
-//                          (void*) offsetof(sVertex, r));    //  (void*)(sizeof(float) * 2));
-
-
     // bun_zipper_res2_xyz_n_rgba.ply
     // bathtub_xyz_n_rgba.ply
 
-    // Add some models to the "scene"
-    cMesh bunny1;   
-    bunny1.meshName = "bun_zipper_res2_xyz_n_rgba.ply";
-    bunny1.position = glm::vec3(-1.0f, 0.0f, 0.0f);
-    bunny1.scale = 10.0f;
-    bunny1.orientation.x = glm::radians(45.0f);
+//    // Add some models to the "scene"
+//    cMesh bunny1;   
+//    bunny1.meshName = "bun_zipper_res2_xyz_n_rgba.ply";
+//    bunny1.position = glm::vec3(-1.0f, 0.0f, 0.0f);
+//    bunny1.scale = 10.0f;
+//    bunny1.orientation.x = glm::radians(45.0f);
+//
+//    cMesh bunny2;
+//    bunny2.meshName = "bun_zipper_res2_xyz_n_rgba.ply";
+//    bunny2.position = glm::vec3(1.0f, 0.0f, 0.0f);
+//    bunny2.scale = 7.5f;
+//    bunny2.orientation.y = glm::radians(135.0f);
+//
+//    cMesh bathtub;
+//    bathtub.meshName = "bathtub_xyz_n_rgba.ply";
+//    //bunny2.position = glm::vec3(1.0f, 0.0f, 0.0f);
+//    bathtub.scale = 0.25f;
+//
+//    cMesh terrain;
+//    terrain.meshName = "Terrain_xyz_n_rgba.ply";
+//    //bunny2.position = glm::vec3(1.0f, 0.0f, 0.0f);
+//    terrain.scale = 1.0f;
+//    terrain.position.y = -25.0f;
+//
+////    // Smart array of cMesh object
+////    std::vector<cMesh> vecMeshesToDraw;
+//    g_vecMeshesToDraw.push_back(bunny1);
+//    g_vecMeshesToDraw.push_back(bunny2);
+//    g_vecMeshesToDraw.push_back(bathtub);
+//    g_vecMeshesToDraw.push_back(terrain);
 
-    cMesh bunny2;
-    bunny2.meshName = "bun_zipper_res2_xyz_n_rgba.ply";
-    bunny2.position = glm::vec3(1.0f, 0.0f, 0.0f);
-    bunny2.scale = 7.5f;
-    bunny2.orientation.y = glm::radians(135.0f);
 
-    cMesh bathtub;
-    bathtub.meshName = "bathtub_xyz_n_rgba.ply";
-    //bunny2.position = glm::vec3(1.0f, 0.0f, 0.0f);
-    bathtub.scale = 0.25f;
 
-    cMesh terrain;
-    terrain.meshName = "Terrain_xyz_n_rgba.ply";
-    //bunny2.position = glm::vec3(1.0f, 0.0f, 0.0f);
-    terrain.scale = 1.0f;
-    terrain.position.y = -25.0f;
+    cMesh gridGroundMesh;
+    gridGroundMesh.meshName = "Flat_Grid_100x100.ply";
+    gridGroundMesh.bIsWireframe = true;
+    gridGroundMesh.bDoNotLight = true;
+    gridGroundMesh.physProps.position.y = -10.0f;
+    gridGroundMesh.friendlyName = "Ground";
+    ::g_vecMeshesToDraw.push_back(gridGroundMesh);
 
-//    // Smart array of cMesh object
-//    std::vector<cMesh> vecMeshesToDraw;
-    g_vecMeshesToDraw.push_back(bunny1);
-    g_vecMeshesToDraw.push_back(bunny2);
-    g_vecMeshesToDraw.push_back(bathtub);
-    g_vecMeshesToDraw.push_back(terrain);
+    const float MAX_SPHERE_LOCATION = 30.0f;
+    const float MAX_VELOCITY = 1.0f;
+
+    // Make a bunch of spheres...
+    for ( unsigned int count = 0; count != 10; count++ )
+    {
+        cMesh sphereMesh;
+        sphereMesh.meshName = "Sphere_1_unit_Radius.ply";
+        sphereMesh.bIsWireframe = true;
+        sphereMesh.bDoNotLight = true;
+
+        sphereMesh.friendlyName = "Sphere";
+
+//        sphereMesh.physProps.velocity.y = 0.0f;
+        sphereMesh.physProps.velocity.y = getRandomFloat(0.0f, MAX_VELOCITY);
+
+
+        sphereMesh.physProps.velocity.x = getRandomFloat(-MAX_VELOCITY, MAX_VELOCITY);
+        sphereMesh.physProps.velocity.z = getRandomFloat(-MAX_VELOCITY, MAX_VELOCITY);
+
+        // Gravity on Earth is likely too fast to look good, so we'll make it smaller.
+        sphereMesh.physProps.acceleration.y = (-9.81f/5.0f);
+
+        sphereMesh.physProps.position.x = getRandomFloat(-MAX_SPHERE_LOCATION, MAX_SPHERE_LOCATION);
+        sphereMesh.physProps.position.z = getRandomFloat(-MAX_SPHERE_LOCATION, MAX_SPHERE_LOCATION);
+        sphereMesh.physProps.position.y = getRandomFloat(0.0f, MAX_SPHERE_LOCATION);
+
+        ::g_vecMeshesToDraw.push_back(sphereMesh);
+
+    }//for ( unsigned int count...
+
 
 
 
@@ -752,6 +420,9 @@ int main(void)
                     lightBrightness);
 
 
+
+
+
         // *********************************************************************
         // Draw all the objects
         for ( unsigned int index = 0; index != g_vecMeshesToDraw.size(); index++ )
@@ -763,17 +434,12 @@ int main(void)
             matModel = glm::mat4(1.0f);
 
 
-            double currentTime = glfwGetTime();
-            double deltaTime = currentTime - lastTime;
-    //        std::cout << deltaTime << std::endl;
-            lastTime = currentTime;
-
 
             // Translation
             glm::mat4 matTranslate = glm::translate(glm::mat4(1.0f),
-                                                    glm::vec3(currentMesh.position.x,
-                                                              currentMesh.position.y,
-                                                              currentMesh.position.z));
+                                                    glm::vec3(currentMesh.physProps.position.x,
+                                                              currentMesh.physProps.position.y,
+                                                              currentMesh.physProps.position.z));
 
 
                // Rotation matrix generation
@@ -848,8 +514,33 @@ int main(void)
 //            glUniform3f(modelOffset_UL, -0.1f, 0.0f, 0.0f);
 
     //        glPolygonMode(GL_FRONT_AND_BACK, GL_POINT /*GL_LINE*/ /*GL_FILL*/);
-            glPolygonMode(GL_FRONT_AND_BACK, GL_FILL /*GL_LINE*/ /*GL_POINT*/);
+            if ( currentMesh.bIsWireframe )
+            {
+                glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+            }
+            else 
+            {
+                glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+            }
+
     //        glPointSize(10.0f);
+
+
+            // uniform bool bDoNotLight;
+            GLint bDoNotLight_UL = glGetUniformLocation(shaderProgramID, "bDoNotLight");
+
+            if ( currentMesh.bDoNotLight )
+            {
+                // Set uniform to true
+                glUniform1f(bDoNotLight_UL, (GLfloat)GL_TRUE);
+            }
+            else
+            {
+                // Set uniform to false;
+                glUniform1f(bDoNotLight_UL, (GLfloat)GL_FALSE);
+            }
+
+
 
  //           glDrawArrays(GL_TRIANGLES, 0, g_NumberOfVerticesToDraw);
 
@@ -871,7 +562,14 @@ int main(void)
         }//for ( unsigned int index
         // *********************************************************************
 
+        // Time per frame (more or less)
+        double currentTime = glfwGetTime();
+        double deltaTime = currentTime - lastTime;
+//        std::cout << deltaTime << std::endl;
+        lastTime = currentTime;
 
+        // 
+        DoPhysicUpdate(deltaTime);
 
 
         glfwSwapBuffers(window);
