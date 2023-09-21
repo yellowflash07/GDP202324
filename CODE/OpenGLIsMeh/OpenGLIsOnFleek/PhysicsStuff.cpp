@@ -18,10 +18,10 @@ glm::vec3 ClosestPtPointTriangle(glm::vec3 p, glm::vec3 a, glm::vec3 b, glm::vec
 void DoPhysicUpdate(double deltaTime)
 {
 
-	for (unsigned int index = 0; index != ::g_vecMeshesToDraw.size(); index++)
+	for (unsigned int meshIndex = 0; meshIndex != ::g_vecMeshesToDraw.size(); meshIndex++)
 	{
 
-		if ( ::g_vecMeshesToDraw[index].pPhysProps == NULL )
+		if ( ::g_vecMeshesToDraw[meshIndex].pPhysProps == NULL )
 		{
 			// Skip this.
 			continue;
@@ -35,23 +35,23 @@ void DoPhysicUpdate(double deltaTime)
 
 		// Velocity change is based on the acceleration over this time frame 
 //		// This part: (Accel * DeltaTime)
-		glm::vec3 deltaVelocityThisFrame = g_vecMeshesToDraw[index].pPhysProps->acceleration * (float)deltaTime;
+		glm::vec3 deltaVelocityThisFrame = g_vecMeshesToDraw[meshIndex].pPhysProps->acceleration * (float)deltaTime;
 
 		// Update the velocity based on this delta velocity
 		// Then this part: NewVelocity = LastVel + ...
-		g_vecMeshesToDraw[index].pPhysProps->velocity += deltaVelocityThisFrame;
+		g_vecMeshesToDraw[meshIndex].pPhysProps->velocity += deltaVelocityThisFrame;
 
 
 		// Position change is based on the velocity over this time frame
 		// This part: (Vel * DeltaTime)	
-		glm::vec3 deltaPosition = g_vecMeshesToDraw[index].pPhysProps->velocity * (float)deltaTime;
+		glm::vec3 deltaPosition = g_vecMeshesToDraw[meshIndex].pPhysProps->velocity * (float)deltaTime;
 
 		// ...then this part: NewPosition = LastPos + ...
 		// Upatate the position based on this delta position
 //		g_vecMeshesToDraw[index].pPhysProps->position += deltaPosition;
-		g_vecMeshesToDraw[index].pPhysProps->position.x += deltaPosition.x;
-		g_vecMeshesToDraw[index].pPhysProps->position.y += deltaPosition.y;
-		g_vecMeshesToDraw[index].pPhysProps->position.z += deltaPosition.z;
+		g_vecMeshesToDraw[meshIndex].pPhysProps->position.x += deltaPosition.x;
+		g_vecMeshesToDraw[meshIndex].pPhysProps->position.y += deltaPosition.y;
+		g_vecMeshesToDraw[meshIndex].pPhysProps->position.z += deltaPosition.z;
 // ***********************************************************************
 
 
@@ -69,21 +69,21 @@ void DoPhysicUpdate(double deltaTime)
 		const float GROUND_LOCATION_Y = 0.0f;
 
 		// Is this a sphere? 
-		if (::g_vecMeshesToDraw[index].friendlyName == "Sphere")
+		if (::g_vecMeshesToDraw[meshIndex].friendlyName == "Sphere")
 		{
-			if ( (::g_vecMeshesToDraw[index].pPhysProps->position.y - 1.0f) <= GROUND_LOCATION_Y)
+			if ( (::g_vecMeshesToDraw[meshIndex].pPhysProps->position.y - 1.0f) <= GROUND_LOCATION_Y)
 			{
 				// "Invert" the velocity
 				// Velocity goes "up" +ve.
-				float newVel = fabs(::g_vecMeshesToDraw[index].pPhysProps->velocity.y);
+				float newVel = fabs(::g_vecMeshesToDraw[meshIndex].pPhysProps->velocity.y);
 
-				::g_vecMeshesToDraw[index].pPhysProps->velocity.y = newVel;
+				::g_vecMeshesToDraw[meshIndex].pPhysProps->velocity.y = newVel;
 
 			}
 		}
 
 		// Update the draw location with the physics location
-		::g_vecMeshesToDraw[index].drawPosition = ::g_vecMeshesToDraw[index].pPhysProps->position;
+		::g_vecMeshesToDraw[meshIndex].drawPosition = ::g_vecMeshesToDraw[meshIndex].pPhysProps->position;
 
 // ***********************************************************************
 
@@ -111,22 +111,19 @@ void DoPhysicUpdate(double deltaTime)
 				verts[2].y = groundMeshInfo.pVertices[ groundMeshInfo.pIndices[index + 2] ].y;
 				verts[2].z = groundMeshInfo.pVertices[ groundMeshInfo.pIndices[index + 2] ].z;
 
-				glm::vec3 closestPoint = ClosestPtPointTriangle(::g_vecMeshesToDraw[index].drawPosition,
+				glm::vec3 closestPoint = ClosestPtPointTriangle(::g_vecMeshesToDraw[meshIndex].drawPosition,
 																verts[0], verts[1], verts[2]);
 
 				// HACK:
-				if ( index == 100 )
+				if (index == 99 )
 				{
 					std::cout << closestPoint.x << ", " << closestPoint.y << ", " << closestPoint.z << std::endl;
 				}
 
-			}
+			}//for ( unsigned int index = 0...
+		}//if (pMeshManager->FindDrawInfoByModelName(
 
-
-
-		}
-
-	}// for (unsigned int index
+	}// for (unsigned int meshIndex
 
 
 	return;
