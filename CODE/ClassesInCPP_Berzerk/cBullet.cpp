@@ -4,6 +4,7 @@
 cBullet::cBullet()
 {
 	std::cout << "cBullet::cBullet()" << std::endl;
+	this->isShot = false;
 }
 
 cBullet::~cBullet()

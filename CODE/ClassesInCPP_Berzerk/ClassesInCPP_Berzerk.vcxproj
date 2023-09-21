@@ -135,13 +135,19 @@
   <ItemGroup>
     <ClInclude Include="cBullet.h" />
     <ClInclude Include="cGameBrain.h" />
+    <ClInclude Include="cMissleLanucher.h" />
     <ClInclude Include="cPlayer.h" />
+    <ClInclude Include="cRayGun.h" />
     <ClInclude Include="cRobot.h" />
+    <ClInclude Include="cWeapon.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="cBullet.cpp" />
+    <ClCompile Include="cMissleLauncher.cpp" />
     <ClCompile Include="cPlayer.cpp" />
+    <ClCompile Include="cRayGun.cpp" />
     <ClCompile Include="cRobot.cpp" />
+    <ClCompile Include="cWeapon.cpp" />
     <ClCompile Include="theMain.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

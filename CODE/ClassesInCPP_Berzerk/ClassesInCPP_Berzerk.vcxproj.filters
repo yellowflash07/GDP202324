@@ -13,6 +13,9 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Weapons">
+      <UniqueIdentifier>{aada216c-00f3-418c-b12e-63739ec80c5b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="cPlayer.h">
@@ -27,6 +30,15 @@
     <ClInclude Include="cGameBrain.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="cRayGun.h">
+      <Filter>Weapons</Filter>
+    </ClInclude>
+    <ClInclude Include="cMissleLanucher.h">
+      <Filter>Weapons</Filter>
+    </ClInclude>
+    <ClInclude Include="cWeapon.h">
+      <Filter>Weapons</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="cPlayer.cpp">
@@ -40,6 +52,15 @@
     </ClCompile>
     <ClCompile Include="cBullet.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="cWeapon.cpp">
+      <Filter>Weapons</Filter>
+    </ClCompile>
+    <ClCompile Include="cRayGun.cpp">
+      <Filter>Weapons</Filter>
+    </ClCompile>
+    <ClCompile Include="cMissleLauncher.cpp">
+      <Filter>Weapons</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

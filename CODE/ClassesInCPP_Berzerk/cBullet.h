@@ -11,4 +11,5 @@ public:
 	glm::vec2 position;
 	glm::vec2 direction;
 	float velocity;
+	bool isShot;
 };
