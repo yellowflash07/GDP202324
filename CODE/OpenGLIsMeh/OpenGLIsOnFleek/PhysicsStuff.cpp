@@ -1,5 +1,6 @@
 // PhysicsStuff.cpp
 
+#include "OpenGLCommon.h"
 #include <glm/glm.hpp>
 #include <vector>
 #include "cMesh.h"
@@ -13,10 +14,37 @@ extern cVAOManager* pMeshManager;
 extern std::vector< cMesh* > g_vec_pMeshesToDraw;
 
 
+// Using this so that I can see the locations of the "closest point to the triangle"
+void DrawObject(cMesh* pCurrentMesh, glm::mat4 matModel,
+				glm::mat4 matProjection, glm::mat4 matView,
+				GLuint shaderProgramID);			// OpenGL common 
+
+// reutrns NULL if we DIDN'T find the object
+cMesh* findObjectByFriendlyName(std::string friendlyNameToFind)
+{
+	for ( unsigned int index = 0; index != ::g_vec_pMeshesToDraw.size(); index++ )
+	{
+		// This it? 
+		cMesh* pCurrentMesh = ::g_vec_pMeshesToDraw[index];
+
+		if (pCurrentMesh->friendlyName == friendlyNameToFind)
+		{
+			return pCurrentMesh;
+		}
+	}
+
+	// Didn't find it
+	return NULL;
+}
+
 glm::vec3 ClosestPtPointTriangle(glm::vec3 p, glm::vec3 a, glm::vec3 b, glm::vec3 c);
 
 void DoPhysicUpdate(double deltaTime)
 {
+
+	// Find the debug sphere
+	cMesh* pDebugSphere = findObjectByFriendlyName("DEBUG_SPHERE");
+
 
 	for (unsigned int meshIndex = 0; meshIndex != ::g_vec_pMeshesToDraw.size(); meshIndex++)
 	{
@@ -116,10 +144,27 @@ void DoPhysicUpdate(double deltaTime)
 				glm::vec3 closestPoint = ClosestPtPointTriangle(pCurrentMesh->drawPosition,
 																verts[0], verts[1], verts[2]);
 
-				// HACK:
-				if (index == 99 )
+//				// HACK:
+//				if (index == 99 )
+//				{
+//					std::cout << closestPoint.x << ", " << closestPoint.y << ", " << closestPoint.z << std::endl;
+//				}
+				//if (pDebugSphere != NULL)
+				if (pDebugSphere)			// NON zero => true, zero = false;
 				{
-					std::cout << closestPoint.x << ", " << closestPoint.y << ", " << closestPoint.z << std::endl;
+					pDebugSphere->drawPosition = closestPoint;
+					pDebugSphere->scale = 0.5f;
+					pDebugSphere->bIsVisible = true;
+
+// HACK: 
+					extern glm::mat4 matProjection;    // "projection"
+					extern glm::mat4 matView;          // "view" or "camera"
+					extern GLuint shaderProgramID;
+
+					DrawObject(pDebugSphere, glm::mat4(1.0f), 
+							   matProjection, matView, shaderProgramID);
+
+					pDebugSphere->bIsVisible = false;
 				}
 
 			}//for ( unsigned int index = 0...

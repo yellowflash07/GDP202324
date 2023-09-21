@@ -42,7 +42,7 @@ bool LoadModels(void)
 //    g_vecMeshesToDraw.push_back(bathtub);
 //    g_vecMeshesToDraw.push_back(terrain);
 
-
+    std::vector< cMesh* > g_vec_pMeshesToDraw;
 
     cMesh* pGridGroundMesh = new cMesh();
     pGridGroundMesh->meshName = "Flat_Grid_100x100.ply";
@@ -103,7 +103,9 @@ bool LoadModels(void)
     pDebugSphere->meshName = "Sphere_1_unit_Radius.ply";
     pDebugSphere->bIsWireframe = true;
     pDebugSphere->bDoNotLight = true;
+    pDebugSphere->scale = 25.0f;
     pDebugSphere->pPhysProps = NULL;
+    pDebugSphere->bIsVisible = false;
     pDebugSphere->friendlyName = "DEBUG_SPHERE";
 
     ::g_vec_pMeshesToDraw.push_back(pDebugSphere);

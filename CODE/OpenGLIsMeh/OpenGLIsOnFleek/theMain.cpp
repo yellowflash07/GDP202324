@@ -33,6 +33,12 @@ glm::vec3 cameraEye = glm::vec3(0.0, 5.0, +90.0f);
 glm::vec3 cameraTarget = glm::vec3(0.0f, 5.0f, 0.0f);
 glm::vec3 upVector = glm::vec3(0.0f, 1.0f, 0.0f);
 
+// HACK: These will be moved out of global soon.
+// They are only here to allow the temporary debug thing to work;
+glm::mat4 matProjection;    // "projection"
+glm::mat4 matView;          // "view" or "camera"
+GLuint shaderProgramID = 0;
+
 
 cVAOManager* pMeshManager = new cVAOManager();
 
@@ -57,6 +63,11 @@ bool SaveVectorSceneToFile(std::string saveFileName);
 bool LoadModels(void);
 
 void DoPhysicUpdate(double deltaTime);
+
+void DrawObject(cMesh* pCurrentMesh, glm::mat4 matModel,
+                glm::mat4 matProjection, glm::mat4 matView,
+                GLuint shaderProgramID);
+
 
 // https://stackoverflow.com/questions/5289613/generate-random-float-between-two-floats
 float getRandomFloat(float a, float b) {
@@ -195,7 +206,7 @@ int main(void)
 
     GLFWwindow* window;
 //    GLuint vertex_buffer; //, vertex_shader, fragment_shader;//v , program;
-    GLint mvp_location;// , vpos_location, vcol_location;
+//    GLint mvp_location;// , vpos_location, vcol_location;
 
     glfwSetErrorCallback(error_callback);
 
@@ -261,7 +272,7 @@ int main(void)
 
 
 //
-    GLuint shaderProgramID = pShaderThing->getIDFromFriendlyName("shader01");
+    /*GLuint*/ shaderProgramID = pShaderThing->getIDFromFriendlyName("shader01");
 
     //cVAOManager* pMeshManager = new cVAOManager();
 
@@ -306,9 +317,9 @@ int main(void)
         int width, height;
 //        mat4x4 m, p, mvp;
         glm::mat4 matModel;         // "model" or "world" matrix
-        glm::mat4 matProjection;    // "projection"
-        glm::mat4 matView;          // "view" or "camera"
-        glm::mat4 mvp;
+//        glm::mat4 matProjection;    // "projection"
+//        glm::mat4 matView;          // "view" or "camera"
+//        glm::mat4 mvp;
 
         glfwGetFramebufferSize(window, &width, &height);
         ratio = width / (float)height;
@@ -340,66 +351,11 @@ int main(void)
 
 
 
-
-
-        // *********************************************************************
-        // Draw all the objects
-        for ( unsigned int index = 0; index != ::g_vec_pMeshesToDraw.size(); index++ )
-        {
-
-            cMesh* pCurrentMesh = g_vec_pMeshesToDraw[index];
-
-        //         mat4x4_identity(m);
-            matModel = glm::mat4(1.0f);
-
-
-
-            // Translation
-            glm::mat4 matTranslate = glm::translate(glm::mat4(1.0f),
-                                                    glm::vec3(pCurrentMesh->drawPosition.x,
-                                                              pCurrentMesh->drawPosition.y,
-                                                              pCurrentMesh->drawPosition.z));
-
-
-               // Rotation matrix generation
-            glm::mat4 matRotateX = glm::rotate(glm::mat4(1.0f),
-                                               pCurrentMesh->orientation.x, // (float)glfwGetTime(),
-                                               glm::vec3(1.0f, 0.0, 0.0f));
-
-
-            glm::mat4 matRotateY = glm::rotate(glm::mat4(1.0f),
-                                               pCurrentMesh->orientation.y, // (float)glfwGetTime(),
-                                               glm::vec3(0.0f, 1.0, 0.0f));
-
-            glm::mat4 matRotateZ = glm::rotate(glm::mat4(1.0f),
-                                               pCurrentMesh->orientation.z, // (float)glfwGetTime(),
-                                               glm::vec3(0.0f, 0.0, 1.0f));
-
-               // Scaling matrix
-            glm::mat4 matScale = glm::scale(glm::mat4(1.0f),
-                                            glm::vec3(pCurrentMesh->scale,
-                                                      pCurrentMesh->scale,
-                                                      pCurrentMesh->scale));
-            //--------------------------------------------------------------
-
-            // Combine all these transformation
-            matModel = matModel * matTranslate;
-
-            matModel = matModel * matRotateX;
-            matModel = matModel * matRotateY;
-            matModel = matModel * matRotateZ;
-
-            matModel = matModel * matScale;
-
-    //        m = m * rotateZ;
-    //        m = m * rotateY;
-    //        m = m * rotateZ;
-
-            //mat4x4_ortho(p, -ratio, ratio, -1.f, 1.f, 1.f, -1.f);
-            matProjection = glm::perspective(0.6f,
-                                             ratio,
-                                             0.1f,
-                                             1000.0f);
+        //mat4x4_ortho(p, -ratio, ratio, -1.f, 1.f, 1.f, -1.f);
+        matProjection = glm::perspective(0.6f,
+                                         ratio,
+                                         0.1f,
+                                         1000.0f);
 
     //        glm::vec3 cameraEye = glm::vec3(0.0, 0.0, -4.0f);
     //        glm::vec3 cameraTarget = glm::vec3(0.0f, 0.0f, 0.0f);
@@ -407,80 +363,29 @@ int main(void)
 
     //        cameraEye.z += 0.001f;
 
-            matView = glm::lookAt(cameraEye,
-                                  cameraTarget,
-                                  upVector);
+        matView = glm::lookAt(cameraEye,
+                              cameraTarget,
+                              upVector);
 
-           //mat4x4_mul(mvp, p, m);
-            mvp = matProjection * matView * matModel;
+        // *********************************************************************
+        // Draw all the objects
+        for ( unsigned int index = 0; index != ::g_vec_pMeshesToDraw.size(); index++ )
+        {
+            cMesh* pCurrentMesh = ::g_vec_pMeshesToDraw[index];
 
-            glUseProgram(shaderProgramID);
-
-            mvp_location = glGetUniformLocation(shaderProgramID, "MVP");
-            //glUniformMatrix4fv(mvp_location, 1, GL_FALSE, (const GLfloat*) mvp);
-            glUniformMatrix4fv(mvp_location, 1, GL_FALSE, glm::value_ptr(mvp));
-
-            // Also calculate and pass the "inverse transpose" for the model matrix
-            glm::mat4 matModel_InverseTranspose = glm::inverse(glm::transpose(matModel));
-            // uniform mat4 matModel_IT;
-            GLint matModel_IT_UL = glGetUniformLocation(shaderProgramID, "matModel_IT");
-            glUniformMatrix4fv(matModel_IT_UL, 1, GL_FALSE, glm::value_ptr(matModel_InverseTranspose));
-
-
-            //uniform vec3 modelOffset;
-//            GLint modelOffset_UL = glGetUniformLocation(shaderProgramID, "modelOffset");
-
-//            glUniform3f(modelOffset_UL, -0.1f, 0.0f, 0.0f);
-
-    //        glPolygonMode(GL_FRONT_AND_BACK, GL_POINT /*GL_LINE*/ /*GL_FILL*/);
-            if (pCurrentMesh->bIsWireframe )
+            if (pCurrentMesh->bIsVisible)
             {
-                glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-            }
-            else 
-            {
-                glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-            }
 
-    //        glPointSize(10.0f);
+                glm::mat4 matModel = glm::mat4(1.0f);   // Identity matrix
 
-
-            // uniform bool bDoNotLight;
-            GLint bDoNotLight_UL = glGetUniformLocation(shaderProgramID, "bDoNotLight");
-
-            if (pCurrentMesh->bDoNotLight )
-            {
-                // Set uniform to true
-                glUniform1f(bDoNotLight_UL, (GLfloat)GL_TRUE);
-            }
-            else
-            {
-                // Set uniform to false;
-                glUniform1f(bDoNotLight_UL, (GLfloat)GL_FALSE);
-            }
-
-
-
- //           glDrawArrays(GL_TRIANGLES, 0, g_NumberOfVerticesToDraw);
-
-            sModelDrawInfo modelInfo;
-            if ( pMeshManager->FindDrawInfoByModelName(pCurrentMesh->meshName, modelInfo) )
-            {
-                // Found it!!!
-
-                glBindVertexArray(modelInfo.VAO_ID); 		//  enable VAO (and everything else)
-                glDrawElements(GL_TRIANGLES, 
-                                modelInfo.numberOfIndices, 
-                                GL_UNSIGNED_INT, 
-                                0);
-                glBindVertexArray(0); 			            // disable VAO (and everything else)
-
-            }
-
+                DrawObject(pCurrentMesh, matModel, matProjection, matView, shaderProgramID);
+            }//if (pCurrentMesh->bIsVisible)
 
         }//for ( unsigned int index
         // *********************************************************************
 
+
+ 
         // Time per frame (more or less)
         double currentTime = glfwGetTime();
         double deltaTime = currentTime - lastTime;
@@ -516,3 +421,126 @@ int main(void)
 }
 
 
+
+
+void DrawObject(cMesh* pCurrentMesh, glm::mat4 matModelParent, 
+                glm::mat4 matProjection, glm::mat4 matView,
+                GLuint shaderProgramID)
+{
+
+    //         mat4x4_identity(m);
+    glm::mat4 matModel = matModelParent;
+
+
+
+    // Translation
+    glm::mat4 matTranslate = glm::translate(glm::mat4(1.0f),
+                                            glm::vec3(pCurrentMesh->drawPosition.x,
+                                                      pCurrentMesh->drawPosition.y,
+                                                      pCurrentMesh->drawPosition.z));
+
+
+       // Rotation matrix generation
+    glm::mat4 matRotateX = glm::rotate(glm::mat4(1.0f),
+                                       pCurrentMesh->orientation.x, // (float)glfwGetTime(),
+                                       glm::vec3(1.0f, 0.0, 0.0f));
+
+
+    glm::mat4 matRotateY = glm::rotate(glm::mat4(1.0f),
+                                       pCurrentMesh->orientation.y, // (float)glfwGetTime(),
+                                       glm::vec3(0.0f, 1.0, 0.0f));
+
+    glm::mat4 matRotateZ = glm::rotate(glm::mat4(1.0f),
+                                       pCurrentMesh->orientation.z, // (float)glfwGetTime(),
+                                       glm::vec3(0.0f, 0.0, 1.0f));
+
+       // Scaling matrix
+    glm::mat4 matScale = glm::scale(glm::mat4(1.0f),
+                                    glm::vec3(pCurrentMesh->scale,
+                                              pCurrentMesh->scale,
+                                              pCurrentMesh->scale));
+    //--------------------------------------------------------------
+
+    // Combine all these transformation
+    matModel = matModel * matTranslate;
+
+    matModel = matModel * matRotateX;
+    matModel = matModel * matRotateY;
+    matModel = matModel * matRotateZ;
+
+    matModel = matModel * matScale;
+
+//        m = m * rotateZ;
+//        m = m * rotateY;
+//        m = m * rotateZ;
+
+
+
+   //mat4x4_mul(mvp, p, m);
+    glm::mat4 mvp = matProjection * matView * matModel;
+
+    glUseProgram(shaderProgramID);
+
+    GLint mvp_location = glGetUniformLocation(shaderProgramID, "MVP");
+    //glUniformMatrix4fv(mvp_location, 1, GL_FALSE, (const GLfloat*) mvp);
+    glUniformMatrix4fv(mvp_location, 1, GL_FALSE, glm::value_ptr(mvp));
+
+    // Also calculate and pass the "inverse transpose" for the model matrix
+    glm::mat4 matModel_InverseTranspose = glm::inverse(glm::transpose(matModel));
+    // uniform mat4 matModel_IT;
+    GLint matModel_IT_UL = glGetUniformLocation(shaderProgramID, "matModel_IT");
+    glUniformMatrix4fv(matModel_IT_UL, 1, GL_FALSE, glm::value_ptr(matModel_InverseTranspose));
+
+
+    //uniform vec3 modelOffset;
+//            GLint modelOffset_UL = glGetUniformLocation(shaderProgramID, "modelOffset");
+
+//            glUniform3f(modelOffset_UL, -0.1f, 0.0f, 0.0f);
+
+    //        glPolygonMode(GL_FRONT_AND_BACK, GL_POINT /*GL_LINE*/ /*GL_FILL*/);
+    if (pCurrentMesh->bIsWireframe)
+    {
+        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    }
+    else
+    {
+        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+    }
+
+//        glPointSize(10.0f);
+
+
+        // uniform bool bDoNotLight;
+    GLint bDoNotLight_UL = glGetUniformLocation(shaderProgramID, "bDoNotLight");
+
+    if (pCurrentMesh->bDoNotLight)
+    {
+        // Set uniform to true
+        glUniform1f(bDoNotLight_UL, (GLfloat)GL_TRUE);
+    }
+    else
+    {
+        // Set uniform to false;
+        glUniform1f(bDoNotLight_UL, (GLfloat)GL_FALSE);
+    }
+
+
+
+//           glDrawArrays(GL_TRIANGLES, 0, g_NumberOfVerticesToDraw);
+
+    sModelDrawInfo modelInfo;
+    if (pMeshManager->FindDrawInfoByModelName(pCurrentMesh->meshName, modelInfo))
+    {
+        // Found it!!!
+
+        glBindVertexArray(modelInfo.VAO_ID); 		//  enable VAO (and everything else)
+        glDrawElements(GL_TRIANGLES,
+                       modelInfo.numberOfIndices,
+                       GL_UNSIGNED_INT,
+                       0);
+        glBindVertexArray(0); 			            // disable VAO (and everything else)
+
+    }
+
+    return;
+}

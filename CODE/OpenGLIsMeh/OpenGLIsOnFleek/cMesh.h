@@ -4,6 +4,7 @@
 #include <glm/glm.hpp>
 #include <glm/vec3.hpp>
 #include <string>
+#include <vector>
 
 // This is where we are going to head...
 struct sPhsyicsProperties
@@ -55,7 +56,6 @@ public:
 
 	bool bIsWireframe;
 	bool bDoNotLight;
-
 
 };
 
