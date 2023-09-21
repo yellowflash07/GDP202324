@@ -12,7 +12,7 @@ uniform vec4 directionalLight_Direction_power;
 // xyz is the normalized direction, w = power (between 0 and 1)
 
 // If true, then passes the colour without calculating lighting
-uniform bool bDoNotLight;
+uniform bool bDoNotLight;		// Really a float (0.0 or not zero)
 
 void main()
 {

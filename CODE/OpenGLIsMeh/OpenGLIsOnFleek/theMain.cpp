@@ -34,8 +34,12 @@ glm::vec3 cameraTarget = glm::vec3(0.0f, 5.0f, 0.0f);
 glm::vec3 upVector = glm::vec3(0.0f, 1.0f, 0.0f);
 
 
+cVAOManager* pMeshManager = new cVAOManager();
+
+
 // Smart array of cMesh object
 std::vector<cMesh> g_vecMeshesToDraw;
+//std::vector<sPhsyicsProperties*> g_vecThingsThePhysicsThingPaysAtte;
 // 
 int g_selectedMesh = 0;
 
@@ -86,33 +90,33 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
     {
         // Shift key down (ignores other keys)
 
-        if (key == GLFW_KEY_A )
-        {
-            ::g_vecMeshesToDraw[::g_selectedMesh].physProps.position.x -= OBJECT_MOVEMENT_SPEED;
-        }
-        if (key == GLFW_KEY_D )
-        {
-            ::g_vecMeshesToDraw[::g_selectedMesh].physProps.position.x += OBJECT_MOVEMENT_SPEED;
-        }
-
-        if (key == GLFW_KEY_W )
-        {
-            ::g_vecMeshesToDraw[::g_selectedMesh].physProps.position.z += OBJECT_MOVEMENT_SPEED;
-        }
-        if (key == GLFW_KEY_S )
-        {
-            ::g_vecMeshesToDraw[::g_selectedMesh].physProps.position.z -= OBJECT_MOVEMENT_SPEED;
-        }
-
-
-        if (key == GLFW_KEY_Q )
-        {
-            ::g_vecMeshesToDraw[::g_selectedMesh].physProps.position.y -= OBJECT_MOVEMENT_SPEED;
-        }
-        if (key == GLFW_KEY_E )
-        {
-            ::g_vecMeshesToDraw[::g_selectedMesh].physProps.position.y += OBJECT_MOVEMENT_SPEED;
-        }
+//        if (key == GLFW_KEY_A )
+//        {
+//            ::g_vecMeshesToDraw[::g_selectedMesh].physProps.position.x -= OBJECT_MOVEMENT_SPEED;
+//        }
+//        if (key == GLFW_KEY_D )
+//        {
+//            ::g_vecMeshesToDraw[::g_selectedMesh].physProps.position.x += OBJECT_MOVEMENT_SPEED;
+//        }
+//
+//        if (key == GLFW_KEY_W )
+//        {
+//            ::g_vecMeshesToDraw[::g_selectedMesh].physProps.position.z += OBJECT_MOVEMENT_SPEED;
+//        }
+//        if (key == GLFW_KEY_S )
+//        {
+//            ::g_vecMeshesToDraw[::g_selectedMesh].physProps.position.z -= OBJECT_MOVEMENT_SPEED;
+//        }
+//
+//
+//        if (key == GLFW_KEY_Q )
+//        {
+//            ::g_vecMeshesToDraw[::g_selectedMesh].physProps.position.y -= OBJECT_MOVEMENT_SPEED;
+//        }
+//        if (key == GLFW_KEY_E )
+//        {
+//            ::g_vecMeshesToDraw[::g_selectedMesh].physProps.position.y += OBJECT_MOVEMENT_SPEED;
+//        }
 
         // Select another model
         if ( key == GLFW_KEY_PAGE_UP )
@@ -249,7 +253,7 @@ int main(void)
 //
     GLuint shaderProgramID = pShaderThing->getIDFromFriendlyName("shader01");
 
-    cVAOManager* pMeshManager = new cVAOManager();
+    //cVAOManager* pMeshManager = new cVAOManager();
 
     //sModelDrawInfo bunnyDrawingInfo;
     //pMeshManager->LoadModelIntoVAO("bun_zipper_res2_xyz_n_rgba.ply",
@@ -338,7 +342,8 @@ int main(void)
     gridGroundMesh.meshName = "Flat_Grid_100x100.ply";
     gridGroundMesh.bIsWireframe = true;
     gridGroundMesh.bDoNotLight = true;
-    gridGroundMesh.physProps.position.y = -10.0f;
+    // note this does NOT have a physProps, so is ignored by the physics update loop
+    gridGroundMesh.drawPosition.y = 0.0f;   //  0,-10,0
     gridGroundMesh.friendlyName = "Ground";
     ::g_vecMeshesToDraw.push_back(gridGroundMesh);
 
@@ -346,7 +351,8 @@ int main(void)
     const float MAX_VELOCITY = 1.0f;
 
     // Make a bunch of spheres...
-    for ( unsigned int count = 0; count != 10; count++ )
+    const unsigned int NUMBER_OF_SPHERES = 1;
+    for ( unsigned int count = 0; count != NUMBER_OF_SPHERES; count++ )
     {
         cMesh sphereMesh;
         sphereMesh.meshName = "Sphere_1_unit_Radius.ply";
@@ -356,24 +362,45 @@ int main(void)
         sphereMesh.friendlyName = "Sphere";
 
 //        sphereMesh.physProps.velocity.y = 0.0f;
-        sphereMesh.physProps.velocity.y = getRandomFloat(0.0f, MAX_VELOCITY);
+        sPhsyicsProperties* pSpherePhysProps = new sPhsyicsProperties();        // HEAP
 
-
-        sphereMesh.physProps.velocity.x = getRandomFloat(-MAX_VELOCITY, MAX_VELOCITY);
-        sphereMesh.physProps.velocity.z = getRandomFloat(-MAX_VELOCITY, MAX_VELOCITY);
+        pSpherePhysProps->velocity.y = getRandomFloat(0.0f, MAX_VELOCITY);
+        pSpherePhysProps->velocity.x = getRandomFloat(-MAX_VELOCITY, MAX_VELOCITY);
+        pSpherePhysProps->velocity.z = getRandomFloat(-MAX_VELOCITY, MAX_VELOCITY);
 
         // Gravity on Earth is likely too fast to look good, so we'll make it smaller.
-        sphereMesh.physProps.acceleration.y = (-9.81f/5.0f);
+//        sphereMesh.physProps.acceleration.y = -9.81f;
+        pSpherePhysProps->acceleration.y = (-9.81f/5.0f);
 
-        sphereMesh.physProps.position.x = getRandomFloat(-MAX_SPHERE_LOCATION, MAX_SPHERE_LOCATION);
-        sphereMesh.physProps.position.z = getRandomFloat(-MAX_SPHERE_LOCATION, MAX_SPHERE_LOCATION);
-        sphereMesh.physProps.position.y = getRandomFloat(0.0f, MAX_SPHERE_LOCATION);
+        pSpherePhysProps->position.x = getRandomFloat(-MAX_SPHERE_LOCATION, MAX_SPHERE_LOCATION);
+        pSpherePhysProps->position.z = getRandomFloat(-MAX_SPHERE_LOCATION, MAX_SPHERE_LOCATION);
+        pSpherePhysProps->position.y = getRandomFloat(10.0f, MAX_SPHERE_LOCATION + 20.0f);
+
+        sphereMesh.pPhysProps = pSpherePhysProps;
+        // Copy the physics position to the drawing position
+        sphereMesh.drawPosition = pSpherePhysProps->position;
 
         ::g_vecMeshesToDraw.push_back(sphereMesh);
 
+
+        //cMesh shpereMeshShadow_HACK;
+        //shpereMeshShadow_HACK.meshName = "Sphere_1_unit_Radius.ply";
+        //shpereMeshShadow_HACK.bIsWireframe = false;
+        //shpereMeshShadow_HACK.bDoNotLight = true;
+//        shpereMeshShadow_HACK.
+//        shpereMeshShadow_HACK.friendlyName = "Sphere";
+
+
     }//for ( unsigned int count...
 
+    cMesh debugSphere;
+    debugSphere.meshName = "Sphere_1_unit_Radius.ply";
+    debugSphere.bIsWireframe = true;
+    debugSphere.bDoNotLight = true;
+    debugSphere.pPhysProps = NULL;
+    debugSphere.friendlyName = "DEBUG_SPEERE";
 
+    g_vecMeshesToDraw.push_back(debugSphere);
 
 
 //    glm::vec3 cameraEye = glm::vec3(10.0, 5.0, -15.0f);
@@ -437,9 +464,9 @@ int main(void)
 
             // Translation
             glm::mat4 matTranslate = glm::translate(glm::mat4(1.0f),
-                                                    glm::vec3(currentMesh.physProps.position.x,
-                                                              currentMesh.physProps.position.y,
-                                                              currentMesh.physProps.position.z));
+                                                    glm::vec3(currentMesh.drawPosition.x,
+                                                              currentMesh.drawPosition.y,
+                                                              currentMesh.drawPosition.z));
 
 
                // Rotation matrix generation

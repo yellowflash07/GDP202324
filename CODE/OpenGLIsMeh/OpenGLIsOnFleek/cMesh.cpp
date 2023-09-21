@@ -11,6 +11,9 @@ cMesh::cMesh()
 	this->bIsWireframe = false;
 	this->bDoNotLight = false;
 
+	// If it's NULL or 0, then it's ignored by the physics loop
+	this->pPhysProps = NULL;		// or 0 or nullptr
+
 }
 
 // Destructor: Called on deletion   d'tor

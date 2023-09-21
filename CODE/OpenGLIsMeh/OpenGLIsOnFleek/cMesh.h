@@ -16,11 +16,14 @@ struct sPhsyicsProperties
 		this->inverse_mass = 1.0f;	// What should this be??
 	}
 
+//	typeOfSimplePhyiscThingy = "Sphere"
+
 	glm::vec3 position;
 	glm::vec3 velocity;
 	glm::vec3 acceleration;
 
 	// Since division is "slow" and we are dividing my mass, 
+	// Could make this immovable by making this 0 (infinite mass)
 	float inverse_mass;	//	float mass;		
 
 	// Rotational
@@ -39,13 +42,14 @@ public:
 
 	std::string friendlyName;		// "Ground"
 
-	// Physics properties
-	//glm::vec3 position;
-	sPhsyicsProperties physProps;
-
-
+	// Draw loop uses this: 
+	glm::vec3 drawPosition;				
 	glm::vec3 orientation;
 	float scale;
+
+	// Physics properties
+	// Physics update this:
+	sPhsyicsProperties* pPhysProps;
 
 	bool bIsWireframe;
 	bool bDoNotLight;

@@ -20,10 +20,10 @@ bool SaveVectorSceneToFile( std::string saveFileName )
 
 	for ( unsigned int index = 0; index != g_vecMeshesToDraw.size(); index++ )
 	{
-		theSameFile << g_vecMeshesToDraw[index].meshName << std::endl;
-		theSameFile << g_vecMeshesToDraw[index].physProps.position.x << " "
-					<< g_vecMeshesToDraw[index].physProps.position.y << " "
-					<< g_vecMeshesToDraw[index].physProps.position.z << std::endl;
+		//theSameFile << g_vecMeshesToDraw[index].meshName << std::endl;
+		//theSameFile << g_vecMeshesToDraw[index].physProps.position.x << " "
+		//			<< g_vecMeshesToDraw[index].physProps.position.y << " "
+		//			<< g_vecMeshesToDraw[index].physProps.position.z << std::endl;
 		// And so on....
 	}
 
@@ -38,10 +38,10 @@ bool LoadVectorSceneToFile( std::string loadFileName )
 
 	for ( unsigned int index = 0; index != g_vecMeshesToDraw.size(); index++ )
 	{
-		theSameFile >> g_vecMeshesToDraw[index].meshName;
-		theSameFile >> g_vecMeshesToDraw[index].physProps.position.x
-					>> g_vecMeshesToDraw[index].physProps.position.y
-					>> g_vecMeshesToDraw[index].physProps.position.z;
+		//theSameFile >> g_vecMeshesToDraw[index].meshName;
+		//theSameFile >> g_vecMeshesToDraw[index].physProps.position.x
+		//			>> g_vecMeshesToDraw[index].physProps.position.y
+		//			>> g_vecMeshesToDraw[index].physProps.position.z;
 		// And so on....
 	}
 
