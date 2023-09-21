@@ -10,7 +10,7 @@
 extern cVAOManager* pMeshManager;
 
 
-extern std::vector<cMesh> g_vecMeshesToDraw;
+extern std::vector< cMesh* > g_vec_pMeshesToDraw;
 
 
 glm::vec3 ClosestPtPointTriangle(glm::vec3 p, glm::vec3 a, glm::vec3 b, glm::vec3 c);
@@ -18,10 +18,12 @@ glm::vec3 ClosestPtPointTriangle(glm::vec3 p, glm::vec3 a, glm::vec3 b, glm::vec
 void DoPhysicUpdate(double deltaTime)
 {
 
-	for (unsigned int meshIndex = 0; meshIndex != ::g_vecMeshesToDraw.size(); meshIndex++)
+	for (unsigned int meshIndex = 0; meshIndex != ::g_vec_pMeshesToDraw.size(); meshIndex++)
 	{
 
-		if ( ::g_vecMeshesToDraw[meshIndex].pPhysProps == NULL )
+		cMesh* pCurrentMesh = ::g_vec_pMeshesToDraw[meshIndex];
+
+		if (pCurrentMesh->pPhysProps == NULL )
 		{
 			// Skip this.
 			continue;
@@ -35,23 +37,23 @@ void DoPhysicUpdate(double deltaTime)
 
 		// Velocity change is based on the acceleration over this time frame 
 //		// This part: (Accel * DeltaTime)
-		glm::vec3 deltaVelocityThisFrame = g_vecMeshesToDraw[meshIndex].pPhysProps->acceleration * (float)deltaTime;
+		glm::vec3 deltaVelocityThisFrame = pCurrentMesh->pPhysProps->acceleration * (float)deltaTime;
 
 		// Update the velocity based on this delta velocity
 		// Then this part: NewVelocity = LastVel + ...
-		g_vecMeshesToDraw[meshIndex].pPhysProps->velocity += deltaVelocityThisFrame;
+		pCurrentMesh->pPhysProps->velocity += deltaVelocityThisFrame;
 
 
 		// Position change is based on the velocity over this time frame
 		// This part: (Vel * DeltaTime)	
-		glm::vec3 deltaPosition = g_vecMeshesToDraw[meshIndex].pPhysProps->velocity * (float)deltaTime;
+		glm::vec3 deltaPosition = pCurrentMesh->pPhysProps->velocity * (float)deltaTime;
 
 		// ...then this part: NewPosition = LastPos + ...
 		// Upatate the position based on this delta position
-//		g_vecMeshesToDraw[index].pPhysProps->position += deltaPosition;
-		g_vecMeshesToDraw[meshIndex].pPhysProps->position.x += deltaPosition.x;
-		g_vecMeshesToDraw[meshIndex].pPhysProps->position.y += deltaPosition.y;
-		g_vecMeshesToDraw[meshIndex].pPhysProps->position.z += deltaPosition.z;
+//		pCurrentMesh->pPhysProps->position += deltaPosition;
+		pCurrentMesh->pPhysProps->position.x += deltaPosition.x;
+		pCurrentMesh->pPhysProps->position.y += deltaPosition.y;
+		pCurrentMesh->pPhysProps->position.z += deltaPosition.z;
 // ***********************************************************************
 
 
@@ -69,21 +71,21 @@ void DoPhysicUpdate(double deltaTime)
 		const float GROUND_LOCATION_Y = 0.0f;
 
 		// Is this a sphere? 
-		if (::g_vecMeshesToDraw[meshIndex].friendlyName == "Sphere")
+		if (pCurrentMesh->friendlyName == "Sphere")
 		{
-			if ( (::g_vecMeshesToDraw[meshIndex].pPhysProps->position.y - 1.0f) <= GROUND_LOCATION_Y)
+			if ( (pCurrentMesh->pPhysProps->position.y - 1.0f) <= GROUND_LOCATION_Y)
 			{
 				// "Invert" the velocity
 				// Velocity goes "up" +ve.
-				float newVel = fabs(::g_vecMeshesToDraw[meshIndex].pPhysProps->velocity.y);
+				float newVel = fabs(pCurrentMesh->pPhysProps->velocity.y);
 
-				::g_vecMeshesToDraw[meshIndex].pPhysProps->velocity.y = newVel;
+				pCurrentMesh->pPhysProps->velocity.y = newVel;
 
 			}
 		}
 
 		// Update the draw location with the physics location
-		::g_vecMeshesToDraw[meshIndex].drawPosition = ::g_vecMeshesToDraw[meshIndex].pPhysProps->position;
+		pCurrentMesh->drawPosition = pCurrentMesh->pPhysProps->position;
 
 // ***********************************************************************
 
@@ -111,7 +113,7 @@ void DoPhysicUpdate(double deltaTime)
 				verts[2].y = groundMeshInfo.pVertices[ groundMeshInfo.pIndices[index + 2] ].y;
 				verts[2].z = groundMeshInfo.pVertices[ groundMeshInfo.pIndices[index + 2] ].z;
 
-				glm::vec3 closestPoint = ClosestPtPointTriangle(::g_vecMeshesToDraw[meshIndex].drawPosition,
+				glm::vec3 closestPoint = ClosestPtPointTriangle(pCurrentMesh->drawPosition,
 																verts[0], verts[1], verts[2]);
 
 				// HACK:

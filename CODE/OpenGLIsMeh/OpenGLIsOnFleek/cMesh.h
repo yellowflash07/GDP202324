@@ -47,6 +47,8 @@ public:
 	glm::vec3 orientation;
 	float scale;
 
+	bool bIsVisible;
+
 	// Physics properties
 	// Physics update this:
 	sPhsyicsProperties* pPhysProps;

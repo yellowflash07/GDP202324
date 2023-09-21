@@ -38,13 +38,23 @@ cVAOManager* pMeshManager = new cVAOManager();
 
 
 // Smart array of cMesh object
-std::vector<cMesh> g_vecMeshesToDraw;
+//std::vector<cMesh> g_vecMeshesToDraw;
+//    ____       _       _                  _          __  __           _               
+//   |  _ \ ___ (_)_ __ | |_ ___ _ __ ___  | |_ ___   |  \/  | ___  ___| |__   ___  ___ 
+//   | |_) / _ \| | '_ \| __/ _ \ '__/ __| | __/ _ \  | |\/| |/ _ \/ __| '_ \ / _ \/ __|
+//   |  __/ (_) | | | | | ||  __/ |  \__ \ | || (_) | | |  | |  __/\__ \ | | |  __/\__ \
+//   |_|   \___/|_|_| |_|\__\___|_|  |___/  \__\___/  |_|  |_|\___||___/_| |_|\___||___/
+//                                                                                      
+std::vector< cMesh* > g_vec_pMeshesToDraw;
+
 //std::vector<sPhsyicsProperties*> g_vecThingsThePhysicsThingPaysAtte;
 // 
 int g_selectedMesh = 0;
 
 // Function signature
 bool SaveVectorSceneToFile(std::string saveFileName);
+
+bool LoadModels(void);
 
 void DoPhysicUpdate(double deltaTime);
 
@@ -122,7 +132,7 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
         if ( key == GLFW_KEY_PAGE_UP )
         {
             ::g_selectedMesh++;
-            if ( ::g_selectedMesh > ::g_vecMeshesToDraw.size() )
+            if ( ::g_selectedMesh > ::g_vec_pMeshesToDraw.size() )
             {
                 ::g_selectedMesh = 0;
             }
@@ -133,7 +143,7 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
             ::g_selectedMesh--;
             if (::g_selectedMesh < 0 )
             {
-                ::g_selectedMesh = ((int)::g_vecMeshesToDraw.size() - 1);
+                ::g_selectedMesh = ((int)::g_vec_pMeshesToDraw.size() - 1);
             }
             std::cout << "Selcted model: " << ::g_selectedMesh << std::endl;
         }
@@ -280,127 +290,9 @@ int main(void)
                                    sphereDrawingInfo, shaderProgramID);
     std::cout << "Loaded: " << sphereDrawingInfo.numberOfVertices << " vertices" << std::endl;
 
-//    sModelDrawInfo BOPModel;
-//    pMeshManager->LoadModelIntoVAO("BirdOfPrey_xyz_n_rgba.ply",
-//                                   BOPModel, shaderProgramID);
-//
 
-    // Load and compile shader part
-
-//    vertex_shader = glCreateShader(GL_VERTEX_SHADER);
-//    glShaderSource(vertex_shader, 1, &vertex_shader_text, NULL);
-//    glCompileShader(vertex_shader);
-//
-//    fragment_shader = glCreateShader(GL_FRAGMENT_SHADER);
-//    glShaderSource(fragment_shader, 1, &fragment_shader_text, NULL);
-//    glCompileShader(fragment_shader);
-//
-//    GLuint program = glCreateProgram();
-//    glAttachShader(program, vertex_shader);
-//    glAttachShader(program, fragment_shader);
-//    glLinkProgram(program);
-
-// 
-
-    // bun_zipper_res2_xyz_n_rgba.ply
-    // bathtub_xyz_n_rgba.ply
-
-//    // Add some models to the "scene"
-//    cMesh bunny1;   
-//    bunny1.meshName = "bun_zipper_res2_xyz_n_rgba.ply";
-//    bunny1.position = glm::vec3(-1.0f, 0.0f, 0.0f);
-//    bunny1.scale = 10.0f;
-//    bunny1.orientation.x = glm::radians(45.0f);
-//
-//    cMesh bunny2;
-//    bunny2.meshName = "bun_zipper_res2_xyz_n_rgba.ply";
-//    bunny2.position = glm::vec3(1.0f, 0.0f, 0.0f);
-//    bunny2.scale = 7.5f;
-//    bunny2.orientation.y = glm::radians(135.0f);
-//
-//    cMesh bathtub;
-//    bathtub.meshName = "bathtub_xyz_n_rgba.ply";
-//    //bunny2.position = glm::vec3(1.0f, 0.0f, 0.0f);
-//    bathtub.scale = 0.25f;
-//
-//    cMesh terrain;
-//    terrain.meshName = "Terrain_xyz_n_rgba.ply";
-//    //bunny2.position = glm::vec3(1.0f, 0.0f, 0.0f);
-//    terrain.scale = 1.0f;
-//    terrain.position.y = -25.0f;
-//
-////    // Smart array of cMesh object
-////    std::vector<cMesh> vecMeshesToDraw;
-//    g_vecMeshesToDraw.push_back(bunny1);
-//    g_vecMeshesToDraw.push_back(bunny2);
-//    g_vecMeshesToDraw.push_back(bathtub);
-//    g_vecMeshesToDraw.push_back(terrain);
-
-
-
-    cMesh gridGroundMesh;
-    gridGroundMesh.meshName = "Flat_Grid_100x100.ply";
-    gridGroundMesh.bIsWireframe = true;
-    gridGroundMesh.bDoNotLight = true;
-    // note this does NOT have a physProps, so is ignored by the physics update loop
-    gridGroundMesh.drawPosition.y = 0.0f;   //  0,-10,0
-    gridGroundMesh.friendlyName = "Ground";
-    ::g_vecMeshesToDraw.push_back(gridGroundMesh);
-
-    const float MAX_SPHERE_LOCATION = 30.0f;
-    const float MAX_VELOCITY = 1.0f;
-
-    // Make a bunch of spheres...
-    const unsigned int NUMBER_OF_SPHERES = 1;
-    for ( unsigned int count = 0; count != NUMBER_OF_SPHERES; count++ )
-    {
-        cMesh sphereMesh;
-        sphereMesh.meshName = "Sphere_1_unit_Radius.ply";
-        sphereMesh.bIsWireframe = true;
-        sphereMesh.bDoNotLight = true;
-
-        sphereMesh.friendlyName = "Sphere";
-
-//        sphereMesh.physProps.velocity.y = 0.0f;
-        sPhsyicsProperties* pSpherePhysProps = new sPhsyicsProperties();        // HEAP
-
-        pSpherePhysProps->velocity.y = getRandomFloat(0.0f, MAX_VELOCITY);
-        pSpherePhysProps->velocity.x = getRandomFloat(-MAX_VELOCITY, MAX_VELOCITY);
-        pSpherePhysProps->velocity.z = getRandomFloat(-MAX_VELOCITY, MAX_VELOCITY);
-
-        // Gravity on Earth is likely too fast to look good, so we'll make it smaller.
-//        sphereMesh.physProps.acceleration.y = -9.81f;
-        pSpherePhysProps->acceleration.y = (-9.81f/5.0f);
-
-        pSpherePhysProps->position.x = getRandomFloat(-MAX_SPHERE_LOCATION, MAX_SPHERE_LOCATION);
-        pSpherePhysProps->position.z = getRandomFloat(-MAX_SPHERE_LOCATION, MAX_SPHERE_LOCATION);
-        pSpherePhysProps->position.y = getRandomFloat(10.0f, MAX_SPHERE_LOCATION + 20.0f);
-
-        sphereMesh.pPhysProps = pSpherePhysProps;
-        // Copy the physics position to the drawing position
-        sphereMesh.drawPosition = pSpherePhysProps->position;
-
-        ::g_vecMeshesToDraw.push_back(sphereMesh);
-
-
-        //cMesh shpereMeshShadow_HACK;
-        //shpereMeshShadow_HACK.meshName = "Sphere_1_unit_Radius.ply";
-        //shpereMeshShadow_HACK.bIsWireframe = false;
-        //shpereMeshShadow_HACK.bDoNotLight = true;
-//        shpereMeshShadow_HACK.
-//        shpereMeshShadow_HACK.friendlyName = "Sphere";
-
-
-    }//for ( unsigned int count...
-
-    cMesh debugSphere;
-    debugSphere.meshName = "Sphere_1_unit_Radius.ply";
-    debugSphere.bIsWireframe = true;
-    debugSphere.bDoNotLight = true;
-    debugSphere.pPhysProps = NULL;
-    debugSphere.friendlyName = "DEBUG_SPEERE";
-
-    g_vecMeshesToDraw.push_back(debugSphere);
+    // 
+    LoadModels();
 
 
 //    glm::vec3 cameraEye = glm::vec3(10.0, 5.0, -15.0f);
@@ -452,10 +344,10 @@ int main(void)
 
         // *********************************************************************
         // Draw all the objects
-        for ( unsigned int index = 0; index != g_vecMeshesToDraw.size(); index++ )
+        for ( unsigned int index = 0; index != ::g_vec_pMeshesToDraw.size(); index++ )
         {
 
-            cMesh currentMesh = g_vecMeshesToDraw[index];
+            cMesh* pCurrentMesh = g_vec_pMeshesToDraw[index];
 
         //         mat4x4_identity(m);
             matModel = glm::mat4(1.0f);
@@ -464,30 +356,30 @@ int main(void)
 
             // Translation
             glm::mat4 matTranslate = glm::translate(glm::mat4(1.0f),
-                                                    glm::vec3(currentMesh.drawPosition.x,
-                                                              currentMesh.drawPosition.y,
-                                                              currentMesh.drawPosition.z));
+                                                    glm::vec3(pCurrentMesh->drawPosition.x,
+                                                              pCurrentMesh->drawPosition.y,
+                                                              pCurrentMesh->drawPosition.z));
 
 
                // Rotation matrix generation
             glm::mat4 matRotateX = glm::rotate(glm::mat4(1.0f),
-                                               currentMesh.orientation.x, // (float)glfwGetTime(),
+                                               pCurrentMesh->orientation.x, // (float)glfwGetTime(),
                                                glm::vec3(1.0f, 0.0, 0.0f));
 
 
             glm::mat4 matRotateY = glm::rotate(glm::mat4(1.0f),
-                                               currentMesh.orientation.y, // (float)glfwGetTime(),
+                                               pCurrentMesh->orientation.y, // (float)glfwGetTime(),
                                                glm::vec3(0.0f, 1.0, 0.0f));
 
             glm::mat4 matRotateZ = glm::rotate(glm::mat4(1.0f),
-                                               currentMesh.orientation.z, // (float)glfwGetTime(),
+                                               pCurrentMesh->orientation.z, // (float)glfwGetTime(),
                                                glm::vec3(0.0f, 0.0, 1.0f));
 
                // Scaling matrix
             glm::mat4 matScale = glm::scale(glm::mat4(1.0f),
-                                            glm::vec3(currentMesh.scale, 
-                                                      currentMesh.scale, 
-                                                      currentMesh.scale));
+                                            glm::vec3(pCurrentMesh->scale,
+                                                      pCurrentMesh->scale,
+                                                      pCurrentMesh->scale));
             //--------------------------------------------------------------
 
             // Combine all these transformation
@@ -541,7 +433,7 @@ int main(void)
 //            glUniform3f(modelOffset_UL, -0.1f, 0.0f, 0.0f);
 
     //        glPolygonMode(GL_FRONT_AND_BACK, GL_POINT /*GL_LINE*/ /*GL_FILL*/);
-            if ( currentMesh.bIsWireframe )
+            if (pCurrentMesh->bIsWireframe )
             {
                 glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
             }
@@ -556,7 +448,7 @@ int main(void)
             // uniform bool bDoNotLight;
             GLint bDoNotLight_UL = glGetUniformLocation(shaderProgramID, "bDoNotLight");
 
-            if ( currentMesh.bDoNotLight )
+            if (pCurrentMesh->bDoNotLight )
             {
                 // Set uniform to true
                 glUniform1f(bDoNotLight_UL, (GLfloat)GL_TRUE);
@@ -572,7 +464,7 @@ int main(void)
  //           glDrawArrays(GL_TRIANGLES, 0, g_NumberOfVerticesToDraw);
 
             sModelDrawInfo modelInfo;
-            if ( pMeshManager->FindDrawInfoByModelName(currentMesh.meshName, modelInfo) )
+            if ( pMeshManager->FindDrawInfoByModelName(pCurrentMesh->meshName, modelInfo) )
             {
                 // Found it!!!
 
