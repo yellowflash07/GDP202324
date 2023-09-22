@@ -25,6 +25,12 @@
     <Filter Include="ShaderManager\Shaders">
       <UniqueIdentifier>{c38c5f13-6225-419e-a6fd-53fb34fe99fb}</UniqueIdentifier>
     </Filter>
+    <Filter Include="DebugRenderer">
+      <UniqueIdentifier>{74a0cc48-2171-4531-887b-146a2b7f2293}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Global Stuff">
+      <UniqueIdentifier>{143e5d91-11fb-4502-af4c-ae13c61f63ae}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="theMain.cpp">
@@ -54,19 +60,31 @@
     <ClCompile Include="LoadModels.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="cDebugRenderer.cpp">
+      <Filter>DebugRenderer</Filter>
+    </ClCompile>
+    <ClCompile Include="cGlobal.cpp">
+      <Filter>Global Stuff</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Basic Shader Manager\cShaderManager.h">
       <Filter>ShaderManager</Filter>
-    </ClInclude>
-    <ClInclude Include="OpenGLCommon.h">
-      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="cMesh.h">
       <Filter>cMesh</Filter>
     </ClInclude>
     <ClInclude Include="cVAOManager\cVAOManager.h">
       <Filter>MeshObjectManager</Filter>
+    </ClInclude>
+    <ClInclude Include="cDebugRender.h">
+      <Filter>DebugRenderer</Filter>
+    </ClInclude>
+    <ClInclude Include="OpenGLCommon.h">
+      <Filter>Global Stuff</Filter>
+    </ClInclude>
+    <ClInclude Include="cGlobal.h">
+      <Filter>Global Stuff</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

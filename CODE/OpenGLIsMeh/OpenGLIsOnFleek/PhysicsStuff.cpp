@@ -6,6 +6,8 @@
 #include "cMesh.h"
 #include <iostream>
 
+#include "cGlobal.h"
+
 #include "cVAOManager/cVAOManager.h"
 // This is defined in main
 extern cVAOManager* pMeshManager;
@@ -144,29 +146,32 @@ void DoPhysicUpdate(double deltaTime)
 				glm::vec3 closestPoint = ClosestPtPointTriangle(pCurrentMesh->drawPosition,
 																verts[0], verts[1], verts[2]);
 
+
+//				::g_pDebugRenderer->AddLine(
+
 //				// HACK:
 //				if (index == 99 )
 //				{
 //					std::cout << closestPoint.x << ", " << closestPoint.y << ", " << closestPoint.z << std::endl;
 //				}
 				//if (pDebugSphere != NULL)
-				if (pDebugSphere)			// NON zero => true, zero = false;
-				{
-					pDebugSphere->drawPosition = closestPoint;
-					pDebugSphere->scale = 0.5f;
-					pDebugSphere->bIsVisible = true;
-
-// HACK: 
-					extern glm::mat4 matProjection;    // "projection"
-					extern glm::mat4 matView;          // "view" or "camera"
-					extern GLuint shaderProgramID;
-
-					DrawObject(pDebugSphere, glm::mat4(1.0f), 
-							   matProjection, matView, shaderProgramID);
-
-					pDebugSphere->bIsVisible = false;
-				}
-
+//				if (pDebugSphere)			// NON zero => true, zero = false;
+//				{
+//					pDebugSphere->drawPosition = closestPoint;
+//					pDebugSphere->scale = 0.5f;
+//					pDebugSphere->bIsVisible = true;
+//
+//// HACK: 
+//					extern glm::mat4 matProjection;    // "projection"
+//					extern glm::mat4 matView;          // "view" or "camera"
+//					extern GLuint shaderProgramID;
+//
+//					DrawObject(pDebugSphere, glm::mat4(1.0f), 
+//							   matProjection, matView, shaderProgramID);
+//
+//					pDebugSphere->bIsVisible = false;
+//				}
+//
 			}//for ( unsigned int index = 0...
 		}//if (pMeshManager->FindDrawInfoByModelName(
 

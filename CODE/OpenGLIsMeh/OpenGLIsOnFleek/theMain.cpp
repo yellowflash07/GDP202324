@@ -5,6 +5,8 @@
 //#include <glad/glad.h>
 //#define GLFW_INCLUDE_NONE
 //#include <GLFW/glfw3.h>
+#include "cGlobal.h"
+
 #include <iostream>
 #include <fstream>      // C++ file IO (secret: it's a wraper for the c IO)
 #include <sstream>      // like a string builder
@@ -229,30 +231,17 @@ int main(void)
     gladLoadGLLoader( (GLADloadproc)glfwGetProcAddress);
     glfwSwapInterval(1);
 
+    // Creat the debug rendere
+    ::g_pDebugRenderer = new cDebugRenderer();
 
-//    if (!LoadTheFile_PlyXYZ("Hey"))
-    // if (!LoadTheFile_Ply_XYZ_N_RGBA("Hey"))
-    // {
-
-    //    std::cout << "Error: didn't load the file." << std::endl;
-    //    std::cout << "How sad." << std::endl;
-    //    return -1;
-    //}
-
-
-    // NOTE: OpenGL error checks have been omitted for brevity
-
-//    glGenBuffers(1, &vertex_buffer);
-//    glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer);
-//
-////    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-//
-//    unsigned int size_of_sVertex = sizeof(sVertex);
-////    unsigned int number_of_bytes_in_array = size_of_sVertex * NUM_OF_VERTICES;
-//    unsigned int number_of_bytes_in_array = size_of_sVertex * g_NumberOfVerticesToDraw;
-//
-////    glBufferData(GL_ARRAY_BUFFER, number_of_bytes_in_array, vertices, GL_STATIC_DRAW);
-//    glBufferData(GL_ARRAY_BUFFER, number_of_bytes_in_array, pVertices, GL_STATIC_DRAW);
+    if ( ::g_pDebugRenderer->Initialize() )
+    {
+        std::cout << "Debug renderer initialized OK" << std::endl;
+    }
+    else
+    {
+        std::cout << "ERROR: Debug renderer because: " << ::g_pDebugRenderer->getLastError() << std::endl;
+    } 
 
 //    cShaderManager ShaderThing;
     cShaderManager* pShaderThing = new cShaderManager();
@@ -313,10 +302,15 @@ int main(void)
 
     while (!glfwWindowShouldClose(window))
     {
+
+        // Switch the "main" shader
+        shaderProgramID = pShaderThing->getIDFromFriendlyName("shader01");
+        glUseProgram(shaderProgramID);
+
         float ratio;
         int width, height;
 //        mat4x4 m, p, mvp;
-        glm::mat4 matModel;         // "model" or "world" matrix
+//        glm::mat4 matModel;         // "model" or "world" matrix
 //        glm::mat4 matProjection;    // "projection"
 //        glm::mat4 matView;          // "view" or "camera"
 //        glm::mat4 mvp;
@@ -385,12 +379,33 @@ int main(void)
         // *********************************************************************
 
 
+
  
         // Time per frame (more or less)
         double currentTime = glfwGetTime();
         double deltaTime = currentTime - lastTime;
 //        std::cout << deltaTime << std::endl;
         lastTime = currentTime;
+
+        const float MAX_LINE_POSITION = 1000.0f;
+
+        glm::vec3 lineStart = glm::vec3(getRandomFloat(-MAX_LINE_POSITION, MAX_LINE_POSITION),
+                                    getRandomFloat(-MAX_LINE_POSITION, MAX_LINE_POSITION),
+                                    getRandomFloat(-MAX_LINE_POSITION, MAX_LINE_POSITION));
+
+        glm::vec3 lineEnd = glm::vec3(getRandomFloat(-MAX_LINE_POSITION, MAX_LINE_POSITION),
+                                    getRandomFloat(-MAX_LINE_POSITION, MAX_LINE_POSITION),
+                                    getRandomFloat(-MAX_LINE_POSITION, MAX_LINE_POSITION));
+
+        glm::vec4 lineColour = glm::vec4(getRandomFloat(0.0f, 1.0f),
+                                     getRandomFloat(0.0f, 1.0f),
+                                     getRandomFloat(0.0f, 1.0f),
+                                     1.0f);
+
+        ::g_pDebugRenderer->AddLine(lineStart, lineEnd, lineColour);
+
+        ::g_pDebugRenderer->RenderDebugObjects(deltaTime, matView, matProjection);
+
 
         // 
         DoPhysicUpdate(deltaTime);
@@ -414,7 +429,13 @@ int main(void)
 
     }
 
+    // Delete everything
+
+
     glfwDestroyWindow(window);
+
+
+
 
     glfwTerminate();
     exit(EXIT_SUCCESS);

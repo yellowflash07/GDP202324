@@ -57,6 +57,8 @@ public:
 	bool bIsWireframe;
 	bool bDoNotLight;
 
+	void Update(double deltaTime);
+
 };
 
 #endif

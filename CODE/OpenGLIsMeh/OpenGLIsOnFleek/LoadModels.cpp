@@ -46,8 +46,8 @@ bool LoadModels(void)
 
     cMesh* pGridGroundMesh = new cMesh();
     pGridGroundMesh->meshName = "Flat_Grid_100x100.ply";
-    pGridGroundMesh->bIsWireframe = true;
-    pGridGroundMesh->bDoNotLight = true;
+    //pGridGroundMesh->bIsWireframe = true;
+    //pGridGroundMesh->bDoNotLight = true;
     // note this does NOT have a physProps, so is ignored by the physics update loop
     pGridGroundMesh->drawPosition.y = 0.0f;   //  0,-10,0
     pGridGroundMesh->friendlyName = "Ground";
@@ -57,13 +57,13 @@ bool LoadModels(void)
     const float MAX_VELOCITY = 1.0f;
 
     // Make a bunch of spheres...
-    const unsigned int NUMBER_OF_SPHERES = 1;
+    const unsigned int NUMBER_OF_SPHERES = 50;
     for (unsigned int count = 0; count != NUMBER_OF_SPHERES; count++)
     {
         cMesh* pSphereMesh = new cMesh();
         pSphereMesh->meshName = "Sphere_1_unit_Radius.ply";
-        pSphereMesh->bIsWireframe = true;
-        pSphereMesh->bDoNotLight = true;
+        //pSphereMesh->bIsWireframe = true;
+        //pSphereMesh->bDoNotLight = true;
 
         pSphereMesh->friendlyName = "Sphere";
 

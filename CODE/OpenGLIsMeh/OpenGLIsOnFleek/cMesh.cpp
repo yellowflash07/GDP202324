@@ -1,6 +1,12 @@
 #include "cMesh.h"
 #include <iostream>			// For KillAllHumans() cout
 
+#ifdef _DEBUG
+#include "cGlobal.h"	//cDebugRenderer* 
+
+#endif
+
+
 // Constructor: Called on creation   c'tor
 cMesh::cMesh()
 {
@@ -30,3 +36,11 @@ cMesh::~cMesh()
 //	return;
 //}
 
+
+void cMesh::Update(double deltaTime)
+{
+#ifdef _DEBUG
+//	::g_pDebugRenderer->AddSphere();
+#endif
+	return;
+}
