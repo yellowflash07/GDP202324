@@ -159,10 +159,10 @@ int main(void)
     //                               bathtubDrawingInfo, shaderProgramID);
     //std::cout << "Loaded: " << bathtubDrawingInfo.numberOfVertices << " vertices" << std::endl;
 
-    //sModelDrawInfo terrainDrawingInfo;
-    //pMeshManager->LoadModelIntoVAO("Terrain_xyz_n_rgba.ply",
-    //                               terrainDrawingInfo, shaderProgramID);
-    //std::cout << "Loaded: " << terrainDrawingInfo.numberOfVertices << " vertices" << std::endl;
+    sModelDrawInfo terrainDrawingInfo;
+    ::g_pMeshManager->LoadModelIntoVAO("Terrain_xyz_n_rgba.ply",
+                                   terrainDrawingInfo, shaderProgramID);
+    std::cout << "Loaded: " << terrainDrawingInfo.numberOfVertices << " vertices" << std::endl;
 
     sModelDrawInfo gridDrawingInfo;
     ::g_pMeshManager->LoadModelIntoVAO("Flat_Grid_100x100.ply",
@@ -205,24 +205,53 @@ int main(void)
         // (Usually) the default - does NOT draw "back facing" triangles
         glCullFace(GL_BACK);
 
-        //uniform vec3 directionalLightColour;
-        // rgb are the rgb of the light colour
-        //uniform vec4 directionalLight_Direction_power;
-        GLint lightColour_UL = glGetUniformLocation(shaderProgramID, "directionalLightColour");
-        GLint lightDirectionPower_UL = glGetUniformLocation(shaderProgramID, "directionalLight_Direction_power");
+//        //uniform vec3 directionalLightColour;
+//        // rgb are the rgb of the light colour
+//        //uniform vec4 directionalLight_Direction_power;
+//        GLint lightColour_UL = glGetUniformLocation(shaderProgramID, "directionalLightColour");
+//        GLint lightDirectionPower_UL = glGetUniformLocation(shaderProgramID, "directionalLight_Direction_power");
+//
+//        glUniform3f(lightColour_UL, 1.0f, 1.0f, 1.0f);  // White light
+////        glm::vec3 lightDirection = glm::vec3(0.0f, -1.0f, 0.0f);
+//        // Down, to the right (+ve X) and along +ve z, too
+//        glm::vec3 lightDirection = glm::vec3(1.0f, -1.0f, 1.0f);
+//        lightDirection = glm::normalize(lightDirection);
+//
+//        float lightBrightness = 1.0f;       
+//        glUniform4f(lightDirectionPower_UL, lightDirection.x, lightDirection.y, lightDirection.z,
+//                    lightBrightness);
+//
 
-        glUniform3f(lightColour_UL, 1.0f, 1.0f, 1.0f);  // White light
-//        glm::vec3 lightDirection = glm::vec3(0.0f, -1.0f, 0.0f);
-        // Down, to the right (+ve X) and along +ve z, too
-        glm::vec3 lightDirection = glm::vec3(1.0f, -1.0f, 1.0f);
-        lightDirection = glm::normalize(lightDirection);
-
-        float lightBrightness = 1.0f;       
-        glUniform4f(lightDirectionPower_UL, lightDirection.x, lightDirection.y, lightDirection.z,
-                    lightBrightness);
+// *****************************************************************
+        //uniform vec4 eyeLocation;
+        GLint eyeLocation_UL = glGetUniformLocation(shaderProgramID, "eyeLocation");
+        glUniform4f(eyeLocation_UL,
+                    ::g_cameraEye.x, ::g_cameraEye.y, ::g_cameraEye.z, 1.0f);
 
 
-        //mat4x4_ortho(p, -ratio, ratio, -1.f, 1.f, 1.f, -1.f);
+        //uniform sLight theLights[NUMBEROFLIGHTS];
+//        GLint theLights_UL = glGetUniformLocation(shaderProgramID, "theLights");
+// 
+//        vec4 position;
+        GLint theLights_0_position = glGetUniformLocation(shaderProgramID, "theLights[0].position");
+//        vec4 diffuse;	// Colour of the light (used for diffuse)
+        GLint theLights_0_diffuse = glGetUniformLocation(shaderProgramID, "theLights[0].diffuse");
+//        vec4 specular;	// rgb = highlight colour, w = power
+        GLint theLights_0_specular = glGetUniformLocation(shaderProgramID, "theLights[0].specular");
+//        vec4 atten;		// x = constant, y = linear, z = quadratic, w = DistanceCutOff
+        GLint theLights_0_atten = glGetUniformLocation(shaderProgramID, "theLights[0].atten");
+//        vec4 direction;	// Spot, directional lights
+        GLint theLights_0_direction = glGetUniformLocation(shaderProgramID, "theLights[0].direction");
+//        vec4 param1;	// x = lightType, y = inner angle, z = outer angle, w = TBD
+        GLint theLights_0_param1 = glGetUniformLocation(shaderProgramID, "theLights[0].param1");
+//        vec4 param2;	// x = 0 for off, 1 for on
+        GLint theLights_0_param2 = glGetUniformLocation(shaderProgramID, "theLights[0].param2");
+
+//        glUniform4f(theLights_0_position, );
+//        glUniform4f(theLights_0_diffuse
+
+ // *****************************************************************
+       //mat4x4_ortho(p, -ratio, ratio, -1.f, 1.f, 1.f, -1.f);
         glm::mat4 matProjection = glm::perspective(0.6f,
                                                    ratio,
                                                    0.1f,
@@ -378,6 +407,7 @@ void DrawObject(cMesh* pCurrentMesh, glm::mat4 matModelParent,
 
     // Also calculate and pass the "inverse transpose" for the model matrix
     glm::mat4 matModel_InverseTranspose = glm::inverse(glm::transpose(matModel));
+
     // uniform mat4 matModel_IT;
     GLint matModel_IT_UL = glGetUniformLocation(shaderProgramID, "matModel_IT");
     glUniformMatrix4fv(matModel_IT_UL, 1, GL_FALSE, glm::value_ptr(matModel_InverseTranspose));

@@ -13,14 +13,15 @@ in vec4 vPos;		// was vec3
 in vec4 vNormal;	// NEW for 2023!
 
 out vec4 colour;
+out vec4 vertexWorldPos;	
 out vec4 vertexWorldNormal;
 
 void main()
 {
-	vec4 finalPos = vPos;	
+	vec4 vertModelPosition = vPos;	
 	
 //	gl_Position = MVP * vec4(finalPos, 1.0);
-	gl_Position = MVP * finalPos;
+	gl_Position = MVP * vertModelPosition;
 	
 	// bunny goes from -0.07 to 0.07
 	vec4 finalColour = vCol;
@@ -30,6 +31,8 @@ void main()
 	vertexWorldNormal = matModel_IT * vNormal;
 	vertexWorldNormal.xyz = normalize(vertexWorldNormal.xyz);
 	vertexWorldNormal.w = 1.0f;
+	
+	vertexWorldPos = matModel * vec4( vertModelPosition.xyz, 1.0f);
 	
 //	if ( vPos.y < 0.0 )
 //	{

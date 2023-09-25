@@ -29,18 +29,19 @@ bool LoadModels(void)
 //    //bunny2.position = glm::vec3(1.0f, 0.0f, 0.0f);
 //    bathtub.scale = 0.25f;
 //
-//    cMesh terrain;
-//    terrain.meshName = "Terrain_xyz_n_rgba.ply";
-//    //bunny2.position = glm::vec3(1.0f, 0.0f, 0.0f);
-//    terrain.scale = 1.0f;
-//    terrain.position.y = -25.0f;
-//
 ////    // Smart array of cMesh object
 ////    std::vector<cMesh> vecMeshesToDraw;
 //    g_vecMeshesToDraw.push_back(bunny1);
 //    g_vecMeshesToDraw.push_back(bunny2);
 //    g_vecMeshesToDraw.push_back(bathtub);
 //    g_vecMeshesToDraw.push_back(terrain);
+
+    cMesh* pTerrain = new cMesh();
+    pTerrain->meshName = "Terrain_xyz_n_rgba.ply";
+    //bunny2.position = glm::vec3(1.0f, 0.0f, 0.0f);
+    pTerrain->scale = 1.0f;
+    pTerrain->drawPosition.y = -25.0f;
+    ::g_vec_pMeshesToDraw.push_back(pTerrain);
 
 
     cMesh* pGridGroundMesh = new cMesh();
@@ -50,7 +51,7 @@ bool LoadModels(void)
     // note this does NOT have a physProps, so is ignored by the physics update loop
     pGridGroundMesh->drawPosition.y = 0.0f;   //  0,-10,0
     pGridGroundMesh->friendlyName = "Ground";
-    ::g_vec_pMeshesToDraw.push_back(pGridGroundMesh);
+//    ::g_vec_pMeshesToDraw.push_back(pGridGroundMesh);
 
     const float MAX_SPHERE_LOCATION = 30.0f;
     const float MAX_VELOCITY = 1.0f;
