@@ -145,6 +145,7 @@
     <ClCompile Include="cMesh.cpp" />
     <ClCompile Include="cVAOManager\cVAOManager.cpp" />
     <ClCompile Include="glad.c" />
+    <ClCompile Include="InputHandling.cpp" />
     <ClCompile Include="LoadModels.cpp" />
     <ClCompile Include="PhysicsStuff.cpp" />
     <ClCompile Include="ScenePersistence.cpp" />
@@ -156,11 +157,12 @@
     <ClInclude Include="cGlobal.h" />
     <ClInclude Include="cMesh.h" />
     <ClInclude Include="cVAOManager\cVAOManager.h" />
+    <ClInclude Include="GLWF_CallBacks.h" />
     <ClInclude Include="OpenGLCommon.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="fragmentShader01.glsl" />
-    <None Include="vertexShader01.glsl" />
+    <None Include="assets\shaders\fragmentShader01.glsl" />
+    <None Include="assets\shaders\vertexShader01.glsl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

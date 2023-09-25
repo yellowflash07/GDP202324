@@ -29,17 +29,14 @@
 #include "Basic Shader Manager/cShaderManager.h"
 #include "cVAOManager/cVAOManager.h"
 
+#include "GLWF_CallBacks.h" // keyboard and mouse input
+
 #include "cMesh.h"
 
-glm::vec3 cameraEye = glm::vec3(0.0, 5.0, +90.0f);
-glm::vec3 cameraTarget = glm::vec3(0.0f, 5.0f, 0.0f);
-glm::vec3 upVector = glm::vec3(0.0f, 1.0f, 0.0f);
+glm::vec3 g_cameraEye = glm::vec3(0.0, 5.0, +90.0f);
+glm::vec3 g_cameraTarget = glm::vec3(0.0f, 5.0f, 0.0f);
+glm::vec3 g_upVector = glm::vec3(0.0f, 1.0f, 0.0f);
 
-// HACK: These will be moved out of global soon.
-// They are only here to allow the temporary debug thing to work;
-glm::mat4 matProjection;    // "projection"
-glm::mat4 matView;          // "view" or "camera"
-GLuint shaderProgramID = 0;
 
 
 cVAOManager* g_pMeshManager = NULL;
@@ -85,122 +82,6 @@ static void error_callback(int error, const char* description)
     fprintf(stderr, "Error: %s\n", description);
 }
 
-// This callback is from the "typing" windows system
-static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
-{
-    if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
-    {
-        glfwSetWindowShouldClose(window, GLFW_TRUE);
-    }
-
-    if (key == GLFW_KEY_F10 && action)
-    {
-        // Save the scene to a file
-        SaveVectorSceneToFile("myscene.txt");
-    }
-
-    const float CAMERA_MOVEMENT_SPEED = 1.0f;
-    const float OBJECT_MOVEMENT_SPEED = 0.01f;
-
-    // Is the shift key down
-    if ( mods == GLFW_MOD_SHIFT )
-    {
-        // Shift key ONLY is down
-    }
-
-    // & will "mask" off the mod leaving the shift
-    if ( ( mods & GLFW_MOD_SHIFT ) == GLFW_MOD_SHIFT )
-    {
-        // Shift key down (ignores other keys)
-
-//        if (key == GLFW_KEY_A )
-//        {
-//            ::g_vecMeshesToDraw[::g_selectedMesh].physProps.position.x -= OBJECT_MOVEMENT_SPEED;
-//        }
-//        if (key == GLFW_KEY_D )
-//        {
-//            ::g_vecMeshesToDraw[::g_selectedMesh].physProps.position.x += OBJECT_MOVEMENT_SPEED;
-//        }
-//
-//        if (key == GLFW_KEY_W )
-//        {
-//            ::g_vecMeshesToDraw[::g_selectedMesh].physProps.position.z += OBJECT_MOVEMENT_SPEED;
-//        }
-//        if (key == GLFW_KEY_S )
-//        {
-//            ::g_vecMeshesToDraw[::g_selectedMesh].physProps.position.z -= OBJECT_MOVEMENT_SPEED;
-//        }
-//
-//
-//        if (key == GLFW_KEY_Q )
-//        {
-//            ::g_vecMeshesToDraw[::g_selectedMesh].physProps.position.y -= OBJECT_MOVEMENT_SPEED;
-//        }
-//        if (key == GLFW_KEY_E )
-//        {
-//            ::g_vecMeshesToDraw[::g_selectedMesh].physProps.position.y += OBJECT_MOVEMENT_SPEED;
-//        }
-
-        // Select another model
-        if ( key == GLFW_KEY_PAGE_UP )
-        {
-            ::g_selectedMesh++;
-            if ( ::g_selectedMesh > ::g_vec_pMeshesToDraw.size() )
-            {
-                ::g_selectedMesh = 0;
-            }
-            std::cout << "Selcted model: " << ::g_selectedMesh << std::endl;
-        }
-        if ( key == GLFW_KEY_PAGE_DOWN )
-        {
-            ::g_selectedMesh--;
-            if (::g_selectedMesh < 0 )
-            {
-                ::g_selectedMesh = ((int)::g_vec_pMeshesToDraw.size() - 1);
-            }
-            std::cout << "Selcted model: " << ::g_selectedMesh << std::endl;
-        }
-    }
-    else
-    {
-        // Shift key is NOT down
-
-        if ( key == GLFW_KEY_A && action )
-        {
-            cameraEye.x -= CAMERA_MOVEMENT_SPEED;
-        }
-        if ( key == GLFW_KEY_D && action )
-        {
-            cameraEye.x += CAMERA_MOVEMENT_SPEED;
-        }
-
-        if ( key == GLFW_KEY_W && action )
-        {
-            cameraEye.z += CAMERA_MOVEMENT_SPEED;
-        }
-        if ( key == GLFW_KEY_S && action )
-        {
-            cameraEye.z -= CAMERA_MOVEMENT_SPEED;
-        }    
-    
-
-        if ( key == GLFW_KEY_Q && action )
-        {
-            cameraEye.y -= CAMERA_MOVEMENT_SPEED;
-        }
-        if ( key == GLFW_KEY_E && action )
-        {
-            cameraEye.y += CAMERA_MOVEMENT_SPEED;
-        }     
-
-    }// if ( ( mods & GLFW_MOD_SHIFT ) == GLFW_MOD_SHIFT )
- 
-
-
-    return;
-}
-
-
 
 int main(void)
 {
@@ -232,16 +113,16 @@ int main(void)
     glfwSwapInterval(1);
 
     // Creat the debug rendere
-    ::g_pDebugRenderer = new cDebugRenderer();
-
-    if ( ::g_pDebugRenderer->Initialize() )
-    {
-        std::cout << "Debug renderer initialized OK" << std::endl;
-    }
-    else
-    {
-        std::cout << "ERROR: Debug renderer because: " << ::g_pDebugRenderer->getLastError() << std::endl;
-    } 
+//    ::g_pDebugRenderer = new cDebugRenderer();
+//
+//    if ( ::g_pDebugRenderer->Initialize() )
+//    {
+//        std::cout << "Debug renderer initialized OK" << std::endl;
+//    }
+//    else
+//    {
+//        std::cout << "ERROR: Debug renderer because: " << ::g_pDebugRenderer->getLastError() << std::endl;
+//    } 
 
 //    cShaderManager ShaderThing;
     cShaderManager* pShaderThing = new cShaderManager();
@@ -262,7 +143,7 @@ int main(void)
 
 
 //
-    /*GLuint*/ shaderProgramID = pShaderThing->getIDFromFriendlyName("shader01");
+    GLuint shaderProgramID = pShaderThing->getIDFromFriendlyName("shader01");
 
     ::g_pMeshManager = new cVAOManager();
 
@@ -295,7 +176,7 @@ int main(void)
 
 
     // 
-//    LoadModels();
+    LoadModels();
 
 
 //    glm::vec3 cameraEye = glm::vec3(10.0, 5.0, -15.0f);
@@ -324,8 +205,6 @@ int main(void)
         // (Usually) the default - does NOT draw "back facing" triangles
         glCullFace(GL_BACK);
 
-goto BYPASS;
-{
         //uniform vec3 directionalLightColour;
         // rgb are the rgb of the light colour
         //uniform vec4 directionalLight_Direction_power;
@@ -343,22 +222,15 @@ goto BYPASS;
                     lightBrightness);
 
 
-
         //mat4x4_ortho(p, -ratio, ratio, -1.f, 1.f, 1.f, -1.f);
-        matProjection = glm::perspective(0.6f,
-                                         ratio,
-                                         0.1f,
-                                         1000.0f);
+        glm::mat4 matProjection = glm::perspective(0.6f,
+                                                   ratio,
+                                                   0.1f,
+                                                   1000.0f);
 
-    //        glm::vec3 cameraEye = glm::vec3(0.0, 0.0, -4.0f);
-    //        glm::vec3 cameraTarget = glm::vec3(0.0f, 0.0f, 0.0f);
-    //        glm::vec3 upVector = glm::vec3(0.0f, 1.0f, 0.0f);
-
-    //        cameraEye.z += 0.001f;
-
-        matView = glm::lookAt(cameraEye,
-                              cameraTarget,
-                              upVector);
+        glm::mat4 matView = glm::lookAt(::g_cameraEye,
+                                        ::g_cameraTarget,
+                                        ::g_upVector);
 
         // *********************************************************************
         // Draw all the objects
@@ -377,8 +249,7 @@ goto BYPASS;
         }//for ( unsigned int index
         // *********************************************************************
 
-}
-BYPASS:
+
  
         // Time per frame (more or less)
         double currentTime = glfwGetTime();
@@ -401,9 +272,9 @@ BYPASS:
                                      getRandomFloat(0.0f, 1.0f),
                                      1.0f);
 
-        ::g_pDebugRenderer->AddLine(lineStart, lineEnd, lineColour);
+//        ::g_pDebugRenderer->AddLine(lineStart, lineEnd, lineColour);
 
-        ::g_pDebugRenderer->RenderDebugObjects(deltaTime, matView, matProjection);
+//        ::g_pDebugRenderer->RenderDebugObjects(deltaTime, matView, matProjection);
 
 
         // 
@@ -416,9 +287,9 @@ BYPASS:
         // Update the title screen
         std::stringstream ssTitle;
         ssTitle << "Camera (x,y,z): "
-            << cameraEye.x << ", "
-            << cameraEye.y << ", "
-            << cameraEye.z << ")";
+            << ::g_cameraEye.x << ", "
+            << ::g_cameraEye.y << ", "
+            << ::g_cameraEye.z << ")";
 //        glfwSetWindowTitle(window, "HEY!");
 
         std::string theTitle = ssTitle.str();

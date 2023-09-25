@@ -66,6 +66,9 @@
     <ClCompile Include="cGlobal.cpp">
       <Filter>Global Stuff</Filter>
     </ClCompile>
+    <ClCompile Include="InputHandling.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Basic Shader Manager\cShaderManager.h">
@@ -86,12 +89,15 @@
     <ClInclude Include="cGlobal.h">
       <Filter>Global Stuff</Filter>
     </ClInclude>
+    <ClInclude Include="GLWF_CallBacks.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="fragmentShader01.glsl">
+    <None Include="assets\shaders\fragmentShader01.glsl">
       <Filter>ShaderManager\Shaders</Filter>
     </None>
-    <None Include="vertexShader01.glsl">
+    <None Include="assets\shaders\vertexShader01.glsl">
       <Filter>ShaderManager\Shaders</Filter>
     </None>
   </ItemGroup>
