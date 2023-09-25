@@ -58,6 +58,8 @@ public:
 
 	std::string getLastError(bool bAndClear = true);
 
+	void setBasePath(std::string basePathWithoutSlash);
+
 private:
 
 	bool m_LoadTheFile_Ply_XYZ_N_RGBA(std::string theFileName, sModelDrawInfo& drawInfo);
@@ -65,6 +67,8 @@ private:
 	std::map< std::string /*model name*/,
 		      sModelDrawInfo /* info needed to draw*/ >
 		m_map_ModelName_to_VAOID;
+
+	std::string m_basePathWithoutSlash;
 
 };
 

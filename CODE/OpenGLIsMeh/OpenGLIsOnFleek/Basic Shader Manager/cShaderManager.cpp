@@ -90,7 +90,7 @@ void cShaderManager::setBasePath( std::string basepath )
 // Returns bool if didn't load
 bool cShaderManager::m_loadSourceFromFile( cShader &shader )
 {
-	std::string fullFileName = this->m_basepath + shader.fileName;
+	std::string fullFileName = this->m_basepath + "/" + shader.fileName;
 
 	std::ifstream theFile( fullFileName.c_str() );
 	if ( ! theFile.is_open() )

@@ -42,7 +42,6 @@ bool LoadModels(void)
 //    g_vecMeshesToDraw.push_back(bathtub);
 //    g_vecMeshesToDraw.push_back(terrain);
 
-    std::vector< cMesh* > g_vec_pMeshesToDraw;
 
     cMesh* pGridGroundMesh = new cMesh();
     pGridGroundMesh->meshName = "Flat_Grid_100x100.ply";

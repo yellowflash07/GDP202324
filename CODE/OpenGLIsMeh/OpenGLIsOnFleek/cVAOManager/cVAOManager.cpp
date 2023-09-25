@@ -40,6 +40,14 @@ sModelDrawInfo::sModelDrawInfo()
 }
 
 
+void cVAOManager::setBasePath(std::string basePathWithoutSlash)
+{
+    this->m_basePathWithoutSlash = basePathWithoutSlash;
+    return;
+}
+
+
+
 bool cVAOManager::LoadModelIntoVAO(
 		std::string fileName, 
 		sModelDrawInfo &drawInfo,
@@ -52,7 +60,9 @@ bool cVAOManager::LoadModelIntoVAO(
 
 	drawInfo.meshName = fileName;
 
-    if ( ! this->m_LoadTheFile_Ply_XYZ_N_RGBA(fileName, drawInfo) )
+    std::string fileAndPath = this->m_basePathWithoutSlash + "/" + fileName;
+
+    if ( ! this->m_LoadTheFile_Ply_XYZ_N_RGBA(fileAndPath, drawInfo) )
     {
         return false;
     };

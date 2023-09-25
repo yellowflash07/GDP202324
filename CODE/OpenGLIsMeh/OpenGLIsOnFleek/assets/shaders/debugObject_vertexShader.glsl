@@ -3,8 +3,8 @@
 
 uniform mat4 MVP;
 
-in vec4 vPosition;
 in vec4 vColour;
+in vec4 vPosition;
 
 out vec4 fColour;
 

@@ -42,7 +42,7 @@ glm::mat4 matView;          // "view" or "camera"
 GLuint shaderProgramID = 0;
 
 
-cVAOManager* pMeshManager = new cVAOManager();
+cVAOManager* g_pMeshManager = NULL;
 
 
 // Smart array of cMesh object
@@ -245,6 +245,7 @@ int main(void)
 
 //    cShaderManager ShaderThing;
     cShaderManager* pShaderThing = new cShaderManager();
+    pShaderThing->setBasePath("assets/shaders");
 
     cShaderManager::cShader vertexShader;
     vertexShader.fileName = "vertexShader01.glsl";
@@ -263,7 +264,9 @@ int main(void)
 //
     /*GLuint*/ shaderProgramID = pShaderThing->getIDFromFriendlyName("shader01");
 
-    //cVAOManager* pMeshManager = new cVAOManager();
+    ::g_pMeshManager = new cVAOManager();
+
+    ::g_pMeshManager->setBasePath("assets/models");
 
     //sModelDrawInfo bunnyDrawingInfo;
     //pMeshManager->LoadModelIntoVAO("bun_zipper_res2_xyz_n_rgba.ply",
@@ -281,18 +284,18 @@ int main(void)
     //std::cout << "Loaded: " << terrainDrawingInfo.numberOfVertices << " vertices" << std::endl;
 
     sModelDrawInfo gridDrawingInfo;
-    pMeshManager->LoadModelIntoVAO("Flat_Grid_100x100.ply",
+    ::g_pMeshManager->LoadModelIntoVAO("Flat_Grid_100x100.ply",
                                    gridDrawingInfo, shaderProgramID);
     std::cout << "Loaded: " << gridDrawingInfo.numberOfVertices << " vertices" << std::endl;
 
     sModelDrawInfo sphereDrawingInfo;
-    pMeshManager->LoadModelIntoVAO("Sphere_1_unit_Radius.ply",
+    ::g_pMeshManager->LoadModelIntoVAO("Sphere_1_unit_Radius.ply",
                                    sphereDrawingInfo, shaderProgramID);
     std::cout << "Loaded: " << sphereDrawingInfo.numberOfVertices << " vertices" << std::endl;
 
 
     // 
-    LoadModels();
+//    LoadModels();
 
 
 //    glm::vec3 cameraEye = glm::vec3(10.0, 5.0, -15.0f);
@@ -304,16 +307,11 @@ int main(void)
     {
 
         // Switch the "main" shader
-        shaderProgramID = pShaderThing->getIDFromFriendlyName("shader01");
-        glUseProgram(shaderProgramID);
+//        shaderProgramID = pShaderThing->getIDFromFriendlyName("shader01");
+//        glUseProgram(shaderProgramID);
 
         float ratio;
         int width, height;
-//        mat4x4 m, p, mvp;
-//        glm::mat4 matModel;         // "model" or "world" matrix
-//        glm::mat4 matProjection;    // "projection"
-//        glm::mat4 matView;          // "view" or "camera"
-//        glm::mat4 mvp;
 
         glfwGetFramebufferSize(window, &width, &height);
         ratio = width / (float)height;
@@ -326,7 +324,8 @@ int main(void)
         // (Usually) the default - does NOT draw "back facing" triangles
         glCullFace(GL_BACK);
 
-
+goto BYPASS;
+{
         //uniform vec3 directionalLightColour;
         // rgb are the rgb of the light colour
         //uniform vec4 directionalLight_Direction_power;
@@ -378,8 +377,8 @@ int main(void)
         }//for ( unsigned int index
         // *********************************************************************
 
-
-
+}
+BYPASS:
  
         // Time per frame (more or less)
         double currentTime = glfwGetTime();
@@ -550,7 +549,7 @@ void DrawObject(cMesh* pCurrentMesh, glm::mat4 matModelParent,
 //           glDrawArrays(GL_TRIANGLES, 0, g_NumberOfVerticesToDraw);
 
     sModelDrawInfo modelInfo;
-    if (pMeshManager->FindDrawInfoByModelName(pCurrentMesh->meshName, modelInfo))
+    if (::g_pMeshManager->FindDrawInfoByModelName(pCurrentMesh->meshName, modelInfo))
     {
         // Found it!!!
 

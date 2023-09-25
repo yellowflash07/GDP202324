@@ -10,8 +10,7 @@
 
 #include "cVAOManager/cVAOManager.h"
 // This is defined in main
-extern cVAOManager* pMeshManager;
-
+extern cVAOManager* g_pMeshManager;
 
 extern std::vector< cMesh* > g_vec_pMeshesToDraw;
 
@@ -122,58 +121,58 @@ void DoPhysicUpdate(double deltaTime)
 		// HACK: Determine what is the closest position to each triangle in 
 		//	the ground mesh
 
-		sModelDrawInfo groundMeshInfo;
-		if (pMeshManager->FindDrawInfoByModelName("Flat_Grid_100x100.ply", groundMeshInfo))
-		{
-			// For each triangle, get the vertices, then pass them to the 
-			//	sphere-triangle collision function, returning the "closest point"
-			for ( unsigned int index = 0; index != groundMeshInfo.numberOfIndices; index += 3 )
-			{	
-				glm::vec3 verts[3];
-
-				verts[0].x = groundMeshInfo.pVertices[ groundMeshInfo.pIndices[index] ].x;
-				verts[0].y = groundMeshInfo.pVertices[ groundMeshInfo.pIndices[index] ].y;
-				verts[0].z = groundMeshInfo.pVertices[ groundMeshInfo.pIndices[index] ].z;
-
-				verts[1].x = groundMeshInfo.pVertices[ groundMeshInfo.pIndices[index + 1] ].x;
-				verts[1].y = groundMeshInfo.pVertices[ groundMeshInfo.pIndices[index + 1] ].y;
-				verts[1].z = groundMeshInfo.pVertices[ groundMeshInfo.pIndices[index + 1] ].z;
-
-				verts[2].x = groundMeshInfo.pVertices[ groundMeshInfo.pIndices[index + 2] ].x;
-				verts[2].y = groundMeshInfo.pVertices[ groundMeshInfo.pIndices[index + 2] ].y;
-				verts[2].z = groundMeshInfo.pVertices[ groundMeshInfo.pIndices[index + 2] ].z;
-
-				glm::vec3 closestPoint = ClosestPtPointTriangle(pCurrentMesh->drawPosition,
-																verts[0], verts[1], verts[2]);
-
-
-//				::g_pDebugRenderer->AddLine(
-
-//				// HACK:
-//				if (index == 99 )
-//				{
-//					std::cout << closestPoint.x << ", " << closestPoint.y << ", " << closestPoint.z << std::endl;
-//				}
-				//if (pDebugSphere != NULL)
-//				if (pDebugSphere)			// NON zero => true, zero = false;
-//				{
-//					pDebugSphere->drawPosition = closestPoint;
-//					pDebugSphere->scale = 0.5f;
-//					pDebugSphere->bIsVisible = true;
+//		sModelDrawInfo groundMeshInfo;
+//		if (::g_pMeshManager->FindDrawInfoByModelName("Flat_Grid_100x100.ply", groundMeshInfo))
+//		{
+//			// For each triangle, get the vertices, then pass them to the 
+//			//	sphere-triangle collision function, returning the "closest point"
+//			for ( unsigned int index = 0; index != groundMeshInfo.numberOfIndices; index += 3 )
+//			{	
+//				glm::vec3 verts[3];
 //
-//// HACK: 
-//					extern glm::mat4 matProjection;    // "projection"
-//					extern glm::mat4 matView;          // "view" or "camera"
-//					extern GLuint shaderProgramID;
+//				verts[0].x = groundMeshInfo.pVertices[ groundMeshInfo.pIndices[index] ].x;
+//				verts[0].y = groundMeshInfo.pVertices[ groundMeshInfo.pIndices[index] ].y;
+//				verts[0].z = groundMeshInfo.pVertices[ groundMeshInfo.pIndices[index] ].z;
 //
-//					DrawObject(pDebugSphere, glm::mat4(1.0f), 
-//							   matProjection, matView, shaderProgramID);
+//				verts[1].x = groundMeshInfo.pVertices[ groundMeshInfo.pIndices[index + 1] ].x;
+//				verts[1].y = groundMeshInfo.pVertices[ groundMeshInfo.pIndices[index + 1] ].y;
+//				verts[1].z = groundMeshInfo.pVertices[ groundMeshInfo.pIndices[index + 1] ].z;
 //
-//					pDebugSphere->bIsVisible = false;
-//				}
+//				verts[2].x = groundMeshInfo.pVertices[ groundMeshInfo.pIndices[index + 2] ].x;
+//				verts[2].y = groundMeshInfo.pVertices[ groundMeshInfo.pIndices[index + 2] ].y;
+//				verts[2].z = groundMeshInfo.pVertices[ groundMeshInfo.pIndices[index + 2] ].z;
 //
-			}//for ( unsigned int index = 0...
-		}//if (pMeshManager->FindDrawInfoByModelName(
+//				glm::vec3 closestPoint = ClosestPtPointTriangle(pCurrentMesh->drawPosition,
+//																verts[0], verts[1], verts[2]);
+//
+//
+////				::g_pDebugRenderer->AddLine(
+//
+////				// HACK:
+////				if (index == 99 )
+////				{
+////					std::cout << closestPoint.x << ", " << closestPoint.y << ", " << closestPoint.z << std::endl;
+////				}
+//				//if (pDebugSphere != NULL)
+////				if (pDebugSphere)			// NON zero => true, zero = false;
+////				{
+////					pDebugSphere->drawPosition = closestPoint;
+////					pDebugSphere->scale = 0.5f;
+////					pDebugSphere->bIsVisible = true;
+////
+////// HACK: 
+////					extern glm::mat4 matProjection;    // "projection"
+////					extern glm::mat4 matView;          // "view" or "camera"
+////					extern GLuint shaderProgramID;
+////
+////					DrawObject(pDebugSphere, glm::mat4(1.0f), 
+////							   matProjection, matView, shaderProgramID);
+////
+////					pDebugSphere->bIsVisible = false;
+////				}
+////
+//			}//for ( unsigned int index = 0...
+//		}//if (pMeshManager->FindDrawInfoByModelName(
 
 	}// for (unsigned int meshIndex
 
