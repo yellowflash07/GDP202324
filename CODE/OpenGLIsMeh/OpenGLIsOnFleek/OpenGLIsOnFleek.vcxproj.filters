@@ -31,6 +31,9 @@
     <Filter Include="Global Stuff">
       <UniqueIdentifier>{143e5d91-11fb-4502-af4c-ae13c61f63ae}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Lights">
+      <UniqueIdentifier>{98381d53-9e58-43fc-a634-99a5a36c2248}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="theMain.cpp">
@@ -69,6 +72,9 @@
     <ClCompile Include="InputHandling.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="cLightManager.cpp">
+      <Filter>Lights</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Basic Shader Manager\cShaderManager.h">
@@ -91,6 +97,9 @@
     </ClInclude>
     <ClInclude Include="GLWF_CallBacks.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="cLightManager.h">
+      <Filter>Lights</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -33,6 +33,8 @@
 
 #include "cMesh.h"
 
+#include "cLightManager.h"
+
 glm::vec3 g_cameraEye = glm::vec3(0.0, 5.0, +90.0f);
 glm::vec3 g_cameraTarget = glm::vec3(0.0f, 5.0f, 0.0f);
 glm::vec3 g_upVector = glm::vec3(0.0f, 1.0f, 0.0f);
@@ -52,9 +54,15 @@ cVAOManager* g_pMeshManager = NULL;
 //                                                                                      
 std::vector< cMesh* > g_vec_pMeshesToDraw;
 
+// Returns NULL if not found
+cMesh* g_pFindMeshByFriendlyName(std::string friendlyNameToFind);
+
+cLightManager* g_pTheLights = NULL;
+
 //std::vector<sPhsyicsProperties*> g_vecThingsThePhysicsThingPaysAtte;
 // 
 int g_selectedMesh = 0;
+int g_selectedLight = 0;
 
 // Function signature
 bool SaveVectorSceneToFile(std::string saveFileName);
@@ -112,19 +120,7 @@ int main(void)
     gladLoadGLLoader( (GLADloadproc)glfwGetProcAddress);
     glfwSwapInterval(1);
 
-    // Creat the debug rendere
-//    ::g_pDebugRenderer = new cDebugRenderer();
-//
-//    if ( ::g_pDebugRenderer->Initialize() )
-//    {
-//        std::cout << "Debug renderer initialized OK" << std::endl;
-//    }
-//    else
-//    {
-//        std::cout << "ERROR: Debug renderer because: " << ::g_pDebugRenderer->getLastError() << std::endl;
-//    } 
 
-//    cShaderManager ShaderThing;
     cShaderManager* pShaderThing = new cShaderManager();
     pShaderThing->setBasePath("assets/shaders");
 
@@ -179,6 +175,25 @@ int main(void)
     LoadModels();
 
 
+    ::g_pTheLights = new cLightManager();
+    // 
+    ::g_pTheLights->SetUniformLocations(shaderProgramID);
+
+    ::g_pTheLights->theLights[0].param2.x = 1.0f;   // Turn on
+    ::g_pTheLights->theLights[0].param1.x = 0.0f;   // 0 = point light
+
+    ::g_pTheLights->theLights[0].position.x = 0.0f;
+    ::g_pTheLights->theLights[0].position.y = 25.0f;
+    ::g_pTheLights->theLights[0].position.z = 0.0f;
+
+    // How "bright" the lights is
+    // Really the opposite of brightness.
+    //  how dim do you want this
+    ::g_pTheLights->theLights[0].atten.x = 0.0f;        // Constant attenuation
+    ::g_pTheLights->theLights[0].atten.y = 0.01f;        // Linear attenuation
+    ::g_pTheLights->theLights[0].atten.z = 0.01f;        // Quadratic attenuation
+
+
 //    glm::vec3 cameraEye = glm::vec3(10.0, 5.0, -15.0f);
     float yaxisRotation = 0.0f;
 
@@ -205,22 +220,11 @@ int main(void)
         // (Usually) the default - does NOT draw "back facing" triangles
         glCullFace(GL_BACK);
 
-//        //uniform vec3 directionalLightColour;
-//        // rgb are the rgb of the light colour
-//        //uniform vec4 directionalLight_Direction_power;
-//        GLint lightColour_UL = glGetUniformLocation(shaderProgramID, "directionalLightColour");
-//        GLint lightDirectionPower_UL = glGetUniformLocation(shaderProgramID, "directionalLight_Direction_power");
-//
-//        glUniform3f(lightColour_UL, 1.0f, 1.0f, 1.0f);  // White light
-////        glm::vec3 lightDirection = glm::vec3(0.0f, -1.0f, 0.0f);
-//        // Down, to the right (+ve X) and along +ve z, too
-//        glm::vec3 lightDirection = glm::vec3(1.0f, -1.0f, 1.0f);
-//        lightDirection = glm::normalize(lightDirection);
-//
-//        float lightBrightness = 1.0f;       
-//        glUniform4f(lightDirectionPower_UL, lightDirection.x, lightDirection.y, lightDirection.z,
-//                    lightBrightness);
-//
+
+// *****************************************************************
+
+        ::g_pTheLights->UpdateUniformValues(shaderProgramID);
+
 
 // *****************************************************************
         //uniform vec4 eyeLocation;
@@ -229,29 +233,8 @@ int main(void)
                     ::g_cameraEye.x, ::g_cameraEye.y, ::g_cameraEye.z, 1.0f);
 
 
-        //uniform sLight theLights[NUMBEROFLIGHTS];
-//        GLint theLights_UL = glGetUniformLocation(shaderProgramID, "theLights");
-// 
-//        vec4 position;
-        GLint theLights_0_position = glGetUniformLocation(shaderProgramID, "theLights[0].position");
-//        vec4 diffuse;	// Colour of the light (used for diffuse)
-        GLint theLights_0_diffuse = glGetUniformLocation(shaderProgramID, "theLights[0].diffuse");
-//        vec4 specular;	// rgb = highlight colour, w = power
-        GLint theLights_0_specular = glGetUniformLocation(shaderProgramID, "theLights[0].specular");
-//        vec4 atten;		// x = constant, y = linear, z = quadratic, w = DistanceCutOff
-        GLint theLights_0_atten = glGetUniformLocation(shaderProgramID, "theLights[0].atten");
-//        vec4 direction;	// Spot, directional lights
-        GLint theLights_0_direction = glGetUniformLocation(shaderProgramID, "theLights[0].direction");
-//        vec4 param1;	// x = lightType, y = inner angle, z = outer angle, w = TBD
-        GLint theLights_0_param1 = glGetUniformLocation(shaderProgramID, "theLights[0].param1");
-//        vec4 param2;	// x = 0 for off, 1 for on
-        GLint theLights_0_param2 = glGetUniformLocation(shaderProgramID, "theLights[0].param2");
 
-//        glUniform4f(theLights_0_position, );
-//        glUniform4f(theLights_0_diffuse
-
- // *****************************************************************
-       //mat4x4_ortho(p, -ratio, ratio, -1.f, 1.f, 1.f, -1.f);
+//       //mat4x4_ortho(p, -ratio, ratio, -1.f, 1.f, 1.f, -1.f);
         glm::mat4 matProjection = glm::perspective(0.6f,
                                                    ratio,
                                                    0.1f,
@@ -286,24 +269,6 @@ int main(void)
 //        std::cout << deltaTime << std::endl;
         lastTime = currentTime;
 
-        const float MAX_LINE_POSITION = 1000.0f;
-
-        glm::vec3 lineStart = glm::vec3(getRandomFloat(-MAX_LINE_POSITION, MAX_LINE_POSITION),
-                                    getRandomFloat(-MAX_LINE_POSITION, MAX_LINE_POSITION),
-                                    getRandomFloat(-MAX_LINE_POSITION, MAX_LINE_POSITION));
-
-        glm::vec3 lineEnd = glm::vec3(getRandomFloat(-MAX_LINE_POSITION, MAX_LINE_POSITION),
-                                    getRandomFloat(-MAX_LINE_POSITION, MAX_LINE_POSITION),
-                                    getRandomFloat(-MAX_LINE_POSITION, MAX_LINE_POSITION));
-
-        glm::vec4 lineColour = glm::vec4(getRandomFloat(0.0f, 1.0f),
-                                     getRandomFloat(0.0f, 1.0f),
-                                     getRandomFloat(0.0f, 1.0f),
-                                     1.0f);
-
-//        ::g_pDebugRenderer->AddLine(lineStart, lineEnd, lineColour);
-
-//        ::g_pDebugRenderer->RenderDebugObjects(deltaTime, matView, matProjection);
 
 
         // 
@@ -318,7 +283,15 @@ int main(void)
         ssTitle << "Camera (x,y,z): "
             << ::g_cameraEye.x << ", "
             << ::g_cameraEye.y << ", "
-            << ::g_cameraEye.z << ")";
+            << ::g_cameraEye.z << ") "
+            << "Light[" << ::g_selectedLight << "]: "
+            << ::g_pTheLights->theLights[::g_selectedLight].position.x << ", "
+            << ::g_pTheLights->theLights[::g_selectedLight].position.y << ", "
+            << ::g_pTheLights->theLights[::g_selectedLight].position.z << "  "
+            << "const:" << ::g_pTheLights->theLights[::g_selectedLight].atten.x << " "
+            << "linear:" << ::g_pTheLights->theLights[::g_selectedLight].atten.y << " "
+            << "quad:" << ::g_pTheLights->theLights[::g_selectedLight].atten.z;
+
 //        glfwSetWindowTitle(window, "HEY!");
 
         std::string theTitle = ssTitle.str();
@@ -340,7 +313,20 @@ int main(void)
     exit(EXIT_SUCCESS);
 }
 
-
+// Returns NULL if not found
+cMesh* g_pFindMeshByFriendlyName(std::string friendlyNameToFind)
+{
+    for ( unsigned int index = 0; index != ::g_vec_pMeshesToDraw.size(); index++ )
+    {
+        if ( ::g_vec_pMeshesToDraw[index]->friendlyName == friendlyNameToFind )
+        {
+            // Found it
+            return ::g_vec_pMeshesToDraw[index];
+        }
+    }
+    // Didn't find it
+    return NULL;
+}
 
 
 void DrawObject(cMesh* pCurrentMesh, glm::mat4 matModelParent, 
