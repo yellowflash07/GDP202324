@@ -33,7 +33,7 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
     const float CAMERA_MOVEMENT_SPEED = 1.0f;
     const float OBJECT_MOVEMENT_SPEED = 0.01f;
 
-    const float LIGHT_MOVEMENT_SPEED = 0.1f;
+    const float LIGHT_MOVEMENT_SPEED = 1.0f;
 
     // Is the shift key down
     if (mods == GLFW_MOD_SHIFT)

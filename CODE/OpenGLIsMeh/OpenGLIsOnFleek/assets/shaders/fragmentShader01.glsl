@@ -17,6 +17,9 @@ uniform bool bDoNotLight;		// Really a float (0.0 or not zero)
 
 uniform vec4 eyeLocation;
 
+uniform bool bUseDebugColour;	// if this is true, then use debugColourRGBA for the colour
+uniform vec4 debugColourRGBA;		
+
 struct sLight
 {
 	vec4 position;			
@@ -53,6 +56,11 @@ void main()
 //	gl_FragColor = vec4(color, 1.0);
 
 	vec4 vertexRGBA = colour;
+	
+	if ( bUseDebugColour )
+	{	
+		vertexRGBA = debugColourRGBA;
+	}
 	
 	if ( bDoNotLight )
 	{

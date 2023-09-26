@@ -50,6 +50,9 @@ public:
 
 	bool bIsVisible;
 
+	bool bUseDebugColours;
+	glm::vec4 wholeObjectDebugColourRGBA;
+
 	// Physics properties
 	// Physics update this:
 	sPhsyicsProperties* pPhysProps;

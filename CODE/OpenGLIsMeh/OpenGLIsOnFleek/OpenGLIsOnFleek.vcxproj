@@ -142,6 +142,7 @@
     <ClCompile Include="Basic Shader Manager\cShaderManager.cpp" />
     <ClCompile Include="cDebugRenderer.cpp" />
     <ClCompile Include="cGlobal.cpp" />
+    <ClCompile Include="cLightHelper.cpp" />
     <ClCompile Include="cLightManager.cpp" />
     <ClCompile Include="cMesh.cpp" />
     <ClCompile Include="cVAOManager\cVAOManager.cpp" />
@@ -156,6 +157,7 @@
     <ClInclude Include="Basic Shader Manager\cShaderManager.h" />
     <ClInclude Include="cDebugRender.h" />
     <ClInclude Include="cGlobal.h" />
+    <ClInclude Include="cLightHelper.h" />
     <ClInclude Include="cLightManager.h" />
     <ClInclude Include="cMesh.h" />
     <ClInclude Include="cVAOManager\cVAOManager.h" />

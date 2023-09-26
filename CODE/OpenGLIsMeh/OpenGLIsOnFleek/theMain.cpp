@@ -34,6 +34,7 @@
 #include "cMesh.h"
 
 #include "cLightManager.h"
+#include "cLightHelper.h"
 
 glm::vec3 g_cameraEye = glm::vec3(0.0, 5.0, +90.0f);
 glm::vec3 g_cameraTarget = glm::vec3(0.0f, 5.0f, 0.0f);
@@ -71,9 +72,13 @@ bool LoadModels(void);
 
 void DoPhysicUpdate(double deltaTime);
 
-void DrawObject(cMesh* pCurrentMesh, glm::mat4 matModel,
-                glm::mat4 matProjection, glm::mat4 matView,
-                GLuint shaderProgramID);
+void DrawObject(cMesh* pCurrentMesh, glm::mat4 matModel, GLuint shaderProgramID);
+
+cMesh* g_pFindMeshByFriendlyName(std::string friendlyNameToFind);
+
+void DrawLightDebugSpheres(glm::mat4 matProjection, glm::mat4 matView,
+                           GLuint shaderProgramID);
+
 
 
 // https://stackoverflow.com/questions/5289613/generate-random-float-between-two-floats
@@ -209,6 +214,8 @@ int main(void)
         float ratio;
         int width, height;
 
+        glUseProgram(shaderProgramID);
+
         glfwGetFramebufferSize(window, &width, &height);
         ratio = width / (float)height;
 
@@ -244,6 +251,13 @@ int main(void)
                                         ::g_cameraTarget,
                                         ::g_upVector);
 
+        GLint matProjection_UL = glGetUniformLocation(shaderProgramID, "matProjection");
+        glUniformMatrix4fv(matProjection_UL, 1, GL_FALSE, glm::value_ptr(matProjection));
+
+        GLint matView_UL = glGetUniformLocation(shaderProgramID, "matView");
+        glUniformMatrix4fv(matView_UL, 1, GL_FALSE, glm::value_ptr(matView));
+
+
         // *********************************************************************
         // Draw all the objects
         for ( unsigned int index = 0; index != ::g_vec_pMeshesToDraw.size(); index++ )
@@ -255,7 +269,7 @@ int main(void)
 
                 glm::mat4 matModel = glm::mat4(1.0f);   // Identity matrix
 
-                DrawObject(pCurrentMesh, matModel, matProjection, matView, shaderProgramID);
+                DrawObject(pCurrentMesh, matModel, shaderProgramID);
             }//if (pCurrentMesh->bIsVisible)
 
         }//for ( unsigned int index
@@ -270,6 +284,7 @@ int main(void)
         lastTime = currentTime;
 
 
+        DrawLightDebugSpheres(matProjection, matView, shaderProgramID);
 
         // 
         DoPhysicUpdate(deltaTime);
@@ -329,9 +344,71 @@ cMesh* g_pFindMeshByFriendlyName(std::string friendlyNameToFind)
 }
 
 
-void DrawObject(cMesh* pCurrentMesh, glm::mat4 matModelParent, 
-                glm::mat4 matProjection, glm::mat4 matView,
-                GLuint shaderProgramID)
+void DrawLightDebugSpheres(glm::mat4 matProjection, glm::mat4 matView,
+                           GLuint shaderProgramID)
+{
+
+
+    // Draw a small sphere where the light is
+    cMesh* pDebugSphere = g_pFindMeshByFriendlyName("DEBUG_SPHERE");
+
+    pDebugSphere->bIsVisible = true;
+    pDebugSphere->drawPosition = ::g_pTheLights->theLights[g_selectedLight].position;
+    pDebugSphere->bUseDebugColours = true;
+
+
+    // Small white sphere where the light is
+    pDebugSphere->scale = 0.5f;
+    pDebugSphere->wholeObjectDebugColourRGBA = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
+
+    DrawObject(pDebugSphere, glm::mat4(1.0f), shaderProgramID);
+
+
+    cLightHelper lightHelper;
+
+    // vec4 atten;		// x = constant, y = linear, z = quadratic, w = DistanceCutOff
+    float constantAtten = ::g_pTheLights->theLights[g_selectedLight].atten.x;
+    float linearAtten = ::g_pTheLights->theLights[g_selectedLight].atten.y;
+    float quadAtten = ::g_pTheLights->theLights[g_selectedLight].atten.z;
+
+
+    // Draw a red sphere at 75% brightness
+    float distAt75Percent = lightHelper.calcApproxDistFromAtten(0.75f, 0.01f, 100000.0f,
+                                                                constantAtten, linearAtten, quadAtten, 50);
+    pDebugSphere->scale = distAt75Percent;
+    pDebugSphere->wholeObjectDebugColourRGBA = glm::vec4(0.5f, 0.0f, 0.0f, 0.0f);
+
+    DrawObject(pDebugSphere, glm::mat4(1.0f), shaderProgramID);
+
+    // Draw a green sphere at 50% brightness
+    float distAt50Percent = lightHelper.calcApproxDistFromAtten(0.50f, 0.01f, 100000.0f,
+                                                                constantAtten, linearAtten, quadAtten, 50);
+    pDebugSphere->scale = distAt50Percent;
+    pDebugSphere->wholeObjectDebugColourRGBA = glm::vec4(0.0f, 0.5f, 0.0f, 0.0f);
+
+    DrawObject(pDebugSphere, glm::mat4(1.0f), shaderProgramID);
+
+    // Draw a yellow? sphere at 25% brightness
+    float distAt25Percent = lightHelper.calcApproxDistFromAtten(0.25f, 0.01f, 100000.0f,
+                                                                constantAtten, linearAtten, quadAtten, 50);
+    pDebugSphere->scale = distAt25Percent;
+    pDebugSphere->wholeObjectDebugColourRGBA = glm::vec4(0.50f, 0.5f, 0.0f, 0.0f);
+
+    DrawObject(pDebugSphere, glm::mat4(1.0f), shaderProgramID);
+
+    // Draw a blue sphere at 5% brightness
+    float distAt_5Percent = lightHelper.calcApproxDistFromAtten(0.05f, 0.01f, 100000.0f,
+                                                                constantAtten, linearAtten, quadAtten, 50);
+    pDebugSphere->scale = distAt_5Percent;
+    pDebugSphere->wholeObjectDebugColourRGBA = glm::vec4(0.0f, 0.0f, 0.5f, 0.0f);
+
+    DrawObject(pDebugSphere, glm::mat4(1.0f), shaderProgramID);
+
+
+    return;
+}
+
+void DrawObject(cMesh* pCurrentMesh, glm::mat4 matModelParent, GLuint shaderProgramID)
 {
 
     //         mat4x4_identity(m);
@@ -383,13 +460,15 @@ void DrawObject(cMesh* pCurrentMesh, glm::mat4 matModelParent,
 
 
    //mat4x4_mul(mvp, p, m);
-    glm::mat4 mvp = matProjection * matView * matModel;
+//    glm::mat4 mvp = matProjection * matView * matModel;
 
-    glUseProgram(shaderProgramID);
+//    GLint mvp_location = glGetUniformLocation(shaderProgramID, "MVP");
+//    //glUniformMatrix4fv(mvp_location, 1, GL_FALSE, (const GLfloat*) mvp);
+//    glUniformMatrix4fv(mvp_location, 1, GL_FALSE, glm::value_ptr(mvp));
 
-    GLint mvp_location = glGetUniformLocation(shaderProgramID, "MVP");
-    //glUniformMatrix4fv(mvp_location, 1, GL_FALSE, (const GLfloat*) mvp);
-    glUniformMatrix4fv(mvp_location, 1, GL_FALSE, glm::value_ptr(mvp));
+    GLint matModel_UL = glGetUniformLocation(shaderProgramID, "matModel");
+    glUniformMatrix4fv(matModel_UL, 1, GL_FALSE, glm::value_ptr(matModel));
+
 
     // Also calculate and pass the "inverse transpose" for the model matrix
     glm::mat4 matModel_InverseTranspose = glm::inverse(glm::transpose(matModel));
@@ -399,12 +478,6 @@ void DrawObject(cMesh* pCurrentMesh, glm::mat4 matModelParent,
     glUniformMatrix4fv(matModel_IT_UL, 1, GL_FALSE, glm::value_ptr(matModel_InverseTranspose));
 
 
-    //uniform vec3 modelOffset;
-//            GLint modelOffset_UL = glGetUniformLocation(shaderProgramID, "modelOffset");
-
-//            glUniform3f(modelOffset_UL, -0.1f, 0.0f, 0.0f);
-
-    //        glPolygonMode(GL_FRONT_AND_BACK, GL_POINT /*GL_LINE*/ /*GL_FILL*/);
     if (pCurrentMesh->bIsWireframe)
     {
         glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
@@ -431,9 +504,25 @@ void DrawObject(cMesh* pCurrentMesh, glm::mat4 matModelParent,
         glUniform1f(bDoNotLight_UL, (GLfloat)GL_FALSE);
     }
 
+        //uniform bool bUseDebugColour;	
+    GLint bUseDebugColour_UL = glGetUniformLocation(shaderProgramID, "bUseDebugColour");
+    if (pCurrentMesh->bUseDebugColours)
+    {
+        glUniform1f(bUseDebugColour_UL, (GLfloat)GL_TRUE);
+        //uniform vec4 debugColourRGBA;
+        GLint debugColourRGBA_UL = glGetUniformLocation(shaderProgramID, "debugColourRGBA");
+        glUniform4f(debugColourRGBA_UL,
+                    pCurrentMesh->wholeObjectDebugColourRGBA.r,
+                    pCurrentMesh->wholeObjectDebugColourRGBA.g,
+                    pCurrentMesh->wholeObjectDebugColourRGBA.b,
+                    pCurrentMesh->wholeObjectDebugColourRGBA.a);
+    }
+    else
+    {
+        glUniform1f(bUseDebugColour_UL, (GLfloat)GL_FALSE);
+    }
 
 
-//           glDrawArrays(GL_TRIANGLES, 0, g_NumberOfVerticesToDraw);
 
     sModelDrawInfo modelInfo;
     if (::g_pMeshManager->FindDrawInfoByModelName(pCurrentMesh->meshName, modelInfo))
