@@ -14,7 +14,7 @@ cRayGun::~cRayGun()
 bool cRayGun::Shoot(void)
 {
 	std::cout << "RayGun goes Bzzzzzzt!" << std::endl;
-	return;
+	return true;
 }
 
 

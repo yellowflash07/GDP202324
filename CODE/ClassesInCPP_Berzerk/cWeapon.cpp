@@ -15,5 +15,5 @@ cWeapon::~cWeapon()
 bool cWeapon::Shoot(void)
 {
 	std::cout << "cWeapon::Shot(void)" << std::endl;
-	return;
+	return true;
 }

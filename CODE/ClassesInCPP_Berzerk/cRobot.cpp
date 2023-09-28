@@ -23,3 +23,10 @@ cRobot::~cRobot()
 {
 	std::cout << "cRobot::~cRobot()" << std::endl;
 }
+
+void cRobot::Attack(void)
+{
+	std::cout << "Robot Attacks!" << std::endl;
+	this->pTheWeapon->Shoot();
+	return;
+}

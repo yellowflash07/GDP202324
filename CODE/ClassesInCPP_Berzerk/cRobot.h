@@ -3,10 +3,10 @@
 #include <glm/glm.hpp>
 #include <glm/vec2.hpp>
 
-#include "cRayGun.h"
+//#include "cRayGun.h"
 #include "cWeapon.h"
 
-class cRobot
+class cRobot 
 {
 public:
 	cRobot();		// constructor (c'tor)
@@ -17,6 +17,8 @@ public:
 	bool bNoticedPlayer;
 
 	cWeapon* pTheWeapon;
+
+	virtual void Attack(void);
 };
 
 struct sBullet

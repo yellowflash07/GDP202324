@@ -9,7 +9,7 @@ class cRayGun : public cWeapon
 {
 public:
 	cRayGun();
-	virtual ~cRayGun() {};
+	virtual ~cRayGun();
 
 	//glm::vec2 position;
 	//glm::vec2 velocity;

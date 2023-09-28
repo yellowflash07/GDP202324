@@ -20,6 +20,14 @@ void cPlayer::Shoot(void)
 	return;
 }
 
+void cPlayer::Attack(void)
+{
+	std::cout << "Player Attacks!" << std::endl;
+
+	this->pTheWeapon->Shoot();
+	return;
+}
+
 
 
 // constructor (c'tor)
@@ -35,7 +43,6 @@ cPlayer::cPlayer()
 	this->direction[0] = 1.0f;
 	this->direction[1] = 0.0f;	
 
-	this->weaponType = eWeaponType::RAY_GUN;
 }
 
 // destructor (d'tor)

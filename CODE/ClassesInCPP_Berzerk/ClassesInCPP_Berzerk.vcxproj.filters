@@ -16,6 +16,9 @@
     <Filter Include="Weapons">
       <UniqueIdentifier>{aada216c-00f3-418c-b12e-63739ec80c5b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="WeaponFactory">
+      <UniqueIdentifier>{00ca9dee-9615-4a03-8142-696e51d11b69}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="cPlayer.h">
@@ -39,6 +42,21 @@
     <ClInclude Include="cWeapon.h">
       <Filter>Weapons</Filter>
     </ClInclude>
+    <ClInclude Include="cArena.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="cSuperRobot.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="cSword.h">
+      <Filter>Weapons</Filter>
+    </ClInclude>
+    <ClInclude Include="cWeaponMaker.h">
+      <Filter>WeaponFactory</Filter>
+    </ClInclude>
+    <ClInclude Include="cRailGun.h">
+      <Filter>Weapons</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="cPlayer.cpp">
@@ -60,6 +78,21 @@
       <Filter>Weapons</Filter>
     </ClCompile>
     <ClCompile Include="cMissleLauncher.cpp">
+      <Filter>Weapons</Filter>
+    </ClCompile>
+    <ClCompile Include="cArena.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="cSuperRobot.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="cSword.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="cWeaponMaker.cpp">
+      <Filter>WeaponFactory</Filter>
+    </ClCompile>
+    <ClCompile Include="cRailGun.cpp">
       <Filter>Weapons</Filter>
     </ClCompile>
   </ItemGroup>

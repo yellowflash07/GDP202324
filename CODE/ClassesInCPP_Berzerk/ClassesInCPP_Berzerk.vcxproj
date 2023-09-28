@@ -133,21 +133,31 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="cArena.h" />
     <ClInclude Include="cBullet.h" />
     <ClInclude Include="cGameBrain.h" />
     <ClInclude Include="cMissleLanucher.h" />
     <ClInclude Include="cPlayer.h" />
+    <ClInclude Include="cRailGun.h" />
     <ClInclude Include="cRayGun.h" />
     <ClInclude Include="cRobot.h" />
+    <ClInclude Include="cSuperRobot.h" />
+    <ClInclude Include="cSword.h" />
     <ClInclude Include="cWeapon.h" />
+    <ClInclude Include="cWeaponMaker.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="cBullet.cpp" />
     <ClCompile Include="cMissleLauncher.cpp" />
     <ClCompile Include="cPlayer.cpp" />
+    <ClCompile Include="cRailGun.cpp" />
     <ClCompile Include="cRayGun.cpp" />
     <ClCompile Include="cRobot.cpp" />
+    <ClCompile Include="cSuperRobot.cpp" />
+    <ClCompile Include="cSword.cpp" />
     <ClCompile Include="cWeapon.cpp" />
+    <ClCompile Include="cArena.cpp" />
+    <ClCompile Include="cWeaponMaker.cpp" />
     <ClCompile Include="theMain.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
