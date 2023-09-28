@@ -24,6 +24,34 @@ bool isCloseEnoughToHit(glm::vec2 a, glm::vec2 b)
 
 int main()
 {
+	cWeapon b;
+	b.Shoot();
+	cRayGun r;
+	r.Shoot();
+
+	cWeapon* pB = new cWeapon();
+	pB->Shoot();
+
+	cRayGun* pR = new cRayGun();
+	pR->Shoot();
+
+	// Ah, the point of Michael's rambling...
+	cWeapon* pR = new cRayGun();
+	pR->Shoot();
+	pR->KillAllHumans();
+
+
+//	pB->Shoot();	// Weapon
+//	pR->Shoot();	// RayGun
+
+	int x = 0;
+	float b = (float)x;			//	static_cast<float>(x);
+
+// You CAN do this, but likely shouldn't...
+//	( (cWeapon)b ).AmmoLeft(); 
+//	(int)b.Shoot();
+
+
 	cWeapon* p = new cRayGun();
 
 	delete p;
@@ -45,7 +73,6 @@ int main()
 		vec_pRobots.push_back(pNewRobot);
 	}
 
-	cBullet PlayersBullet;
 
 //	cRobot theRobots[NUM_ROBOTS];			// Stack
 
@@ -55,7 +82,8 @@ int main()
 	{
 		// ASsume player presses "shoot" and a director	
 		std::cout << "Player shoots..." << std::endl;
-		pBob->Shoot();
+
+
 		std::cout << "Player shot!" << std::endl;
 
 
@@ -85,7 +113,6 @@ int main()
 //	delete pRobots;		// YIKES! GOTCHA!! BEWARE
 //	delete [] pRobots;
 	
-	delete pBob;
 
 	return 0;
 }

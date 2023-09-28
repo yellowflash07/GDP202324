@@ -165,6 +165,11 @@ int main(void)
                                    terrainDrawingInfo, shaderProgramID);
     std::cout << "Loaded: " << terrainDrawingInfo.numberOfVertices << " vertices" << std::endl;
 
+    sModelDrawInfo HilbertRampDrawingInfo;
+    ::g_pMeshManager->LoadModelIntoVAO("HilbertRamp_stl (rotated).ply",
+                                       HilbertRampDrawingInfo, shaderProgramID);
+    std::cout << "Loaded: " << HilbertRampDrawingInfo.numberOfVertices << " vertices" << std::endl;
+
     sModelDrawInfo gridDrawingInfo;
     ::g_pMeshManager->LoadModelIntoVAO("Flat_Grid_100x100.ply",
                                    gridDrawingInfo, shaderProgramID);

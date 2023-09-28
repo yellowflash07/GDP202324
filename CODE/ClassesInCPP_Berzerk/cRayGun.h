@@ -17,8 +17,15 @@ public:
 
 	std::string colour;
 
-	virtual void Shoot(void);
+	virtual bool Shoot(void);
 
-	void KillAllHumans(void);
+	int AmmoLeft(void) {
+		return this->BatteryLeft;
+	}
+
+	// private:
+	// 	int shoeSize;
+
+	int BatteryLeft;
 
 };

@@ -3,6 +3,9 @@
 #include <glm/glm.hpp>
 #include <glm/vec2.hpp>
 
+#include "cRayGun.h"
+#include "cWeapon.h"
+
 class cRobot
 {
 public:
@@ -12,6 +15,8 @@ public:
 	bool bIsDead;
 	glm::vec2 dir;	// direction
 	bool bNoticedPlayer;
+
+	cWeapon* pTheWeapon;
 };
 
 struct sBullet

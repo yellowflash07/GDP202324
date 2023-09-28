@@ -1,12 +1,20 @@
 #include "cRayGun.h"
+#include <iostream>
 
 cRayGun::cRayGun()
 {
-
+	std::cout << "cRayGun is created" << std::endl;
+}
+cRayGun::~cRayGun()
+{
+	std::cout << "cRayGun is destroyed" << std::endl;
 }
 
-void cRayGun::KillAllHumans(void)
+
+bool cRayGun::Shoot(void)
 {
-	this->shoeSize = 0;
+	std::cout << "RayGun goes Bzzzzzzt!" << std::endl;
 	return;
 }
+
+

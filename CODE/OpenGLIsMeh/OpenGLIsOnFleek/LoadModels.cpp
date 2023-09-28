@@ -54,19 +54,24 @@ bool LoadModels(void)
 //    ::g_vec_pMeshesToDraw.push_back(pGridGroundMesh);
 
     cMesh* pFlat_1x1_planeMesh = new cMesh();
-    pFlat_1x1_planeMesh->meshName = "Flat_1x1_plane.ply";
+//    pFlat_1x1_planeMesh->meshName = "Flat_1x1_plane.ply";
+//    pFlat_1x1_planeMesh->meshName = "Terrain_xyz_n_rgba.ply";
+    pFlat_1x1_planeMesh->meshName = "HilbertRamp_stl (rotated).ply";
     //pFlat_1x1_planeMesh->bIsWireframe = true;
     //pFlat_1x1_planeMesh->bDoNotLight = true;
     // note this does NOT have a physProps, so is ignored by the physics update loop
-    pFlat_1x1_planeMesh->drawPosition.y = -5.0f;   //  0,-10,0
-    pFlat_1x1_planeMesh->drawPosition.x = 10.0f;
+    pFlat_1x1_planeMesh->drawPosition.y = -40.0f;   //  0,-10,0
+    pFlat_1x1_planeMesh->drawPosition.x = -10.0f;   //  0,-10,0
+//    pFlat_1x1_planeMesh->drawPosition.x = 10.0f;
     pFlat_1x1_planeMesh->friendlyName = "Ground";
     //
-    pFlat_1x1_planeMesh->orientation.z = glm::radians(+12.0f);
+//    pFlat_1x1_planeMesh->orientation.z = glm::radians(+12.0f);
    ::g_vec_pMeshesToDraw.push_back(pFlat_1x1_planeMesh);
 
    cMesh* pFlat_1x1_planeMesh_DEBUG = new cMesh();
-   pFlat_1x1_planeMesh_DEBUG->meshName = "Flat_1x1_plane.ply";
+//   pFlat_1x1_planeMesh_DEBUG->meshName = "Flat_1x1_plane.ply";
+//   pFlat_1x1_planeMesh_DEBUG->meshName = "Terrain_xyz_n_rgba.ply";
+   pFlat_1x1_planeMesh_DEBUG->meshName = "HilbertRamp_stl (rotated).ply";
    pFlat_1x1_planeMesh_DEBUG->bIsWireframe = true;
    pFlat_1x1_planeMesh_DEBUG->bDoNotLight = true;
    pFlat_1x1_planeMesh_DEBUG->bUseDebugColours = true;

@@ -4,10 +4,15 @@
 
 cWeapon::cWeapon()
 {
-	
+	// MakeGunCreationSound();
+	std::cout << "cWeapon::cWeapon()" << std::endl;
 }
 
-void cWeapon::Shoot(void)
+cWeapon::~cWeapon()
+{
+	std::cout << "cWeapon is destroyed" << std::endl;
+}
+bool cWeapon::Shoot(void)
 {
 	std::cout << "cWeapon::Shot(void)" << std::endl;
 	return;

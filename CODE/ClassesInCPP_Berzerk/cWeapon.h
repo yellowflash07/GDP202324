@@ -9,16 +9,20 @@ public:
 	cWeapon();
 	virtual ~cWeapon();
 
-
 	glm::vec2 position;
 	glm::vec2 velocity;
 	bool isShot;
 
-	virtual void Shoot(void);
-	void KillAllHumans(void);
+	int AmmoLeft(void) {
+		return this->ammo; 
+	}
+
+	/*virtual*/ bool Shoot(void);
+
 
 protected:			// Externally private, but parent objects see this as private
 	int shoeSize;
+	int ammo;
 
 };
 

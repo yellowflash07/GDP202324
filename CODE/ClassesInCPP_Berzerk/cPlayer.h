@@ -4,8 +4,8 @@
 #include <glm/glm.hpp>
 #include <glm/vec2.hpp>
 
-#include "cMissleLanucher.h"
 #include "cRayGun.h"
+#include "cWeapon.h"
 
 enum eWeaponType
 {
@@ -15,7 +15,7 @@ enum eWeaponType
 };
 
 
-class cPlayer : private cRayGun
+class cPlayer 
 {
 public:
 	cPlayer();		// constructor (c'tor)
@@ -28,18 +28,8 @@ public:
 	bool bIsAlive;
 	glm::vec2  direction;
 
-//	cBullet bullet;			
+	cWeapon* pTheWeapon;
 
-//	cRayGun* pWeapon1 = new cRayGun();
-//	cMissleLauncher* pWeapon2 = new cMissleLauncher();
-
-	cWeapon* pTheWeapon = new cRayGun();
-//	cWeapon* pTheWeapon = new cMissleLauncher();
-
-
-	//bool hasRayGun;
-	//bool hasMissleLaucher;
-	eWeaponType weaponType;
 };
 
 #endif //_cPlayer_HG_
