@@ -51,7 +51,8 @@ void cVAOManager::setBasePath(std::string basePathWithoutSlash)
 bool cVAOManager::LoadModelIntoVAO(
 		std::string fileName, 
 		sModelDrawInfo &drawInfo,
-	    unsigned int shaderProgramID)
+	    unsigned int shaderProgramID,
+        bool bIsDynamicBuffer /*=false*/)
 
 {
 	// Load the model from file
@@ -99,10 +100,18 @@ bool cVAOManager::LoadModelIntoVAO(
 //	glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer);
 	glBindBuffer(GL_ARRAY_BUFFER, drawInfo.VertexBufferID);
 	// sVert vertices[3]
+
+    // This is updated for bIsDynamicBuffer so:
+    // * if true, then it's GL_DYNAMIC_DRAW
+    // * if false, then it's GL_STATIC_DRAW
+    // 
+    // Honestly, it's not that Big Of A Deal in that you can still update 
+    //  a buffer if it's set to STATIC, but in theory this will take longer.
+    // Does it really take longer? Who knows?
 	glBufferData( GL_ARRAY_BUFFER, 
 				  sizeof(sVertex) * drawInfo.numberOfVertices,	// ::g_NumberOfVertsToDraw,	// sizeof(vertices), 
 				  (GLvoid*) drawInfo.pVertices,							// pVertices,			//vertices, 
-				  GL_STATIC_DRAW );
+				  (bIsDynamicBuffer ? GL_DYNAMIC_DRAW : GL_STATIC_DRAW ) );
 
 
 	// Copy the index buffer into the video card, too
@@ -392,3 +401,54 @@ bool cVAOManager::m_LoadTheFile_Ply_XYZ_N_RGBA(std::string theFileName, sModelDr
     return true;
 }
 
+
+
+bool cVAOManager::UpdateVAOBuffers(std::string fileName,
+                      sModelDrawInfo& updatedDrawInfo,
+                      unsigned int shaderProgramID)
+{
+    // This exists? 
+    sModelDrawInfo updatedDrawInfo_TEMP;
+    if ( ! this->FindDrawInfoByModelName(fileName,  updatedDrawInfo_TEMP) )
+    {
+        // Didn't find this buffer
+        return false;
+    }
+
+
+    glBindBuffer(GL_ARRAY_BUFFER, updatedDrawInfo.VertexBufferID);
+
+// Original call to create and copy the initial data:
+//     
+//    glBufferData(GL_ARRAY_BUFFER,
+//                 sizeof(sVertex) * updatedDrawInfo.numberOfVertices,	
+//                 (GLvoid*)updatedDrawInfo.pVertices,					
+//                 GL_DYNAMIC_DRAW);
+
+    glBufferSubData(GL_ARRAY_BUFFER, 
+                    0,  // Offset
+                    sizeof(sVertex) * updatedDrawInfo.numberOfVertices,	
+                    (GLvoid*)updatedDrawInfo.pVertices);
+
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, updatedDrawInfo.IndexBufferID);
+
+// Original call to create and copy the initial data:
+//     
+//    glBufferData(GL_ELEMENT_ARRAY_BUFFER,			// Type: Index element array
+//                 sizeof(unsigned int) * updatedDrawInfo.numberOfIndices,
+//                 (GLvoid*)updatedDrawInfo.pIndices,
+//                 GL_DYNAMIC_DRAW);
+
+    glBufferSubData(GL_ELEMENT_ARRAY_BUFFER,			
+                    0,  // Offset
+                    sizeof(unsigned int) * updatedDrawInfo.numberOfIndices,
+                    (GLvoid*)updatedDrawInfo.pIndices);
+
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+
+    return true;
+}
