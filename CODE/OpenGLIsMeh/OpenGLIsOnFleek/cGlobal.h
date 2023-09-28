@@ -6,3 +6,5 @@
 #include "cDebugRender.h"
 
 extern cDebugRenderer* g_pDebugRenderer;
+
+extern bool g_drawDebugLightSpheres;

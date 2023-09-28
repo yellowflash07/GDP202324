@@ -81,6 +81,8 @@ void main()
 			
 	outputColour.rgb = vertexColourLit.rgb;
 	
+	// Real gamma correction is a curve, but we'll Rock-n-Roll it here
+	outputColour.rgb *= 1.35f;
 	
 	outputColour.a = 1.0f;
 }

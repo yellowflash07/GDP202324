@@ -96,13 +96,43 @@ void DoPhysicUpdate(double deltaTime)
 	// Our model has radius of 1.0f
 
 
-//		const float GROUND_LOCATION_Y = -10.0f;
-		const float GROUND_LOCATION_Y = 0.0f;
+//    ____        _                         ____  _                  
+//   / ___| _ __ | |__   ___ _ __ ___      |  _ \| | __ _ _ __   ___ 
+//   \___ \| '_ \| '_ \ / _ \ '__/ _ \_____| |_) | |/ _` | '_ \ / _ \
+//    ___) | |_) | | | |  __/ | |  __/_____|  __/| | (_| | | | |  __/
+//   |____/| .__/|_| |_|\___|_|  \___|     |_|   |_|\__,_|_| |_|\___|
+//         |_|                                                       
+//
+// 		const float GROUND_LOCATION_Y = -10.0f;
+//		const float GROUND_LOCATION_Y = 0.0f;
+//
+//		// Is this a sphere? 
+//		if (pCurrentMesh->friendlyName == "Sphere")
+//		{
+//			if ( (pCurrentMesh->pPhysProps->position.y - 1.0f) <= GROUND_LOCATION_Y)
+//			{
+//				// "Invert" the velocity
+//				// Velocity goes "up" +ve.
+//				float newVel = fabs(pCurrentMesh->pPhysProps->velocity.y);
+//
+//				pCurrentMesh->pPhysProps->velocity.y = newVel;
+//
+//			}
+//		}
+
+		// Update the draw location with the physics location
+		pCurrentMesh->drawPosition = pCurrentMesh->pPhysProps->position;
+
 
 		// Is this a sphere? 
 		if (pCurrentMesh->friendlyName == "Sphere")
 		{
-			if ( (pCurrentMesh->pPhysProps->position.y - 1.0f) <= GROUND_LOCATION_Y)
+			// Find the ground object
+			cMesh* pTheGround = findObjectByFriendlyName("Ground");
+
+			float sphereRadius = 1.0f;		
+
+			if ((pCurrentMesh->pPhysProps->position.y - sphereRadius) <= pTheGround->drawPosition.y)
 			{
 				// "Invert" the velocity
 				// Velocity goes "up" +ve.
@@ -113,8 +143,9 @@ void DoPhysicUpdate(double deltaTime)
 			}
 		}
 
-		// Update the draw location with the physics location
-		pCurrentMesh->drawPosition = pCurrentMesh->pPhysProps->position;
+
+
+
 
 // ***********************************************************************
 

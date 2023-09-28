@@ -175,6 +175,11 @@ int main(void)
                                    sphereDrawingInfo, shaderProgramID);
     std::cout << "Loaded: " << sphereDrawingInfo.numberOfVertices << " vertices" << std::endl;
 
+    sModelDrawInfo Flat_1x1_planeDrawingInfo;
+    ::g_pMeshManager->LoadModelIntoVAO("Flat_1x1_plane.ply",
+                                       Flat_1x1_planeDrawingInfo, shaderProgramID);
+    std::cout << "Loaded: " << Flat_1x1_planeDrawingInfo.numberOfVertices << " vertices" << std::endl;
+
 
     // 
     LoadModels();
@@ -184,7 +189,7 @@ int main(void)
     // 
     ::g_pTheLights->SetUniformLocations(shaderProgramID);
 
-    ::g_pTheLights->theLights[0].param2.x = 1.0f;   // Turn on
+    ::g_pTheLights->theLights[0].param2.x = 0.0f;   // Turn on
     ::g_pTheLights->theLights[0].param1.x = 0.0f;   // 0 = point light
 
     ::g_pTheLights->theLights[0].position.x = 0.0f;
@@ -197,6 +202,15 @@ int main(void)
     ::g_pTheLights->theLights[0].atten.x = 0.0f;        // Constant attenuation
     ::g_pTheLights->theLights[0].atten.y = 0.01f;        // Linear attenuation
     ::g_pTheLights->theLights[0].atten.z = 0.01f;        // Quadratic attenuation
+
+    // Light #1 is a directional light 
+    ::g_pTheLights->theLights[1].param2.x = 1.0f;   // Turn on
+    ::g_pTheLights->theLights[1].param1.x = 2.0f;   // 0 = point light
+
+    // Direction with respect of the light.
+    ::g_pTheLights->theLights[1].direction = glm::vec4(0.0f, -1.0f, 0.0f, 1.0f);
+    ::g_pTheLights->theLights[1].diffuse = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
+    ::g_pTheLights->theLights[1].specular = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
 
 
 //    glm::vec3 cameraEye = glm::vec3(10.0, 5.0, -15.0f);
@@ -286,6 +300,30 @@ int main(void)
 
         DrawLightDebugSpheres(matProjection, matView, shaderProgramID);
 
+
+        // HACK: See where the sphere is on the surface of the "ground"
+        cMesh* pBouncingSphere = g_pFindMeshByFriendlyName("Sphere");
+        if ( pBouncingSphere )
+        {
+            cMesh* pGround = g_pFindMeshByFriendlyName("Ground");
+            // Place this sphere right above the "ground"
+            
+            cMesh* pDebugSphere = g_pFindMeshByFriendlyName("DEBUG_SPHERE");
+
+            pDebugSphere->drawPosition = pBouncingSphere->drawPosition;
+            // Place it where it intersects the ground
+            pDebugSphere->drawPosition.y = pGround->drawPosition.y;
+            //
+            pDebugSphere->scale = pBouncingSphere->scale;
+            pDebugSphere->bIsVisible = true;
+            pDebugSphere->bUseDebugColours = true;
+            pDebugSphere->wholeObjectDebugColourRGBA = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
+
+            DrawObject(pDebugSphere, glm::mat4(1.0f), shaderProgramID);
+
+            pDebugSphere->bIsVisible = false;
+        }
+
         // 
         DoPhysicUpdate(deltaTime);
 
@@ -347,7 +385,10 @@ cMesh* g_pFindMeshByFriendlyName(std::string friendlyNameToFind)
 void DrawLightDebugSpheres(glm::mat4 matProjection, glm::mat4 matView,
                            GLuint shaderProgramID)
 {
-
+    if ( ! ::g_drawDebugLightSpheres )
+    {
+        return;
+    }
 
     // Draw a small sphere where the light is
     cMesh* pDebugSphere = g_pFindMeshByFriendlyName("DEBUG_SPHERE");
@@ -396,13 +437,17 @@ void DrawLightDebugSpheres(glm::mat4 matProjection, glm::mat4 matView,
 
     DrawObject(pDebugSphere, glm::mat4(1.0f), shaderProgramID);
 
-    // Draw a blue sphere at 5% brightness
-    float distAt_5Percent = lightHelper.calcApproxDistFromAtten(0.05f, 0.01f, 100000.0f,
+    // Draw a blue sphere at 1% brightness
+    float distAt_5Percent = lightHelper.calcApproxDistFromAtten(0.01f, 0.01f, 100000.0f,
                                                                 constantAtten, linearAtten, quadAtten, 50);
     pDebugSphere->scale = distAt_5Percent;
     pDebugSphere->wholeObjectDebugColourRGBA = glm::vec4(0.0f, 0.0f, 0.5f, 0.0f);
 
     DrawObject(pDebugSphere, glm::mat4(1.0f), shaderProgramID);
+
+
+
+    pDebugSphere->bIsVisible = false;
 
 
     return;

@@ -5,6 +5,7 @@
 #include <vector>
 #include "cMesh.h"
 #include "cLightManager.h"
+#include "cGlobal.h"
 
 extern int g_selectedMesh;// = 0;
 extern std::vector< cMesh* > g_vec_pMeshesToDraw;
@@ -93,6 +94,17 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
         {
             ::g_pTheLights->theLights[::g_selectedLight].atten.z *= 1.01f;      // 1% more
         }
+
+        // quadratic attenuation 
+        if (key == GLFW_KEY_9 )
+        {
+            ::g_drawDebugLightSpheres = true;
+        }
+        if (key == GLFW_KEY_0 )
+        {
+            ::g_drawDebugLightSpheres = false;
+        }
+
 
 
     }//if ((mods & GLFW_MOD_SHIFT) == GLFW_MOD_SHIFT)
