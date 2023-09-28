@@ -58,18 +58,23 @@ bool LoadModels(void)
     //pFlat_1x1_planeMesh->bIsWireframe = true;
     //pFlat_1x1_planeMesh->bDoNotLight = true;
     // note this does NOT have a physProps, so is ignored by the physics update loop
-    pFlat_1x1_planeMesh->drawPosition.y = -15.0f;   //  0,-10,0
+    pFlat_1x1_planeMesh->drawPosition.y = -5.0f;   //  0,-10,0
+    pFlat_1x1_planeMesh->drawPosition.x = 10.0f;
     pFlat_1x1_planeMesh->friendlyName = "Ground";
+    //
+    pFlat_1x1_planeMesh->orientation.z = glm::radians(+12.0f);
    ::g_vec_pMeshesToDraw.push_back(pFlat_1x1_planeMesh);
 
    cMesh* pFlat_1x1_planeMesh_DEBUG = new cMesh();
    pFlat_1x1_planeMesh_DEBUG->meshName = "Flat_1x1_plane.ply";
-   pFlat_1x1_planeMesh->bIsWireframe = true;
-   pFlat_1x1_planeMesh->bDoNotLight = true;
-   pFlat_1x1_planeMesh->bUseDebugColours = true;
-   pFlat_1x1_planeMesh->wholeObjectDebugColourRGBA = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
+   pFlat_1x1_planeMesh_DEBUG->bIsWireframe = true;
+   pFlat_1x1_planeMesh_DEBUG->bDoNotLight = true;
+   pFlat_1x1_planeMesh_DEBUG->bUseDebugColours = true;
+   pFlat_1x1_planeMesh_DEBUG->wholeObjectDebugColourRGBA = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
+   pFlat_1x1_planeMesh_DEBUG->orientation = pFlat_1x1_planeMesh->orientation;
    // note this does NOT have a physProps, so is ignored by the physics update loop
-   pFlat_1x1_planeMesh_DEBUG->drawPosition.y = pFlat_1x1_planeMesh->drawPosition.y -0.01f;   //  0,-10,0
+   pFlat_1x1_planeMesh_DEBUG->drawPosition = pFlat_1x1_planeMesh->drawPosition;
+//   pFlat_1x1_planeMesh_DEBUG->drawPosition.y += 0.01f;   //  0,-10,0
    ::g_vec_pMeshesToDraw.push_back(pFlat_1x1_planeMesh_DEBUG);
 
 

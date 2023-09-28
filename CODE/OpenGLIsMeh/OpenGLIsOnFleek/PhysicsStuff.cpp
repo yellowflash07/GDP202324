@@ -2,11 +2,17 @@
 
 #include "OpenGLCommon.h"
 #include <glm/glm.hpp>
+#include <glm/vec4.hpp> // glm::vec4
+#include <glm/mat4x4.hpp> // glm::mat4
+#include <glm/gtc/matrix_transform.hpp> 
 #include <vector>
 #include "cMesh.h"
 #include <iostream>
 
 #include "cGlobal.h"
+
+#include <limits.h>		// Lots of limits, etc. for all the data types
+#include <float.h>		// Limits for floating point
 
 #include "cVAOManager/cVAOManager.h"
 // This is defined in main
@@ -39,6 +45,7 @@ cMesh* findObjectByFriendlyName(std::string friendlyNameToFind)
 }
 
 glm::vec3 ClosestPtPointTriangle(glm::vec3 p, glm::vec3 a, glm::vec3 b, glm::vec3 c);
+bool TestSphereTriangle(float sphereRadius, glm::vec3 vert0, glm::vec3 vert1, glm::vec3 vert2, glm::vec3 sphereCentre);
 
 void DoPhysicUpdate(double deltaTime)
 {
@@ -132,26 +139,192 @@ void DoPhysicUpdate(double deltaTime)
 
 			float sphereRadius = 1.0f;		
 
-			if ((pCurrentMesh->pPhysProps->position.y - sphereRadius) <= pTheGround->drawPosition.y)
+			// Get all the triangle from this "ground" model
+			sModelDrawInfo groundMeshInfo;
+			glm::vec3 closestPointToTriangle = glm::vec3(FLT_MAX, FLT_MAX, FLT_MAX);
+			float closestDistanceSoFar = FLT_MAX;
+			glm::vec3 closestTriangleVertices[3] = { glm::vec3(0.0f), glm::vec3(0.0f), glm::vec3(0.0f) };
+			unsigned int indexOfClosestTriangle = INT_MAX;
+
+
+			//    _____ _           _        _                     _     _        _                   _      
+			//   |  ___(_)_ __   __| |   ___| | ___  ___  ___  ___| |_  | |_ _ __(_) __ _ _ __   __ _| | ___ 
+			//   | |_  | | '_ \ / _` |  / __| |/ _ \/ __|/ _ \/ __| __| | __| '__| |/ _` | '_ \ / _` | |/ _ \
+			//   |  _| | | | | | (_| | | (__| | (_) \__ \  __/\__ \ |_  | |_| |  | | (_| | | | | (_| | |  __/
+			//   |_|   |_|_| |_|\__,_|  \___|_|\___/|___/\___||___/\__|  \__|_|  |_|\__,_|_| |_|\__, |_|\___|
+			//                                                                                  |___/        
+			if (::g_pMeshManager->FindDrawInfoByModelName(pTheGround->meshName, groundMeshInfo))
 			{
-				// "Invert" the velocity
-				// Velocity goes "up" +ve.
-				float newVel = fabs(pCurrentMesh->pPhysProps->velocity.y);
+				// Which triangle is closest to this sphere (right now)
+				for ( unsigned int index = 0; index != groundMeshInfo.numberOfIndices; index += 3 )
+				{	
+					glm::vec3 verts[3];
 
-				pCurrentMesh->pPhysProps->velocity.y = newVel;
+					verts[0].x = groundMeshInfo.pVertices[ groundMeshInfo.pIndices[index] ].x;
+					verts[0].y = groundMeshInfo.pVertices[ groundMeshInfo.pIndices[index] ].y;
+					verts[0].z = groundMeshInfo.pVertices[ groundMeshInfo.pIndices[index] ].z;
 
-			}
-		}
+					verts[1].x = groundMeshInfo.pVertices[ groundMeshInfo.pIndices[index + 1] ].x;
+					verts[1].y = groundMeshInfo.pVertices[ groundMeshInfo.pIndices[index + 1] ].y;
+					verts[1].z = groundMeshInfo.pVertices[ groundMeshInfo.pIndices[index + 1] ].z;
+
+					verts[2].x = groundMeshInfo.pVertices[ groundMeshInfo.pIndices[index + 2] ].x;
+					verts[2].y = groundMeshInfo.pVertices[ groundMeshInfo.pIndices[index + 2] ].y;
+					verts[2].z = groundMeshInfo.pVertices[ groundMeshInfo.pIndices[index + 2] ].z;
+
+					// Transform this object in world space using the same technique we did to render it
+					// 
+					// Here's the key line: 	
+					// 
+					//		vertexWorldPos = matModel * vec4( vPos.xyz, 1.0f);
+					// 
+					// THIS BLOCK OF CODE IS FROM DrawObject()
+
+					glm::mat4 matModel = glm::mat4(1.0f);
+
+					// Translation
+					glm::mat4 matTranslate = glm::translate(glm::mat4(1.0f),
+															glm::vec3(pTheGround->drawPosition.x,
+																	  pTheGround->drawPosition.y,
+																	  pTheGround->drawPosition.z));
+
+					   // Rotation matrix generation
+					glm::mat4 matRotateX = glm::rotate(glm::mat4(1.0f),
+													   pTheGround->orientation.x, // (float)glfwGetTime(),
+													   glm::vec3(1.0f, 0.0, 0.0f));
+
+
+					glm::mat4 matRotateY = glm::rotate(glm::mat4(1.0f),
+													   pTheGround->orientation.y, // (float)glfwGetTime(),
+													   glm::vec3(0.0f, 1.0, 0.0f));
+
+					glm::mat4 matRotateZ = glm::rotate(glm::mat4(1.0f),
+													   pTheGround->orientation.z, // (float)glfwGetTime(),
+													   glm::vec3(0.0f, 0.0, 1.0f));
+
+					   // Scaling matrix
+					glm::mat4 matScale = glm::scale(glm::mat4(1.0f),
+													glm::vec3(pTheGround->scale,
+															  pTheGround->scale,
+															  pTheGround->scale));
+					//--------------------------------------------------------------
+
+					// Combine all these transformation
+					matModel = matModel * matTranslate;
+
+					matModel = matModel * matRotateX;
+					matModel = matModel * matRotateY;
+					matModel = matModel * matRotateZ;
+
+					matModel = matModel * matScale;
+
+
+					// vertexWorldPos = matModel * vec4(vPos.xyz, 1.0f);
+
+					glm::vec4 vertsWorld[3];
+					vertsWorld[0] = (matModel * glm::vec4(verts[0], 1.0f));
+					vertsWorld[1] = (matModel * glm::vec4(verts[1], 1.0f));
+					vertsWorld[2] = (matModel * glm::vec4(verts[2], 1.0f));
+
+					// And make sure you multiply the normal by the inverse transpose
+					// OR recalculate it right here! 
+
+					// ******************************************************
+
+					glm::vec3 thisTriangleClosestPoint = ClosestPtPointTriangle(pCurrentMesh->drawPosition,
+																				vertsWorld[0], vertsWorld[1], vertsWorld[2]);
+
+					// Is this the closest so far
+					float distanceToThisTriangle = glm::distance(thisTriangleClosestPoint, pCurrentMesh->drawPosition);
+
+					if (distanceToThisTriangle < closestDistanceSoFar)
+					{
+						// this one is closer
+						closestDistanceSoFar = distanceToThisTriangle;
+						// Make note of the triangle index
+						indexOfClosestTriangle = index;
+						// 
+						closestTriangleVertices[0] = vertsWorld[0];
+						closestTriangleVertices[1] = vertsWorld[1];
+						closestTriangleVertices[2] = vertsWorld[2];
+					}
+
+
+				} //for ( unsigned int index...
+
+				//    ____  _     _                  _     _ _     _        _                   _     ___ 
+				//   |  _ \(_) __| | __      _____  | |__ (_) |_  | |_ _ __(_) __ _ _ __   __ _| | __|__ \
+				//   | | | | |/ _` | \ \ /\ / / _ \ | '_ \| | __| | __| '__| |/ _` | '_ \ / _` | |/ _ \/ /
+				//   | |_| | | (_| |  \ V  V /  __/ | | | | | |_  | |_| |  | | (_| | | | | (_| | |  __/_| 
+				//   |____/|_|\__,_|   \_/\_/ \___| |_| |_|_|\__|  \__|_|  |_|\__,_|_| |_|\__, |_|\___(_) 
+				//                                                                        |___/           
+//				if (TestSphereTriangle(sphereRadius, 
+//									   closestTriangleVertices[0], 
+//									   closestTriangleVertices[1], 
+//									   closestTriangleVertices[2], 
+//									   pCurrentMesh->drawPosition) )
+				// Compare the radius
+
+				if (closestDistanceSoFar < sphereRadius )
+				{
+					// Hit it!
+					// Take the normal of that triangle and bounce the sphere along it
+
+					// How do we calculate the new direction after the "bounce"? 
+					// 
+					// Answer: it's based on the REFLECTION vector around the normal.
+					// The sphere is travelling along its VELOCITY vector (at this moment)
+					//	and will "bounce off" along an angle reflected by the normal
+
+					// Calculate the current "direction" vector 
+					// We're using the velocity
+					glm::vec3 sphereDirection = pCurrentMesh->pPhysProps->velocity;
+					// Normalize... 
+					sphereDirection = glm::normalize(sphereDirection);
+
+					// Calcualte the current normal from the TRANSFORMED vertices
+					glm::vec3 edgeA = closestTriangleVertices[1] - closestTriangleVertices[0];
+					glm::vec3 edgeB = closestTriangleVertices[2] - closestTriangleVertices[0];
+
+					glm::vec3 triNormal = glm::normalize(glm::cross(edgeA, edgeB));
+
+					// Calculate the reflection vector from the normal	
+					// https://registry.khronos.org/OpenGL-Refpages/gl4/html/reflect.xhtml
+					// 1st parameter is the "incident" vector
+					// 2nd parameter is the "normal" vector
+					glm::vec3 reflectionVec = glm::reflect(sphereDirection, triNormal);
+
+					// Update the  velocity based on this reflection vector
+					float sphereSpeed = glm::length(pCurrentMesh->pPhysProps->velocity);
+					glm::vec3 newVelocity = reflectionVec * sphereSpeed;
+
+					pCurrentMesh->pPhysProps->velocity = newVelocity;
+				}
+
+			}//if (::g_pMeshManager->FindDrawInfoByModelName..
+			
+
+
+//			if ((pCurrentMesh->pPhysProps->position.y - sphereRadius) <= pTheGround->drawPosition.y)
+//			{
+//				// "Invert" the velocity
+//				// Velocity goes "up" +ve.
+//				float newVel = fabs(pCurrentMesh->pPhysProps->velocity.y);
+//
+//				pCurrentMesh->pPhysProps->velocity.y = newVel;
+//
+//			}
+		}//if (pCurrentMesh->friendlyName == "Sphere")
 
 
 
 
 
 // ***********************************************************************
-
+//
 		// HACK: Determine what is the closest position to each triangle in 
 		//	the ground mesh
-
+//
 //		sModelDrawInfo groundMeshInfo;
 //		if (::g_pMeshManager->FindDrawInfoByModelName("Flat_Grid_100x100.ply", groundMeshInfo))
 //		{
@@ -204,12 +377,38 @@ void DoPhysicUpdate(double deltaTime)
 ////
 //			}//for ( unsigned int index = 0...
 //		}//if (pMeshManager->FindDrawInfoByModelName(
+//
+//	}// for (unsigned int meshIndex
 
-	}// for (unsigned int meshIndex
-
+	}// For loop
 
 	return;
 }
+
+
+//== = Section 5.2.7: ============================================================ =
+//
+// Returns true if sphere s intersects triangle ABC, false otherwise.
+bool TestSphereTriangle(float sphereRadius, glm::vec3 vert0, glm::vec3 vert1, glm::vec3 vert2, 
+					   glm::vec3 sphereCentre)
+{
+	// Find point P on triangle ABC closest to sphere center
+	glm::vec3 closestPoint = ClosestPtPointTriangle(sphereCentre, vert0, vert1, vert2);
+
+	// Sphere and triangle intersect if the (squared) distance from sphere
+	// center to point p is less than the (squared) sphere radius
+	glm::vec3 v = closestPoint - sphereCentre;
+
+	bool isItIntersecting = false;
+
+	if ( glm::dot(v, v) <= (sphereRadius * sphereRadius) )
+	{
+		isItIntersecting = true;
+	}
+
+	return isItIntersecting;
+}
+
 
 // From: Real-Time Collision Detection- Ericson, Christer- 9781558607323- Books - Amazon.ca
 // https://www.amazon.ca/Real-Time-Collision-Detection-Christer-Ericson/dp/1558607323/ref=pd_lpo_sccl_1/137-6663593-0701065?pd_rd_w=YiI8A&content-id=amzn1.sym.687e7c56-2b08-4044-894f-bbad969cf967&pf_rd_p=687e7c56-2b08-4044-894f-bbad969cf967&pf_rd_r=JWS56NJC99QEH56TYFJX&pd_rd_wg=zBE6V&pd_rd_r=d611733e-ec29-4b30-bd70-89f092f1991a&pd_rd_i=1558607323&psc=1

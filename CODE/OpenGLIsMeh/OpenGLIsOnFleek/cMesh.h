@@ -23,6 +23,8 @@ struct sPhsyicsProperties
 	glm::vec3 velocity;
 	glm::vec3 acceleration;
 
+	glm::mat4 matModel;	// or matWorld
+
 	// Since division is "slow" and we are dividing my mass, 
 	// Could make this immovable by making this 0 (infinite mass)
 	float inverse_mass;	//	float mass;		
