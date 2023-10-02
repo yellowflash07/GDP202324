@@ -1,8 +1,9 @@
 #include "cRailGun.h"
+#include <iostream>
 
 bool cRailGun::Shoot(void)
 {
-
+	std::cout << "Rail gun goes PEYEW!" << std::endl;
 	return true;
 }
 

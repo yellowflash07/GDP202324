@@ -30,3 +30,10 @@ void cRobot::Attack(void)
 	this->pTheWeapon->Shoot();
 	return;
 }
+
+
+void cRobot::Move(glm::vec2 toWhere)
+{
+	std::cout << "Robot moves to " << toWhere.x << ", " << toWhere.y << std::endl;
+	return;
+}

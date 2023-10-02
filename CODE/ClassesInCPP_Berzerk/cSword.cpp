@@ -5,10 +5,10 @@ cSword::cSword()
 {
 }
 
-bool cSword::Shoot(void)
+void cSword::Slash(float power)
 {
-	std::cout << "cSword::Shot(void)" << std::endl;
-	return true;
+	std::cout << "cSword::Slash() with power = " << power << std::endl;
+	return;
 }
 
 
@@ -23,24 +23,3 @@ void cSword::setPosition(glm::vec2 newPosition)
 	return;
 }
 
-glm::vec2 cSword::getVelocity(void)
-{
-	return this->velocity;
-}
-
-void cSword::setVelocity(glm::vec2 newVelocity)
-{
-	this->velocity = newVelocity;
-	return;
-}
-
-bool cSword::get_isShot(void)
-{
-	return this->isShot;
-}
-
-void cSword::set_IsShot(bool bIsShot)
-{
-	this->isShot = bIsShot;
-	return;
-}

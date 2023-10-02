@@ -1,6 +1,5 @@
 #include "cWeaponMaker.h"
 #include "cRayGun.h"
-#include "cSword.h"
 #include "cMissleLanucher.h"
 // 
 #include "cRailGun.h"
@@ -23,12 +22,6 @@ iWeapon* cWeaponMaker::pMakeWeapon(std::string typeOfWeapon)
 	if (typeOfWeapon == "Ray Gun")
 	{
 		pTheWeapon = new cRayGun();
-		return pTheWeapon;
-	}
-
-	if (typeOfWeapon == "Sword")
-	{
-		pTheWeapon = new cSword();
 		return pTheWeapon;
 	}
 

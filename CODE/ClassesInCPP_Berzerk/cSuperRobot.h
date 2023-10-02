@@ -6,19 +6,23 @@
 //  and it dual weilds. 
 
 //#include "cMissleLanucher.h"
-#include "cRobot.h"
-//#include "cSword.h"
+#include "iRobot.h"
+#include "iWeapon.h"
+#include "cSword.h"
 
-class cSuperRobot : public cRobot
+class cSuperRobot : public iRobot
 {
 public:
 	cSuperRobot();
 	virtual ~cSuperRobot() {};
 
-	iWeapon* pThe_2nd_Weapon;
-//	cSword* pTheSword;
-//	cWeapon* pTheSword;
+	// Has two weapons...
+	iWeapon* pTheWeapons[2];
+	// ... and a sword!
+	cSword* pTheSword;
 
-	void Attack(void);
+	// From iRobot interface
+	virtual void Attack(void);
+	virtual void Move(glm::vec2 toWhere);
 };
 

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "cPlayer.h"
-#include "cRobot.h"
+#include "iRobot.h"
 #include "cSuperRobot.h"
 #include "cWeaponMaker.h"	// Factory object
 #include <vector>
@@ -22,9 +22,9 @@ public:
 	static int hi;
 
 private:
-	cArena();
+	cArena();		// Can't be called by anything but "me" (i.e. the cArena class)
 
-	std::vector< cRobot* > vecRobots;
+	std::vector< iRobot* > vecRobots;
 	std::vector< cPlayer* > vecPlayers;
 
 	cWeaponMaker* pTheWeaponFactory;

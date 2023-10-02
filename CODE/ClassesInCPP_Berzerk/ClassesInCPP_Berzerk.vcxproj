@@ -141,10 +141,12 @@
     <ClInclude Include="cRailGun.h" />
     <ClInclude Include="cRayGun.h" />
     <ClInclude Include="cRobot.h" />
+    <ClInclude Include="cRobotBuilder.h" />
     <ClInclude Include="cSuperRobot.h" />
     <ClInclude Include="cSword.h" />
     <ClInclude Include="cWeapon.h" />
     <ClInclude Include="cWeaponMaker.h" />
+    <ClInclude Include="iRobot.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="cBullet.cpp" />
@@ -153,6 +155,7 @@
     <ClCompile Include="cRailGun.cpp" />
     <ClCompile Include="cRayGun.cpp" />
     <ClCompile Include="cRobot.cpp" />
+    <ClCompile Include="cRobotBuilder.cpp" />
     <ClCompile Include="cSuperRobot.cpp" />
     <ClCompile Include="cSword.cpp" />
     <ClCompile Include="cWeapon.cpp" />

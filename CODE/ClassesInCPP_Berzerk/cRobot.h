@@ -5,8 +5,9 @@
 
 //#include "cRayGun.h"
 #include "iWeapon.h"
+#include "iRobot.h"
 
-class cRobot 
+class cRobot : public iRobot
 {
 public:
 	cRobot();		// constructor (c'tor)
@@ -18,12 +19,11 @@ public:
 
 	iWeapon* pTheWeapon;
 
+	// From iRobot interface
 	virtual void Attack(void);
+	virtual void Move(glm::vec2 toWhere);
 };
 
-struct sBullet
-{
 
-};
 
 
