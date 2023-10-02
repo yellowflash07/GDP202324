@@ -37,6 +37,8 @@ int main()
 	std::cout << "Game loop starting..." << std::endl;
 	pTheGame->Update();
 
+	
+
 
 
 
