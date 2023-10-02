@@ -27,7 +27,7 @@ cRobot::~cRobot()
 void cRobot::Attack(void)
 {
 	std::cout << "Robot Attacks!" << std::endl;
-	this->pTheWeapon->Shoot();
+	this->pTheWeapon->Shoot(34);
 	return;
 }
 

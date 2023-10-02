@@ -16,7 +16,7 @@ cWeapon::~cWeapon()
 {
 	std::cout << "cWeapon is destroyed" << std::endl;
 }
-bool cWeapon::Shoot(void)
+bool cWeapon::Shoot(int numBullets)
 {
 	std::cout << "cWeapon::Shot(void)" << std::endl;
 	return true;

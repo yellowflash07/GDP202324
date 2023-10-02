@@ -20,7 +20,7 @@ public:
 	virtual bool get_isShot(void);
 	virtual void set_IsShot(bool bIsShot);
 
-	bool Shoot(void);
+	virtual bool Shoot(int numBullets);
 	// ****************************************
 
 

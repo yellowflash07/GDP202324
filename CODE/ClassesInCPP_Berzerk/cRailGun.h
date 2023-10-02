@@ -17,7 +17,7 @@ public:
 	virtual bool get_isShot(void);
 	virtual void set_IsShot(bool bIsShot);
 
-	bool Shoot(void);
+	bool Shoot(int numBullets);
 	// ****************************************
 
 	glm::vec2 position;

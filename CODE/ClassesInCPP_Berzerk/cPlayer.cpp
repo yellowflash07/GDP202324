@@ -24,7 +24,7 @@ void cPlayer::Attack(void)
 {
 	std::cout << "Player Attacks!" << std::endl;
 
-	this->pTheWeapon->Shoot();
+	this->pTheWeapon->Shoot(50);
 	return;
 }
 

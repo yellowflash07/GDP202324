@@ -7,9 +7,9 @@ cMissleLauncher::cMissleLauncher()
 
 }
 
-bool cMissleLauncher::Shoot(void)
+bool cMissleLauncher::Shoot(int numBullets)
 {
-	std::cout << "cMissleLauncher shoots a missle!" << std::endl;
+	std::cout << "cMissleLauncher shoots a missle!!!!!!" << std::endl;
 	return true;
 }
 

@@ -12,8 +12,8 @@ void cSuperRobot::Attack(void)
 {
 	std::cout << "SuperRobot Attacks! " << std::endl;
 	
-	this->pTheWeapons[0]->Shoot();
-	this->pTheWeapons[1]->Shoot();
+	this->pTheWeapons[0]->Shoot(75);
+	this->pTheWeapons[1]->Shoot(75);
 
 	this->pTheSword->Slash(100.0f);
 	return;

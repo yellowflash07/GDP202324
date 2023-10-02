@@ -23,7 +23,7 @@ public:
 	virtual bool get_isShot(void) = 0;
 	virtual void set_IsShot(bool bIsShot) = 0;
 
-	virtual bool Shoot(void) = 0;
+	virtual bool Shoot(int numBullets) = 0;
 
 //	virtual void Swipe(void);
 
