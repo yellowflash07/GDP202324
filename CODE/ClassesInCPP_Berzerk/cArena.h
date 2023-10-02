@@ -2,7 +2,7 @@
 
 #include "cPlayer.h"
 #include "iRobot.h"
-#include "cSuperRobot.h"
+//#include "cSuperRobot.h"
 #include "cWeaponMaker.h"	// Factory object
 #include <vector>
 
