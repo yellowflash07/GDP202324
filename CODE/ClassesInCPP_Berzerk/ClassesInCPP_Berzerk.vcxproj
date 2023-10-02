@@ -158,6 +158,7 @@
     <ClCompile Include="cWeapon.cpp" />
     <ClCompile Include="cArena.cpp" />
     <ClCompile Include="cWeaponMaker.cpp" />
+    <ClCompile Include="iWeapon.h" />
     <ClCompile Include="theMain.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

@@ -34,6 +34,9 @@
     <Filter Include="Lights">
       <UniqueIdentifier>{98381d53-9e58-43fc-a634-99a5a36c2248}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Physics_Stuff">
+      <UniqueIdentifier>{5b55af3a-96a6-4303-83fe-718973b08afd}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="theMain.cpp">
@@ -57,9 +60,6 @@
     <ClCompile Include="ScenePersistence.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="PhysicsStuff.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="LoadModels.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -77,6 +77,9 @@
     </ClCompile>
     <ClCompile Include="cLightHelper.cpp">
       <Filter>Lights</Filter>
+    </ClCompile>
+    <ClCompile Include="PhysicsUpdateLoop.cpp">
+      <Filter>Physics_Stuff</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -106,6 +109,15 @@
     </ClInclude>
     <ClInclude Include="cLightHelper.h">
       <Filter>Lights</Filter>
+    </ClInclude>
+    <ClInclude Include="sPhsyicsProperties.h">
+      <Filter>Physics_Stuff</Filter>
+    </ClInclude>
+    <ClInclude Include="sTransformInfo.h">
+      <Filter>Physics_Stuff</Filter>
+    </ClInclude>
+    <ClInclude Include="iTransformInfoAccessor.h">
+      <Filter>cMesh</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

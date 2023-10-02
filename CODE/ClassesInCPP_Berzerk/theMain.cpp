@@ -24,13 +24,18 @@ bool isCloseEnoughToHit(glm::vec2 a, glm::vec2 b)
 
 }
 
+
 int main()
 {
-	cArena* pTheGame = new cArena();
+//	cArena* pTheGame = new cArena();
+	cArena* pTheGame = cArena::getTheArena();
+	cArena* pTheGame2 = cArena::getTheArena();
 
 	pTheGame->Init(2, 4);
 
 	pTheGame->Update();
+
+
 
 
 //	pB->Shoot();	// Weapon

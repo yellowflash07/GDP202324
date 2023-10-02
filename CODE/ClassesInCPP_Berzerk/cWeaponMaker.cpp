@@ -6,10 +6,13 @@
 #include "cRailGun.h"
 
 
-cWeapon* cWeaponMaker::pMakeWeapon(std::string typeOfWeapon)
+iWeapon* cWeaponMaker::pMakeWeapon(std::string typeOfWeapon)
 {
 	
-	cWeapon* pTheWeapon = NULL;
+	iWeapon* pTheWeapon = NULL;
+
+	// Pure virtual classes can't be created (instantiated)
+//	pTheWeapon = new iWeapon();
 
 	if (typeOfWeapon == "Regular")
 	{

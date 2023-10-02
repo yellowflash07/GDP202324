@@ -6,36 +6,10 @@
 #include <string>
 #include <vector>
 
-// This is where we are going to head...
-struct sPhsyicsProperties
-{
-	sPhsyicsProperties()
-	{
-		this->position = glm::vec3(0.0f);
-		this->velocity = glm::vec3(0.0f);
-		this->acceleration = glm::vec3(0.0f);
-		this->inverse_mass = 1.0f;	// What should this be??
-	}
+#include "sTransformInfo.h"
+#include "iTransformInfoAccessor.h"
 
-//	typeOfSimplePhyiscThingy = "Sphere"
-
-	glm::vec3 position;
-	glm::vec3 velocity;
-	glm::vec3 acceleration;
-
-	glm::mat4 matModel;	// or matWorld
-
-	// Since division is "slow" and we are dividing my mass, 
-	// Could make this immovable by making this 0 (infinite mass)
-	float inverse_mass;	//	float mass;		
-
-	// Rotational
-//	glm::vec3 momentOfWhatever;
-//	glm::vec3 rotationalSpeed;
-};
-
-
-class cMesh
+class cMesh : public iTransformInfoAccessor
 {
 public:
 	cMesh();		// Called on creation   c'tor
@@ -45,11 +19,19 @@ public:
 
 	std::string friendlyName;		// "Ground"
 
-	// Draw loop uses this: 
-	glm::vec3 drawPosition;				
-	glm::vec3 orientation;
-	float scale;
 
+public:
+	// From the iTransformInfoAccessor interface
+	virtual sTransformInfo getTransformInfo(void);
+	virtual void setTransformInfo(sTransformInfo newTransformInfo);
+private:
+	// Draw loop uses this: 
+/*	glm::vec3 drawPosition;
+	glm::vec3 drawOrientation;
+	float drawScale;*/	
+	sTransformInfo transformInfo;
+
+public:
 	bool bIsVisible;
 
 	bool bUseDebugColours;
@@ -57,7 +39,7 @@ public:
 
 	// Physics properties
 	// Physics update this:
-	sPhsyicsProperties* pPhysProps;
+//	sPhsyicsProperties* pPhysProps;
 
 	bool bIsWireframe;
 	bool bDoNotLight;

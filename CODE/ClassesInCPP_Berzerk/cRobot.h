@@ -4,7 +4,7 @@
 #include <glm/vec2.hpp>
 
 //#include "cRayGun.h"
-#include "cWeapon.h"
+#include "iWeapon.h"
 
 class cRobot 
 {
@@ -16,7 +16,7 @@ public:
 	glm::vec2 dir;	// direction
 	bool bNoticedPlayer;
 
-	cWeapon* pTheWeapon;
+	iWeapon* pTheWeapon;
 
 	virtual void Attack(void);
 };
@@ -25,3 +25,5 @@ struct sBullet
 {
 
 };
+
+

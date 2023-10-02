@@ -1,7 +1,9 @@
 #include "cMesh.h"
+#include "sPhsyicsProperties.h"
 #include <vector>
 
 extern std::vector< cMesh* > g_vec_pMeshesToDraw;
+extern std::vector< sPhsyicsProperties* > g_vec_pPhysicalProps;
 
 float getRandomFloat(float a, float b);
 
@@ -60,13 +62,22 @@ bool LoadModels(void)
     //pFlat_1x1_planeMesh->bIsWireframe = true;
     //pFlat_1x1_planeMesh->bDoNotLight = true;
     // note this does NOT have a physProps, so is ignored by the physics update loop
-    pFlat_1x1_planeMesh->drawPosition.y = -40.0f;   //  0,-10,0
-    pFlat_1x1_planeMesh->drawPosition.x = -10.0f;   //  0,-10,0
+    sTransformInfo transformPlane = pFlat_1x1_planeMesh->getTransformInfo();
+    transformPlane.position.y = -40.0f;   //  0,-10,0
+    transformPlane.position.x = -10.0f;   //  0,-10,0
+    pFlat_1x1_planeMesh->setTransformInfo(transformPlane);
 //    pFlat_1x1_planeMesh->drawPosition.x = 10.0f;
     pFlat_1x1_planeMesh->friendlyName = "Ground";
     //
 //    pFlat_1x1_planeMesh->orientation.z = glm::radians(+12.0f);
    ::g_vec_pMeshesToDraw.push_back(pFlat_1x1_planeMesh);
+
+    // Also add the physics items
+   sPhsyicsProperties* pFlat_1x1_plane = new sPhsyicsProperties();
+   pFlat_1x1_plane->pTheAssociatedMesh = pFlat_1x1_planeMesh;
+   ::g_vec_pPhysicalProps.push_back(pFlat_1x1_plane);
+
+
 
    cMesh* pFlat_1x1_planeMesh_DEBUG = new cMesh();
 //   pFlat_1x1_planeMesh_DEBUG->meshName = "Flat_1x1_plane.ply";
@@ -76,9 +87,11 @@ bool LoadModels(void)
    pFlat_1x1_planeMesh_DEBUG->bDoNotLight = true;
    pFlat_1x1_planeMesh_DEBUG->bUseDebugColours = true;
    pFlat_1x1_planeMesh_DEBUG->wholeObjectDebugColourRGBA = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
-   pFlat_1x1_planeMesh_DEBUG->orientation = pFlat_1x1_planeMesh->orientation;
+
+   pFlat_1x1_planeMesh_DEBUG->setTransformInfo(pFlat_1x1_planeMesh->getTransformInfo() );
+//   pFlat_1x1_planeMesh_DEBUG->orientation = pFlat_1x1_planeMesh->orientation;
    // note this does NOT have a physProps, so is ignored by the physics update loop
-   pFlat_1x1_planeMesh_DEBUG->drawPosition = pFlat_1x1_planeMesh->drawPosition;
+//   pFlat_1x1_planeMesh_DEBUG->drawPosition = pFlat_1x1_planeMesh->drawPosition;
 //   pFlat_1x1_planeMesh_DEBUG->drawPosition.y += 0.01f;   //  0,-10,0
    ::g_vec_pMeshesToDraw.push_back(pFlat_1x1_planeMesh_DEBUG);
 
@@ -108,15 +121,25 @@ bool LoadModels(void)
 //        sphereMesh.physProps.acceleration.y = -9.81f;
         pSpherePhysProps->acceleration.y = (-9.81f / 5.0f);
 
-        pSpherePhysProps->position.x = getRandomFloat(-MAX_SPHERE_LOCATION, MAX_SPHERE_LOCATION);
-        pSpherePhysProps->position.z = getRandomFloat(-MAX_SPHERE_LOCATION, MAX_SPHERE_LOCATION);
-        pSpherePhysProps->position.y = getRandomFloat(10.0f, MAX_SPHERE_LOCATION + 20.0f);
-
-        pSphereMesh->pPhysProps = pSpherePhysProps;
         // Copy the physics position to the drawing position
-        pSphereMesh->drawPosition = pSpherePhysProps->position;
+        sTransformInfo sphereTransInfo = pSphereMesh->getTransformInfo();
 
+        sphereTransInfo.position.x = getRandomFloat(-MAX_SPHERE_LOCATION, MAX_SPHERE_LOCATION);
+        sphereTransInfo.position.z = getRandomFloat(-MAX_SPHERE_LOCATION, MAX_SPHERE_LOCATION);
+        sphereTransInfo.position.y = getRandomFloat(10.0f, MAX_SPHERE_LOCATION + 20.0f);
+
+        pSphereMesh->setTransformInfo(sphereTransInfo);
+
+        // Inicate which mesh this physical properties object "controls"
+        pSpherePhysProps->pTheAssociatedMesh = pSphereMesh;
+
+//       pSphereMesh->pPhysProps = pSpherePhysProps;
+//        pSphereMesh->drawPosition = pSpherePhysProps->position;
+
+        // Add drawing mesh to the things to draw
         ::g_vec_pMeshesToDraw.push_back(pSphereMesh);
+        // Add the physics item to the things the phsyics loop will update
+        ::g_vec_pPhysicalProps.push_back(pSpherePhysProps);
 
 
         //cMesh shpereMeshShadow_HACK;
@@ -133,8 +156,12 @@ bool LoadModels(void)
     pDebugSphere->meshName = "Sphere_1_unit_Radius.ply";
     pDebugSphere->bIsWireframe = true;
     pDebugSphere->bDoNotLight = true;
-    pDebugSphere->scale = 25.0f;
-    pDebugSphere->pPhysProps = NULL;
+
+    sTransformInfo debugSphereTransInfo = pDebugSphere->getTransformInfo();
+    debugSphereTransInfo.scale = 25.0f;
+    pDebugSphere->setTransformInfo(debugSphereTransInfo);
+//    pDebugSphere->pPhysProps = NULL;
+
     pDebugSphere->bIsVisible = false;
     pDebugSphere->friendlyName = "DEBUG_SPHERE";
 

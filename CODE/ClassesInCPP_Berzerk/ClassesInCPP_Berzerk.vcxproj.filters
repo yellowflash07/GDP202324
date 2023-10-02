@@ -86,13 +86,16 @@
     <ClCompile Include="cSuperRobot.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="cSword.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="cWeaponMaker.cpp">
       <Filter>WeaponFactory</Filter>
     </ClCompile>
     <ClCompile Include="cRailGun.cpp">
+      <Filter>Weapons</Filter>
+    </ClCompile>
+    <ClCompile Include="iWeapon.h">
+      <Filter>Weapons</Filter>
+    </ClCompile>
+    <ClCompile Include="cSword.cpp">
       <Filter>Weapons</Filter>
     </ClCompile>
   </ItemGroup>

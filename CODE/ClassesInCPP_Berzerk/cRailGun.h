@@ -1,11 +1,27 @@
 #pragma once
-#include "cWeapon.h"
+#include "iWeapon.h"
 
-class cRailGun : public cWeapon
+class cRailGun : public iWeapon
 {
 public:
 	cRailGun() {};;
 	virtual ~cRailGun() {};
 
-	void Shoot(void);
+	// These are all from the iWeapon interface
+	virtual glm::vec2 getPosition(void);
+	virtual void setPosition(glm::vec2 newPosition);
+
+	virtual glm::vec2 getVelocity(void);
+	virtual void setVelocity(glm::vec2 newVelocity);
+
+	virtual bool get_isShot(void);
+	virtual void set_IsShot(bool bIsShot);
+
+	bool Shoot(void);
+	// ****************************************
+
+	glm::vec2 position;
+	glm::vec2 velocity;
+	bool isShot;
+
 };

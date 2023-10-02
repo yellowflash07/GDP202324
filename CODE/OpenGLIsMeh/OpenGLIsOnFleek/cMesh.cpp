@@ -10,9 +10,9 @@
 // Constructor: Called on creation   c'tor
 cMesh::cMesh()
 {
-	this->drawPosition = glm::vec3(0.0f, 0.0f, 0.0f);
-	this->orientation = glm::vec3(0.0f, 0.0f, 0.0f);
-	this->scale = 1.0f;
+//	this->drawPosition = glm::vec3(0.0f, 0.0f, 0.0f);
+//	this->orientation = glm::vec3(0.0f, 0.0f, 0.0f);
+//	this->scale = 1.0f;
 
 	this->bIsWireframe = false;
 	this->bDoNotLight = false;
@@ -23,7 +23,7 @@ cMesh::cMesh()
 	this->wholeObjectDebugColourRGBA = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
 
 	// If it's NULL or 0, then it's ignored by the physics loop
-	this->pPhysProps = NULL;		// or 0 or nullptr
+//	this->pPhysProps = NULL;		// or 0 or nullptr
 
 }
 
@@ -45,5 +45,16 @@ void cMesh::Update(double deltaTime)
 #ifdef _DEBUG
 //	::g_pDebugRenderer->AddSphere();
 #endif
+	return;
+}
+
+sTransformInfo cMesh::getTransformInfo(void)
+{
+	return this->transformInfo;
+}
+
+void cMesh::setTransformInfo(sTransformInfo newTransformInfo)
+{
+	this->transformInfo = newTransformInfo;
 	return;
 }

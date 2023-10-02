@@ -15,7 +15,7 @@ public:
 	cSuperRobot();
 	virtual ~cSuperRobot() {};
 
-	cWeapon* pThe_2nd_Weapon;
+	iWeapon* pThe_2nd_Weapon;
 //	cSword* pTheSword;
 //	cWeapon* pTheSword;
 

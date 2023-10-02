@@ -32,6 +32,7 @@
 #include "GLWF_CallBacks.h" // keyboard and mouse input
 
 #include "cMesh.h"
+#include "sPhsyicsProperties.h"
 
 #include "cLightManager.h"
 #include "cLightHelper.h"
@@ -52,8 +53,13 @@ cVAOManager* g_pMeshManager = NULL;
 //   | |_) / _ \| | '_ \| __/ _ \ '__/ __| | __/ _ \  | |\/| |/ _ \/ __| '_ \ / _ \/ __|
 //   |  __/ (_) | | | | | ||  __/ |  \__ \ | || (_) | | |  | |  __/\__ \ | | |  __/\__ \
 //   |_|   \___/|_|_| |_|\__\___|_|  |___/  \__\___/  |_|  |_|\___||___/_| |_|\___||___/
-//                                                                                      
+//                            
+// This is the list of meshes                                                           
 std::vector< cMesh* > g_vec_pMeshesToDraw;
+// This is the list of physical properties 
+// This has a pointer to the matching mesh
+std::vector< sPhsyicsProperties* > g_vec_pPhysicalProps;
+
 
 // Returns NULL if not found
 cMesh* g_pFindMeshByFriendlyName(std::string friendlyNameToFind);
@@ -98,6 +104,9 @@ static void error_callback(int error, const char* description)
 
 int main(void)
 {
+
+    cMesh bob;
+
     std::cout << "About to blow you mind with OpenGL!" << std::endl;
 
     GLFWwindow* window;

@@ -4,8 +4,9 @@
 #include <glm/glm.hpp>
 #include <glm/vec2.hpp>
 
+#include "iWeapon.h"
 //#include "cRayGun.h"
-#include "cWeapon.h"
+//#include "cWeapon.h"
 //#include "cSword.h"
 
 enum eWeaponType
@@ -29,8 +30,8 @@ public:
 	bool bIsAlive;
 	glm::vec2  direction;
 
-	cWeapon* /*cRayGun**/ pTheWeapon;
-	cWeapon* /*cSword**/ pTheSword;
+	iWeapon* /*cRayGun**/ pTheWeapon;
+	iWeapon* /*cSword**/ pTheSword;
 
 
 	void Attack(void);

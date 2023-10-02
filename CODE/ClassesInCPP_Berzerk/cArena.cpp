@@ -3,6 +3,20 @@
 //#include "cWeapon.h"
 //#include "cRayGun.h"
 
+//static variables have to be assigned this way.
+cArena* cArena::m_pTheOneAndOnlyArena = NULL;
+
+
+//static 
+cArena* cArena::getTheArena(void)
+{
+	if (cArena::m_pTheOneAndOnlyArena == NULL)
+	{
+		cArena::m_pTheOneAndOnlyArena = new cArena();
+	}
+	return cArena::m_pTheOneAndOnlyArena;
+}
+
 cArena::cArena()
 {
 	this->pTheWeaponFactory = new cWeaponMaker();
