@@ -11,33 +11,6 @@
 #include <fstream>
 
 
-sModelDrawInfo::sModelDrawInfo()
-{
-	this->VAO_ID = 0;
-
-	this->VertexBufferID = 0;
-	this->VertexBuffer_Start_Index = 0;
-	this->numberOfVertices = 0;
-
-	this->IndexBufferID = 0;
-	this->IndexBuffer_Start_Index = 0;
-	this->numberOfIndices = 0;
-	this->numberOfTriangles = 0;
-
-	// The "local" (i.e. "CPU side" temporary array)
-	this->pVertices = 0;	// or NULL
-	this->pIndices = 0;		// or NULL
-
-	// You could store the max and min values of the 
-	//  vertices here (determined when you load them):
-	glm::vec3 maxValues;
-	glm::vec3 minValues;
-
-//	scale = 5.0/maxExtent;		-> 5x5x5
-	float maxExtent;
-
-	return;
-}
 
 
 void cVAOManager::setBasePath(std::string basePathWithoutSlash)

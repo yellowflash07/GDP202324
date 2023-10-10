@@ -8,7 +8,6 @@
 #include <vector>
 
 //#include "cMesh.h"
-#include "iTransformInfoAccessor.h"
 #include "sPhsyicsProperties.h"
 
 #include <iostream>

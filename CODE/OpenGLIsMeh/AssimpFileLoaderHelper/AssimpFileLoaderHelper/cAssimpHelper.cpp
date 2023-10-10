@@ -41,17 +41,17 @@ void AssimpHelper::cFileLoader::SetBasePath(std::string basepath_no_end_slash)
     return;
 }
 
-AssimpHelper::cString AssimpHelper::cFileLoader::getLastError(bool bAndClearErrors /*=true*/)
+AssimpHelper::ass_cString AssimpHelper::cFileLoader::getLastError(bool bAndClearErrors /*=true*/)
 {
     return this->m_pImp->getLastError().c_str();
 }
 
-AssimpHelper::cScene::cScene()
+AssimpHelper::ass_cScene::ass_cScene()
 {
 }
 
 //
-void AssimpHelper::cScene::sSceneFlags::DecodeSceneFlags(unsigned int flags)
+void AssimpHelper::ass_cScene::ass_sSceneFlags::DecodeSceneFlags(unsigned int flags)
 {
     this->incomplete = (flags & AI_SCENE_FLAGS_INCOMPLETE);                 // 0x1
     this->validated = (flags & AI_SCENE_FLAGS_VALIDATED);                   // 0x2
@@ -66,12 +66,12 @@ void AssimpHelper::cScene::sSceneFlags::DecodeSceneFlags(unsigned int flags)
 
 
 
-AssimpHelper::cString::cString()
+AssimpHelper::ass_cString::ass_cString()
 {
     this->m_reset();
 }
 
-AssimpHelper::cString::cString(const char* const c_str)
+AssimpHelper::ass_cString::ass_cString(const char* const c_str)
 {
     this->m_reset();
 
@@ -82,7 +82,7 @@ AssimpHelper::cString::cString(const char* const c_str)
 }
 
 // Copy constructor
-AssimpHelper::cString::cString(const cString& copyString)				
+AssimpHelper::ass_cString::ass_cString(const ass_cString& copyString)
 {
     this->m_reset();
 
@@ -94,7 +94,7 @@ AssimpHelper::cString::cString(const cString& copyString)
 }
 
 // Copy assignment 
-AssimpHelper::cString& AssimpHelper::cString::operator=(const cString& copyString)
+AssimpHelper::ass_cString& AssimpHelper::ass_cString::operator=(const ass_cString& copyString)
 {
     this->m_reset();
 
@@ -108,31 +108,31 @@ AssimpHelper::cString& AssimpHelper::cString::operator=(const cString& copyStrin
 }
 
 // concatenation
-AssimpHelper::cString AssimpHelper::cString::operator+(const cString& concatString)
+AssimpHelper::ass_cString AssimpHelper::ass_cString::operator+(const ass_cString& concatString)
 {
-    cString newString;
+    ass_cString newString;
     
     // TODO
 
     return newString;
 }
 
-AssimpHelper::cString::~cString()
+AssimpHelper::ass_cString::~ass_cString()
 {
     this->m_reset();
 }
 
-unsigned int AssimpHelper::cString::getLength()
+unsigned int AssimpHelper::ass_cString::getLength()
 {
     return this->m_numCharacters;
 }
 
-const char* AssimpHelper::cString::c_str(void) const
+const char* AssimpHelper::ass_cString::c_str(void) const
 {
     return this->m_data;
 }
 
-void AssimpHelper::cString::m_reset(void)
+void AssimpHelper::ass_cString::m_reset(void)
 {
     if ( this->m_data )
     {

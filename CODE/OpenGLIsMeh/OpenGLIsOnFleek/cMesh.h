@@ -6,10 +6,9 @@
 #include <string>
 #include <vector>
 
-#include "sTransformInfo.h"
-#include "iTransformInfoAccessor.h"
+#include "iPhysicsMeshTransformAccess.h"
 
-class cMesh : public iTransformInfoAccessor
+class cMesh : public iPhysicsMeshTransformAccess
 {
 public:
 	cMesh();		// Called on creation   c'tor
@@ -19,32 +18,34 @@ public:
 
 	std::string friendlyName;		// "Ground"
 
-
-public:
-	// From the iTransformInfoAccessor interface
-	virtual sTransformInfo getTransformInfo(void);
-	virtual void setTransformInfo(sTransformInfo newTransformInfo);
-private:
-	// Draw loop uses this: 
-/*	glm::vec3 drawPosition;
+	glm::vec3 drawPosition;
 	glm::vec3 drawOrientation;
-	float drawScale;*/	
-	sTransformInfo transformInfo;
+	glm::vec3 drawScale;
+	void setUniformDrawScale(float scale);
 
-public:
+	// STARTOF: From: iPhysicsMeshTransformAccess interface
+	virtual glm::vec3 getDrawPosition(void);
+	virtual glm::vec3 getDrawOrientation(void);
+	virtual void setDrawPosition(const glm::vec3& newPosition);
+	virtual void setDrawOrientation(const glm::vec3& newOrientation);
+	// ENDOF: iPhysicsMeshTransformAccess interface
+
 	bool bIsVisible;
 
 	bool bUseDebugColours;
 	glm::vec4 wholeObjectDebugColourRGBA;
 
-	// Physics properties
-	// Physics update this:
-//	sPhsyicsProperties* pPhysProps;
-
 	bool bIsWireframe;
 	bool bDoNotLight;
 
-	void Update(double deltaTime);
+	//void Update(double deltaTime);
+
+	unsigned int getUniqueID(void);
+
+private:
+	unsigned int m_UniqueID;
+	static const unsigned int FIRST_UNIQUE_ID = 1000;
+	static unsigned int m_nextUniqueID;
 
 };
 

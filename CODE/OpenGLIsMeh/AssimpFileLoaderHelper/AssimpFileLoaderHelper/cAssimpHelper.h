@@ -11,19 +11,19 @@ class cFileLoader_Imp;
 
 namespace AssimpHelper
 {
-	struct __declspec(dllexport) sVec3
+	struct __declspec(dllexport) ass_sVec3
 	{
 		float x = 0.0f;
 		float y = 0.0f;
 		float z = 0.0f;
 	};
-	struct __declspec(dllexport) sColourRGB
+	struct __declspec(dllexport) ass_sColourRGB
 	{
 		float r = 0.0f;
 		float g = 0.0f;
 		float b = 0.0f;
 	};
-	struct __declspec(dllexport) sColourRGBA
+	struct __declspec(dllexport) ass_sColourRGBA
 	{
 		float r = 0.0f;
 		float g = 0.0f;
@@ -31,15 +31,15 @@ namespace AssimpHelper
 		float a = 0.0f;
 	};
 
-	class __declspec(dllexport) cString
+	class __declspec(dllexport) ass_cString
 	{
 	public:
-		cString();
-		cString(const char* const c_str);
-		cString(const cString &copyString);				// Copy constructor
-		cString& operator=(const cString &copyString);	// Copy assignment 
-		cString operator+(const cString& concatString);	// concatenation
-		~cString();
+		ass_cString();
+		ass_cString(const char* const c_str);
+		ass_cString(const ass_cString&copyString);				// Copy constructor
+		ass_cString& operator=(const ass_cString&copyString);	// Copy assignment 
+		ass_cString operator+(const ass_cString& concatString);	// concatenation
+		~ass_cString();
 		unsigned int getLength();
 		const char* c_str(void) const;
 	private:
@@ -48,28 +48,28 @@ namespace AssimpHelper
 		unsigned int m_numCharacters = 0;
 	};
 
-	class __declspec(dllexport) cFace
+	class __declspec(dllexport) ass_cFace
 	{
 	public:
-		cFace() {};
+		ass_cFace() {};
 		unsigned int number_of_indices = 0;
 		unsigned int* indicies = NULL;
 	};
 
-	class __declspec(dllexport) cMesh
+	class __declspec(dllexport) ass_cMesh
 	{
 	public:
-		cMesh() {};
-		cString name;
-		sVec3* vertices = NULL;
-		sVec3* normals = NULL;
-		sVec3* tangents = NULL;
-		sVec3* bitangents = NULL;
-		sColourRGBA* coloursRGBA = NULL;
-		sVec3* texture_coordinates = NULL;
+		ass_cMesh() {};
+		ass_cString name;
+		ass_sVec3* vertices = NULL;
+		ass_sVec3* normals = NULL;
+		ass_sVec3* tangents = NULL;
+		ass_sVec3* bitangents = NULL;
+		ass_sColourRGBA* coloursRGBA = NULL;
+		ass_sVec3* texture_coordinates = NULL;
 		unsigned int number_of_vertices = 0;
 
-		cFace* faces = NULL;
+		ass_cFace* faces = NULL;
 		unsigned int number_of_faces = 0;
 
 		enum ePrimitiveType
@@ -79,10 +79,10 @@ namespace AssimpHelper
 			LINE,				// aiPrimitiveType_LINE = 0x2,
 			TRIANGLE,			// aiPrimitiveType_TRIANGLE = 0x4,
 			POLYGON,			// aiPrimitiveType_POLYGON = 0x8,
-			NGONE				// aiPrimitiveType_NGONEncodingFlag = 0x10,
+			NGON				// aiPrimitiveType_NGONEncodingFlag = 0x10,
 		};
-		ePrimitiveType primitive_type;
-		cString getPrimitiveTypeString(void);
+		ePrimitiveType primitive_type = UNKNOWN_OR_UNDEFINED;
+		ass_cString getPrimitiveTypeString(void);
 
 		unsigned int GetNumColorChannels();	// Get the number of vertex color channels the mesh contains.
 		unsigned int GetNumUVChannels();	// Get the number of UV channels the mesh contains.
@@ -103,10 +103,10 @@ namespace AssimpHelper
 		float near_clipping_plane = 0.0f;
 		float far_clipping_plane = 0.0f;
 		float half_horizontal_FOV = 0.0f;		// Half horizontal field of view angle, in radians.
-		sVec3 target_or_at_vector;
-		sVec3 position_or_eye_vector;
-		sVec3 up_vector;
-		cString name;
+		ass_sVec3 target_or_at_vector;
+		ass_sVec3 position_or_eye_vector;
+		ass_sVec3 up_vector;
+		ass_cString name;
 	};
 
 
@@ -118,12 +118,12 @@ namespace AssimpHelper
 		float attenuation_constant;
 		float attenuation_linear;
 		float attenuation_quadratic;
-		sVec3 colour_ambient_RGB;
-		sVec3 colour_diffuse_RGB;
-		sVec3 colour_specular_RGB;
-		sVec3 position;
-		sVec3 direction;
-		cString name;
+		ass_sVec3 colour_ambient_RGB;
+		ass_sVec3 colour_diffuse_RGB;
+		ass_sVec3 colour_specular_RGB;
+		ass_sVec3 position;
+		ass_sVec3 direction;
+		ass_cString name;
 		enum eLightType
 		{
 			UNKNOWN_OR_UNDEFINED,			// aiLightSource_UNDEFINED = 0x0
@@ -138,7 +138,7 @@ namespace AssimpHelper
 	{
 	public:
 		cMaterialProperty() {};
-		cString key;
+		ass_cString key;
 		unsigned int semantic = 0;
 		unsigned int index = 0;
 		unsigned int data_length = 0;
@@ -176,18 +176,18 @@ namespace AssimpHelper
 		char* data = NULL;
 	};
 
-	class __declspec(dllexport) cMaterial
+	class __declspec(dllexport) ass_cMaterial
 	{
 	public:
-		cMaterial() {};
+		ass_cMaterial() {};
 	};
 
-	class __declspec(dllexport) cScene
+	class __declspec(dllexport) ass_cScene
 	{
 	public:
-		cScene();
+		ass_cScene();
 
-		struct sSceneFlags
+		struct ass_sSceneFlags
 		{
 			bool incomplete = false;			// #define AI_SCENE_FLAGS_INCOMPLETE			0x1
 			bool validated = false;				// #define AI_SCENE_FLAGS_VALIDATED				0x2
@@ -197,7 +197,7 @@ namespace AssimpHelper
 			bool allow_shared = false;			// #define AI_SCENE_FLAGS_ALLOW_SHARED			0x20
 			void DecodeSceneFlags(unsigned int flags);
 		};
-		sSceneFlags scene_flags;
+		ass_sSceneFlags scene_flags;
 
 	};//cScene
 
@@ -292,7 +292,7 @@ namespace AssimpHelper
 		bool Load3DModelFile(std::string filename, sPostProcessFlags postProcessOptions);
 		void SetBasePath(std::string basepath_no_end_slash);
 
-		cString getLastError(bool bAndClearErrors = true);
+		ass_cString getLastError(bool bAndClearErrors = true);
 
 	//	void GetVertexPosistionsXYZ(std::vector< glm::vec3 >& vecPositions);
 	//	void GetVertexNormalsXYZ(std::vector< glm::vec3 >& vecPositions);

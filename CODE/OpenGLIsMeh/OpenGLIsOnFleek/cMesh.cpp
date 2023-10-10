@@ -10,9 +10,9 @@
 // Constructor: Called on creation   c'tor
 cMesh::cMesh()
 {
-//	this->drawPosition = glm::vec3(0.0f, 0.0f, 0.0f);
-//	this->orientation = glm::vec3(0.0f, 0.0f, 0.0f);
-//	this->scale = 1.0f;
+	this->drawPosition = glm::vec3(0.0f, 0.0f, 0.0f);
+	this->drawOrientation = glm::vec3(0.0f, 0.0f, 0.0f);
+	this->drawScale = glm::vec3(1.0f);
 
 	this->bIsWireframe = false;
 	this->bDoNotLight = false;
@@ -22,10 +22,19 @@ cMesh::cMesh()
 	this->bUseDebugColours = false;
 	this->wholeObjectDebugColourRGBA = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
 
-	// If it's NULL or 0, then it's ignored by the physics loop
-//	this->pPhysProps = NULL;		// or 0 or nullptr
-
+	// Set uniqueID
+	this->m_UniqueID = cMesh::m_nextUniqueID;
+	cMesh::m_nextUniqueID++;
 }
+
+unsigned int cMesh::getUniqueID(void)
+{
+	return this->m_UniqueID;
+}
+
+// static
+unsigned int cMesh::m_nextUniqueID = cMesh::FIRST_UNIQUE_ID;
+
 
 // Destructor: Called on deletion   d'tor
 cMesh::~cMesh()
@@ -33,28 +42,42 @@ cMesh::~cMesh()
 
 }
 
-//void cMesh::KillAllHumans(void)
+void cMesh::setUniformDrawScale(float scale)
+{
+	this->drawScale.x = this->drawScale.y = this->drawScale.z = scale;
+	return;
+}
+
+// STARTOF: From: iPhysicsMeshTransformAccess interface
+glm::vec3 cMesh::getDrawPosition(void)
+{
+	return this->drawPosition;
+}
+
+void cMesh::setDrawPosition(const glm::vec3& newPosition)
+{
+	this->drawPosition = newPosition;
+	return;
+}
+
+glm::vec3 cMesh::getDrawOrientation(void)
+{
+	return this->drawOrientation;
+}
+
+void cMesh::setDrawOrientation(const glm::vec3& newOrientation)
+{
+	this->drawOrientation = newOrientation;
+	return;
+}
+// ENDOF: iPhysicsMeshTransformAccess interface
+
+
+//void cMesh::Update(double deltaTime)
 //{
-//	std::cout << "Kill all humans!" << std::endl;
+//#ifdef _DEBUG
+////	::g_pDebugRenderer->AddSphere();
+//#endif
 //	return;
 //}
 
-
-void cMesh::Update(double deltaTime)
-{
-#ifdef _DEBUG
-//	::g_pDebugRenderer->AddSphere();
-#endif
-	return;
-}
-
-sTransformInfo cMesh::getTransformInfo(void)
-{
-	return this->transformInfo;
-}
-
-void cMesh::setTransformInfo(sTransformInfo newTransformInfo)
-{
-	this->transformInfo = newTransformInfo;
-	return;
-}

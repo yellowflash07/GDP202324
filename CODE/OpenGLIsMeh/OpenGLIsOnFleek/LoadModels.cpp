@@ -1,14 +1,29 @@
 #include "cMesh.h"
-#include "sPhsyicsProperties.h"
+//#include "sPhsyicsProperties.h"
+#include "cPhysics.h"
 #include <vector>
 
 extern std::vector< cMesh* > g_vec_pMeshesToDraw;
-extern std::vector< sPhsyicsProperties* > g_vec_pPhysicalProps;
+//extern std::vector< sPhsyicsProperties* > g_vec_pPhysicalProps;
+extern cPhysics* g_pPhysics;    //
+
+extern cMesh* g_pDebugSphereMesh;
 
 float getRandomFloat(float a, float b);
 
 bool LoadModels(void)
 {
+
+
+    ::g_pDebugSphereMesh = new cMesh();
+    ::g_pDebugSphereMesh->meshName = "Sphere_1_unit_Radius.ply";
+    ::g_pDebugSphereMesh->bIsWireframe = true;
+    ::g_pDebugSphereMesh->bDoNotLight = true;
+    ::g_pDebugSphereMesh->setUniformDrawScale(1.0f);
+    ::g_pDebugSphereMesh->bIsVisible = false;
+    ::g_pDebugSphereMesh->friendlyName = "DEBUG_SPHERE";
+    // Note: we are NOT adding this to the vector of meshes
+
 
         // bun_zipper_res2_xyz_n_rgba.ply
     // bathtub_xyz_n_rgba.ply
@@ -55,45 +70,49 @@ bool LoadModels(void)
 //    pGridGroundMesh->friendlyName = "Ground";
 //    ::g_vec_pMeshesToDraw.push_back(pGridGroundMesh);
 
-    cMesh* pFlat_1x1_planeMesh = new cMesh();
+    cMesh* pGroundMesh = new cMesh();
 //    pFlat_1x1_planeMesh->meshName = "Flat_1x1_plane.ply";
 //    pFlat_1x1_planeMesh->meshName = "Terrain_xyz_n_rgba.ply";
-    pFlat_1x1_planeMesh->meshName = "HilbertRamp_stl (rotated).ply";
+    pGroundMesh->meshName = "HilbertRamp_stl (rotated).ply";
+    pGroundMesh->friendlyName = "Ground";
+    ::g_vec_pMeshesToDraw.push_back(pGroundMesh);
+
+    // Add matching physics object
+    sPhsyicsProperties* pGroundMeshShape = new sPhsyicsProperties();
+    pGroundMeshShape->shapeType = sPhsyicsProperties::MESH_OF_TRIANGLES_INDIRECT;
+    // Tie this phsyics object to the associated mesh
+    pGroundMeshShape->pTheAssociatedMesh = pGroundMesh;
+    pGroundMeshShape->inverse_mass = 0.0f;  // Infinite, so won't move
+    pGroundMeshShape->position.x = -10.0f;
+    pGroundMeshShape->position.y = -40.0f;
+    pGroundMeshShape->friendlyName = "Ground";
+    ::g_pPhysics->AddShape(pGroundMeshShape);
+   
     //pFlat_1x1_planeMesh->bIsWireframe = true;
     //pFlat_1x1_planeMesh->bDoNotLight = true;
     // note this does NOT have a physProps, so is ignored by the physics update loop
-    sTransformInfo transformPlane = pFlat_1x1_planeMesh->getTransformInfo();
-    transformPlane.position.y = -40.0f;   //  0,-10,0
-    transformPlane.position.x = -10.0f;   //  0,-10,0
-    pFlat_1x1_planeMesh->setTransformInfo(transformPlane);
+//    sTransformInfo transformPlane = pFlat_1x1_planeMesh->getTransformInfo();
+//    transformPlane.position.y = -40.0f;   //  0,-10,0
+//    transformPlane.position.x = -10.0f;   //  0,-10,0
+//    pFlat_1x1_planeMesh->setTransformInfo(transformPlane);
 //    pFlat_1x1_planeMesh->drawPosition.x = 10.0f;
-    pFlat_1x1_planeMesh->friendlyName = "Ground";
-    //
 //    pFlat_1x1_planeMesh->orientation.z = glm::radians(+12.0f);
-   ::g_vec_pMeshesToDraw.push_back(pFlat_1x1_planeMesh);
-
     // Also add the physics items
-   sPhsyicsProperties* pFlat_1x1_plane = new sPhsyicsProperties();
-   pFlat_1x1_plane->pTheAssociatedMesh = pFlat_1x1_planeMesh;
-   ::g_vec_pPhysicalProps.push_back(pFlat_1x1_plane);
+//   sPhsyicsProperties* pFlat_1x1_plane = new sPhsyicsProperties();
+//   pFlat_1x1_plane->pTheAssociatedMesh = pFlat_1x1_planeMesh;
+//   ::g_vec_pPhysicalProps.push_back(pFlat_1x1_plane);
 
+    cMesh* pFlat_1x1_planeMesh_DEBUG = new cMesh();
+    pFlat_1x1_planeMesh_DEBUG->meshName = pGroundMesh->meshName;
+    pFlat_1x1_planeMesh_DEBUG->bIsWireframe = true;
+    pFlat_1x1_planeMesh_DEBUG->bDoNotLight = true;
+    pFlat_1x1_planeMesh_DEBUG->bUseDebugColours = true;
+    pFlat_1x1_planeMesh_DEBUG->wholeObjectDebugColourRGBA = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
 
-
-   cMesh* pFlat_1x1_planeMesh_DEBUG = new cMesh();
-//   pFlat_1x1_planeMesh_DEBUG->meshName = "Flat_1x1_plane.ply";
-//   pFlat_1x1_planeMesh_DEBUG->meshName = "Terrain_xyz_n_rgba.ply";
-   pFlat_1x1_planeMesh_DEBUG->meshName = "HilbertRamp_stl (rotated).ply";
-   pFlat_1x1_planeMesh_DEBUG->bIsWireframe = true;
-   pFlat_1x1_planeMesh_DEBUG->bDoNotLight = true;
-   pFlat_1x1_planeMesh_DEBUG->bUseDebugColours = true;
-   pFlat_1x1_planeMesh_DEBUG->wholeObjectDebugColourRGBA = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
-
-   pFlat_1x1_planeMesh_DEBUG->setTransformInfo(pFlat_1x1_planeMesh->getTransformInfo() );
-//   pFlat_1x1_planeMesh_DEBUG->orientation = pFlat_1x1_planeMesh->orientation;
-   // note this does NOT have a physProps, so is ignored by the physics update loop
-//   pFlat_1x1_planeMesh_DEBUG->drawPosition = pFlat_1x1_planeMesh->drawPosition;
-//   pFlat_1x1_planeMesh_DEBUG->drawPosition.y += 0.01f;   //  0,-10,0
-   ::g_vec_pMeshesToDraw.push_back(pFlat_1x1_planeMesh_DEBUG);
+    pFlat_1x1_planeMesh_DEBUG->drawPosition = pGroundMeshShape->position;
+    pFlat_1x1_planeMesh_DEBUG->drawOrientation = pGroundMeshShape->orientation;
+    pFlat_1x1_planeMesh_DEBUG->setUniformDrawScale(1.001f);
+    ::g_vec_pMeshesToDraw.push_back(pFlat_1x1_planeMesh_DEBUG);
 
 
     const float MAX_SPHERE_LOCATION = 30.0f;
@@ -105,68 +124,36 @@ bool LoadModels(void)
     {
         cMesh* pSphereMesh = new cMesh();
         pSphereMesh->meshName = "Sphere_1_unit_Radius.ply";
-        //pSphereMesh->bIsWireframe = true;
-        //pSphereMesh->bDoNotLight = true;
 
         pSphereMesh->friendlyName = "Sphere";
 
-//        sphereMesh.physProps.velocity.y = 0.0f;
+        // Add drawing mesh to the things to draw
+        ::g_vec_pMeshesToDraw.push_back(pSphereMesh);
+
+        // Now the physical object to match this
         sPhsyicsProperties* pSpherePhysProps = new sPhsyicsProperties();        // HEAP
 
         pSpherePhysProps->velocity.y = getRandomFloat(0.0f, MAX_VELOCITY);
         pSpherePhysProps->velocity.x = getRandomFloat(-MAX_VELOCITY, MAX_VELOCITY);
         pSpherePhysProps->velocity.z = getRandomFloat(-MAX_VELOCITY, MAX_VELOCITY);
 
-        // Gravity on Earth is likely too fast to look good, so we'll make it smaller.
-//        sphereMesh.physProps.acceleration.y = -9.81f;
         pSpherePhysProps->acceleration.y = (-9.81f / 5.0f);
 
-        // Copy the physics position to the drawing position
-        sTransformInfo sphereTransInfo = pSphereMesh->getTransformInfo();
+        pSpherePhysProps->position.x = -10.0f;                      // getRandomFloat(-MAX_SPHERE_LOCATION, MAX_SPHERE_LOCATION);
+        pSpherePhysProps->position.z = -10.0f;                        // getRandomFloat(-MAX_SPHERE_LOCATION, MAX_SPHERE_LOCATION);
+        pSpherePhysProps->position.y = MAX_SPHERE_LOCATION; //  getRandomFloat(10.0f, MAX_SPHERE_LOCATION + 20.0f);
 
-        sphereTransInfo.position.x = getRandomFloat(-MAX_SPHERE_LOCATION, MAX_SPHERE_LOCATION);
-        sphereTransInfo.position.z = getRandomFloat(-MAX_SPHERE_LOCATION, MAX_SPHERE_LOCATION);
-        sphereTransInfo.position.y = getRandomFloat(10.0f, MAX_SPHERE_LOCATION + 20.0f);
+        // Mass of 10 somethings? kg?
+        pSpherePhysProps->inverse_mass = 1.0f / 10.0f;
 
-        pSphereMesh->setTransformInfo(sphereTransInfo);
+        pSpherePhysProps->shapeType = sPhsyicsProperties::SPHERE;
 
-        // Inicate which mesh this physical properties object "controls"
         pSpherePhysProps->pTheAssociatedMesh = pSphereMesh;
 
-//       pSphereMesh->pPhysProps = pSpherePhysProps;
-//        pSphereMesh->drawPosition = pSpherePhysProps->position;
-
-        // Add drawing mesh to the things to draw
-        ::g_vec_pMeshesToDraw.push_back(pSphereMesh);
-        // Add the physics item to the things the phsyics loop will update
-        ::g_vec_pPhysicalProps.push_back(pSpherePhysProps);
-
-
-        //cMesh shpereMeshShadow_HACK;
-        //shpereMeshShadow_HACK.meshName = "Sphere_1_unit_Radius.ply";
-        //shpereMeshShadow_HACK.bIsWireframe = false;
-        //shpereMeshShadow_HACK.bDoNotLight = true;
-//        shpereMeshShadow_HACK.
-//        shpereMeshShadow_HACK.friendlyName = "Sphere";
+        ::g_pPhysics->AddShape(pSpherePhysProps);
 
 
     }//for ( unsigned int count...
-
-    cMesh* pDebugSphere = new cMesh();
-    pDebugSphere->meshName = "Sphere_1_unit_Radius.ply";
-    pDebugSphere->bIsWireframe = true;
-    pDebugSphere->bDoNotLight = true;
-
-    sTransformInfo debugSphereTransInfo = pDebugSphere->getTransformInfo();
-    debugSphereTransInfo.scale = 25.0f;
-    pDebugSphere->setTransformInfo(debugSphereTransInfo);
-//    pDebugSphere->pPhysProps = NULL;
-
-    pDebugSphere->bIsVisible = false;
-    pDebugSphere->friendlyName = "DEBUG_SPHERE";
-
-    ::g_vec_pMeshesToDraw.push_back(pDebugSphere);
-
 
 
     return true;

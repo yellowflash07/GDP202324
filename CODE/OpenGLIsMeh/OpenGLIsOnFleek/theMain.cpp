@@ -32,7 +32,8 @@
 #include "GLWF_CallBacks.h" // keyboard and mouse input
 
 #include "cMesh.h"
-#include "sPhsyicsProperties.h"
+//#include "sPhsyicsProperties.h"
+#include "cPhysics.h"
 
 #include "cLightManager.h"
 #include "cLightHelper.h"
@@ -44,6 +45,11 @@ glm::vec3 g_upVector = glm::vec3(0.0f, 1.0f, 0.0f);
 
 
 cVAOManager* g_pMeshManager = NULL;
+
+cMesh* g_pDebugSphereMesh = NULL;
+// Used by g_DrawDebugSphere()
+GLuint g_DebugSphereMesh_shaderProgramID = 0;
+
 
 
 // Smart array of cMesh object
@@ -58,7 +64,8 @@ cVAOManager* g_pMeshManager = NULL;
 std::vector< cMesh* > g_vec_pMeshesToDraw;
 // This is the list of physical properties 
 // This has a pointer to the matching mesh
-std::vector< sPhsyicsProperties* > g_vec_pPhysicalProps;
+//std::vector< sPhsyicsProperties* > g_vec_pPhysicalProps;
+cPhysics* g_pPhysics = NULL;
 
 
 // Returns NULL if not found
@@ -76,7 +83,7 @@ bool SaveVectorSceneToFile(std::string saveFileName);
 
 bool LoadModels(void);
 
-void DoPhysicUpdate(double deltaTime);
+//void DoPhysicUpdate(double deltaTime);
 
 void DrawObject(cMesh* pCurrentMesh, glm::mat4 matModel, GLuint shaderProgramID);
 
@@ -155,6 +162,9 @@ int main(void)
 //
     GLuint shaderProgramID = pShaderThing->getIDFromFriendlyName("shader01");
 
+    // Set the debug shader ID we're going to use
+    ::g_DebugSphereMesh_shaderProgramID = shaderProgramID;
+
     ::g_pMeshManager = new cVAOManager();
 
     ::g_pMeshManager->setBasePath("assets/models");
@@ -194,6 +204,9 @@ int main(void)
                                        Flat_1x1_planeDrawingInfo, shaderProgramID);
     std::cout << "Loaded: " << Flat_1x1_planeDrawingInfo.numberOfVertices << " vertices" << std::endl;
 
+
+    // This handles the phsyics objects
+    ::g_pPhysics = new cPhysics();
 
     // 
     LoadModels();
@@ -315,31 +328,34 @@ int main(void)
         DrawLightDebugSpheres(matProjection, matView, shaderProgramID);
 
 
-        // HACK: See where the sphere is on the surface of the "ground"
-        cMesh* pBouncingSphere = g_pFindMeshByFriendlyName("Sphere");
-        if ( pBouncingSphere )
-        {
-            cMesh* pGround = g_pFindMeshByFriendlyName("Ground");
-            // Place this sphere right above the "ground"
-            
-            cMesh* pDebugSphere = g_pFindMeshByFriendlyName("DEBUG_SPHERE");
-
-            pDebugSphere->drawPosition = pBouncingSphere->drawPosition;
-            // Place it where it intersects the ground
-            pDebugSphere->drawPosition.y = pGround->drawPosition.y;
-            //
-            pDebugSphere->scale = pBouncingSphere->scale;
-            pDebugSphere->bIsVisible = true;
-            pDebugSphere->bUseDebugColours = true;
-            pDebugSphere->wholeObjectDebugColourRGBA = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
-
-            DrawObject(pDebugSphere, glm::mat4(1.0f), shaderProgramID);
-
-            pDebugSphere->bIsVisible = false;
-        }
+//        // HACK: See where the sphere is on the surface of the "ground"
+//        cMesh* pBouncingSphere = g_pFindMeshByFriendlyName("Sphere");
+//        if ( pBouncingSphere )
+//        {
+//            cMesh* pGround = g_pFindMeshByFriendlyName("Ground");
+//            // Place this sphere right above the "ground"
+//            
+//            cMesh* pDebugSphere = g_pFindMeshByFriendlyName("DEBUG_SPHERE");
+//
+//            sTransformInfo bouncingSphereTrans = pBouncingSphere->getTransformInfo();
+//            // Place it where it intersects the ground
+//            bouncingSphereTrans.position.y = pGround->getTransformInfo().position.y;
+//
+//            pDebugSphere->setTransformInfo(bouncingSphereTrans);
+//            //
+//            pDebugSphere->bIsVisible = true;
+//            pDebugSphere->bUseDebugColours = true;
+//            pDebugSphere->wholeObjectDebugColourRGBA = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
+//
+//            DrawObject(pDebugSphere, glm::mat4(1.0f), shaderProgramID);
+//
+//            pDebugSphere->bIsVisible = false;
+//        }
 
         // 
-        DoPhysicUpdate(deltaTime);
+//        DoPhysicUpdate(deltaTime);
+
+        ::g_pPhysics->Update(deltaTime);
 
 
         glfwSwapBuffers(window);
@@ -404,20 +420,11 @@ void DrawLightDebugSpheres(glm::mat4 matProjection, glm::mat4 matView,
         return;
     }
 
-    // Draw a small sphere where the light is
-    cMesh* pDebugSphere = g_pFindMeshByFriendlyName("DEBUG_SPHERE");
-
-    pDebugSphere->bIsVisible = true;
-    pDebugSphere->drawPosition = ::g_pTheLights->theLights[g_selectedLight].position;
-    pDebugSphere->bUseDebugColours = true;
-
+    // Draw concentric spheres to indicate light position and attenuation
 
     // Small white sphere where the light is
-    pDebugSphere->scale = 0.5f;
-    pDebugSphere->wholeObjectDebugColourRGBA = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
-
-    DrawObject(pDebugSphere, glm::mat4(1.0f), shaderProgramID);
-
+    ::g_DrawDebugSphere(::g_pTheLights->theLights[g_selectedLight].position,
+                        0.5f, glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
 
     cLightHelper lightHelper;
 
@@ -428,40 +435,45 @@ void DrawLightDebugSpheres(glm::mat4 matProjection, glm::mat4 matView,
 
 
     // Draw a red sphere at 75% brightness
-    float distAt75Percent = lightHelper.calcApproxDistFromAtten(0.75f, 0.01f, 100000.0f,
-                                                                constantAtten, linearAtten, quadAtten, 50);
-    pDebugSphere->scale = distAt75Percent;
-    pDebugSphere->wholeObjectDebugColourRGBA = glm::vec4(0.5f, 0.0f, 0.0f, 0.0f);
+    {
+        float distAt75Percent = lightHelper.calcApproxDistFromAtten(0.75f, 0.01f, 100000.0f,
+                                                                    constantAtten, linearAtten, quadAtten, 50);
 
-    DrawObject(pDebugSphere, glm::mat4(1.0f), shaderProgramID);
+        ::g_DrawDebugSphere(::g_pTheLights->theLights[g_selectedLight].position,
+                            distAt75Percent, 
+                            glm::vec4(0.5f, 0.0f, 0.0f, 1.0f));
+    }
+
 
     // Draw a green sphere at 50% brightness
-    float distAt50Percent = lightHelper.calcApproxDistFromAtten(0.50f, 0.01f, 100000.0f,
-                                                                constantAtten, linearAtten, quadAtten, 50);
-    pDebugSphere->scale = distAt50Percent;
-    pDebugSphere->wholeObjectDebugColourRGBA = glm::vec4(0.0f, 0.5f, 0.0f, 0.0f);
+    {
+        float distAt50Percent = lightHelper.calcApproxDistFromAtten(0.50f, 0.01f, 100000.0f,
+                                                                    constantAtten, linearAtten, quadAtten, 50);
 
-    DrawObject(pDebugSphere, glm::mat4(1.0f), shaderProgramID);
+        ::g_DrawDebugSphere(::g_pTheLights->theLights[g_selectedLight].position,
+                            distAt50Percent,
+                            glm::vec4(0.0f, 0.5f, 0.0f, 1.0f));
+    }
 
     // Draw a yellow? sphere at 25% brightness
-    float distAt25Percent = lightHelper.calcApproxDistFromAtten(0.25f, 0.01f, 100000.0f,
-                                                                constantAtten, linearAtten, quadAtten, 50);
-    pDebugSphere->scale = distAt25Percent;
-    pDebugSphere->wholeObjectDebugColourRGBA = glm::vec4(0.50f, 0.5f, 0.0f, 0.0f);
+    {
+        float distAt25Percent = lightHelper.calcApproxDistFromAtten(0.25f, 0.01f, 100000.0f,
+                                                                    constantAtten, linearAtten, quadAtten, 50);
 
-    DrawObject(pDebugSphere, glm::mat4(1.0f), shaderProgramID);
+        ::g_DrawDebugSphere(::g_pTheLights->theLights[g_selectedLight].position,
+                            distAt25Percent,
+                            glm::vec4(0.50f, 0.5f, 0.0f, 1.0f));
+    }
 
     // Draw a blue sphere at 1% brightness
-    float distAt_5Percent = lightHelper.calcApproxDistFromAtten(0.01f, 0.01f, 100000.0f,
-                                                                constantAtten, linearAtten, quadAtten, 50);
-    pDebugSphere->scale = distAt_5Percent;
-    pDebugSphere->wholeObjectDebugColourRGBA = glm::vec4(0.0f, 0.0f, 0.5f, 0.0f);
+    {
+        float distAt_5Percent = lightHelper.calcApproxDistFromAtten(0.01f, 0.01f, 100000.0f,
+                                                                    constantAtten, linearAtten, quadAtten, 50);
 
-    DrawObject(pDebugSphere, glm::mat4(1.0f), shaderProgramID);
-
-
-
-    pDebugSphere->bIsVisible = false;
+        ::g_DrawDebugSphere(::g_pTheLights->theLights[g_selectedLight].position,
+                            distAt_5Percent,
+                            glm::vec4(0.0f, 0.0f, 0.5f, 1.0f));
+    }
 
 
     return;
@@ -484,23 +496,23 @@ void DrawObject(cMesh* pCurrentMesh, glm::mat4 matModelParent, GLuint shaderProg
 
        // Rotation matrix generation
     glm::mat4 matRotateX = glm::rotate(glm::mat4(1.0f),
-                                       pCurrentMesh->orientation.x, // (float)glfwGetTime(),
+                                       pCurrentMesh->drawOrientation.x, // (float)glfwGetTime(),
                                        glm::vec3(1.0f, 0.0, 0.0f));
 
 
     glm::mat4 matRotateY = glm::rotate(glm::mat4(1.0f),
-                                       pCurrentMesh->orientation.y, // (float)glfwGetTime(),
+                                       pCurrentMesh->drawOrientation.y, // (float)glfwGetTime(),
                                        glm::vec3(0.0f, 1.0, 0.0f));
 
     glm::mat4 matRotateZ = glm::rotate(glm::mat4(1.0f),
-                                       pCurrentMesh->orientation.z, // (float)glfwGetTime(),
+                                       pCurrentMesh->drawOrientation.z, // (float)glfwGetTime(),
                                        glm::vec3(0.0f, 0.0, 1.0f));
 
-       // Scaling matrix
+    // Scaling matrix
     glm::mat4 matScale = glm::scale(glm::mat4(1.0f),
-                                    glm::vec3(pCurrentMesh->scale,
-                                              pCurrentMesh->scale,
-                                              pCurrentMesh->scale));
+                                    glm::vec3(pCurrentMesh->drawScale.x,
+                                              pCurrentMesh->drawScale.y,
+                                              pCurrentMesh->drawScale.z));
     //--------------------------------------------------------------
 
     // Combine all these transformation
@@ -596,6 +608,31 @@ void DrawObject(cMesh* pCurrentMesh, glm::mat4 matModelParent, GLuint shaderProg
         glBindVertexArray(0); 			            // disable VAO (and everything else)
 
     }
+
+    return;
+}
+
+
+void g_DrawDebugSphere(glm::vec3 position, float scale, glm::vec4 colourRGBA)
+{
+    // Save the debug sphere state
+    bool OLD_isVisible = ::g_pDebugSphereMesh->bIsVisible;
+    glm::vec3 OLD_position = ::g_pDebugSphereMesh->drawPosition;
+    glm::vec3 OLD_scale = ::g_pDebugSphereMesh->drawScale;
+    glm::vec4 OLD_colours = ::g_pDebugSphereMesh->wholeObjectDebugColourRGBA;
+
+    ::g_pDebugSphereMesh->bIsVisible = true;
+    ::g_pDebugSphereMesh->drawPosition = position;
+    ::g_pDebugSphereMesh->setUniformDrawScale(scale);
+    ::g_pDebugSphereMesh->wholeObjectDebugColourRGBA = colourRGBA;
+
+   
+    DrawObject(::g_pDebugSphereMesh, glm::mat4(1.0f), ::g_DebugSphereMesh_shaderProgramID);
+
+    ::g_pDebugSphereMesh->bIsVisible = OLD_isVisible;
+    ::g_pDebugSphereMesh->drawPosition = OLD_position;
+    ::g_pDebugSphereMesh->drawScale = OLD_scale;
+    ::g_pDebugSphereMesh->wholeObjectDebugColourRGBA = OLD_colours;
 
     return;
 }

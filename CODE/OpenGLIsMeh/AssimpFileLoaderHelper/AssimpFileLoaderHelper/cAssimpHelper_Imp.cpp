@@ -69,7 +69,7 @@ bool cFileLoader_Imp::Load3DModelFile(std::string filename, AssimpHelper::cFileL
     }
     // Now we can access the file's contents. 
 
-	AssimpHelper::cScene theScene;
+	AssimpHelper::ass_cScene theScene;
 	theScene.scene_flags.DecodeSceneFlags(scene->mFlags);
 	
 	

@@ -145,12 +145,21 @@
     <ClCompile Include="cLightHelper.cpp" />
     <ClCompile Include="cLightManager.cpp" />
     <ClCompile Include="cMesh.cpp" />
+    <ClCompile Include="cPhysics.cpp" />
+    <ClCompile Include="cPhysics_BasicTests.cpp" />
+    <ClCompile Include="cPhysics_IntersectionTests.cpp" />
+    <ClCompile Include="cPhysics_Update.cpp" />
     <ClCompile Include="cVAOManager\cVAOManager.cpp" />
+    <ClCompile Include="cVAOManager\sModelDrawInfo.cpp" />
     <ClCompile Include="glad.c" />
     <ClCompile Include="InputHandling.cpp" />
     <ClCompile Include="LoadModels.cpp" />
-    <ClCompile Include="PhysicsUpdateLoop.cpp" />
+    <ClCompile Include="PhysicsUpdateLoop.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="ScenePersistence.cpp" />
+    <ClCompile Include="sPhsyicsProperties.cpp" />
     <ClCompile Include="theMain.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -160,12 +169,13 @@
     <ClInclude Include="cLightHelper.h" />
     <ClInclude Include="cLightManager.h" />
     <ClInclude Include="cMesh.h" />
+    <ClInclude Include="cPhysics.h" />
     <ClInclude Include="cVAOManager\cVAOManager.h" />
+    <ClInclude Include="cVAOManager\sModelDrawInfo.h" />
     <ClInclude Include="GLWF_CallBacks.h" />
-    <ClInclude Include="iTransformInfoAccessor.h" />
+    <ClInclude Include="iPhysicsMeshTransformAccess.h" />
     <ClInclude Include="OpenGLCommon.h" />
     <ClInclude Include="sPhsyicsProperties.h" />
-    <ClInclude Include="sTransformInfo.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="assets\shaders\fragmentShader01.glsl" />

@@ -81,6 +81,24 @@
     <ClCompile Include="PhysicsUpdateLoop.cpp">
       <Filter>Physics_Stuff</Filter>
     </ClCompile>
+    <ClCompile Include="sPhsyicsProperties.cpp">
+      <Filter>Physics_Stuff</Filter>
+    </ClCompile>
+    <ClCompile Include="cPhysics.cpp">
+      <Filter>Physics_Stuff</Filter>
+    </ClCompile>
+    <ClCompile Include="cPhysics_Update.cpp">
+      <Filter>Physics_Stuff</Filter>
+    </ClCompile>
+    <ClCompile Include="cVAOManager\sModelDrawInfo.cpp">
+      <Filter>MeshObjectManager</Filter>
+    </ClCompile>
+    <ClCompile Include="cPhysics_IntersectionTests.cpp">
+      <Filter>Physics_Stuff</Filter>
+    </ClCompile>
+    <ClCompile Include="cPhysics_BasicTests.cpp">
+      <Filter>Physics_Stuff</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Basic Shader Manager\cShaderManager.h">
@@ -113,11 +131,14 @@
     <ClInclude Include="sPhsyicsProperties.h">
       <Filter>Physics_Stuff</Filter>
     </ClInclude>
-    <ClInclude Include="sTransformInfo.h">
+    <ClInclude Include="iPhysicsMeshTransformAccess.h">
+      <Filter>cMesh</Filter>
+    </ClInclude>
+    <ClInclude Include="cPhysics.h">
       <Filter>Physics_Stuff</Filter>
     </ClInclude>
-    <ClInclude Include="iTransformInfoAccessor.h">
-      <Filter>cMesh</Filter>
+    <ClInclude Include="cVAOManager\sModelDrawInfo.h">
+      <Filter>MeshObjectManager</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

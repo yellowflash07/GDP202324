@@ -4,3 +4,5 @@
 cDebugRenderer* g_pDebugRenderer = NULL;
 
 bool g_drawDebugLightSpheres = false;
+
+

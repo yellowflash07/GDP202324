@@ -8,3 +8,8 @@
 extern cDebugRenderer* g_pDebugRenderer;
 
 extern bool g_drawDebugLightSpheres;
+
+void g_DrawDebugSphere(glm::vec3 position, float scale, glm::vec4 colourRGBA);
+
+
+

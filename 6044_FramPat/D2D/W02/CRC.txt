@@ -1,0 +1,26 @@
+CRC
+
+Class: 
+	- What is this? One noun (DB)
+           Robot-->Weapon
+           Customer 
+              Name    City    Province
+Responsibility:
+	- What is responsible for what
+	- Who creates this? (calls new)
+	- Who deletes it? (calls delete)
+	- Who touches thiis? 
+Collaboration:
+	- How do they all work together?
+
+Three lies:
+1. Software is the platform.
+2. Code is more important than data.
+3. Code is an representation of the world.
+
+
+Robot, Player, Gun
+	Who creates this? Factory
+Order, Product, Customer
+	Customer -(CustomerID to OrderID) Order --> Product
+	
