@@ -1,11 +1,22 @@
 #include "cPhysics.h"
 
+
+#include <iostream>
+
 // HACK:
 void g_DrawDebugSphere(glm::vec3 position, float scale, glm::vec4 colourRGBA);
 
 
 void cPhysics::Update(double deltaTime)
 {
+//	for ( unsigned int index = 0; index !=  this->m_vec_pPhysicalProps.size(); index++ )
+//	{
+//		sPhsyicsProperties* pObject = this->m_vec_pPhysicalProps[index];
+//		
+//		// ...and so on...
+//
+//	}
+
 	// Perform the iteration loop
 	for (sPhsyicsProperties* pObject : this->m_vec_pPhysicalProps)
 	{
@@ -92,6 +103,10 @@ void cPhysics::Update(double deltaTime)
 					break;
 				case sPhsyicsProperties::MESH_OF_TRIANGLES_INDIRECT:
 					// Sphere - Mesh triangle (indirect)
+					if ( this->m_Sphere_TriMeshIndirect_IntersectionTest( pObjectA, pObjectB))
+					{
+						std::cout << "Hazzah!" << std::endl;
+					}
 					break;
 				case sPhsyicsProperties::MESH_OF_TRIANGLES_LOCAL_VERTICES:
 					// Shpere - Mesh (local vertices)

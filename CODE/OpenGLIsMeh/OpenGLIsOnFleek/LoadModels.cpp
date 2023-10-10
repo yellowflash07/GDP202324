@@ -80,6 +80,11 @@ bool LoadModels(void)
     // Add matching physics object
     sPhsyicsProperties* pGroundMeshShape = new sPhsyicsProperties();
     pGroundMeshShape->shapeType = sPhsyicsProperties::MESH_OF_TRIANGLES_INDIRECT;
+
+    pGroundMeshShape->setShape( new sPhsyicsProperties::sMeshOfTriangles_Indirect("HilbertRamp_stl (rotated).ply") );
+
+
+
     // Tie this phsyics object to the associated mesh
     pGroundMeshShape->pTheAssociatedMesh = pGroundMesh;
     pGroundMeshShape->inverse_mass = 0.0f;  // Infinite, so won't move
@@ -148,8 +153,13 @@ bool LoadModels(void)
 
         pSpherePhysProps->shapeType = sPhsyicsProperties::SPHERE;
 
+        // The rendered graphical object that moves with this physics object
         pSpherePhysProps->pTheAssociatedMesh = pSphereMesh;
 
+//        sPhsyicsProperties::sSphere* pTemp = new sPhsyicsProperties::sSphere(1.0f);
+//        pSpherePhysProps->setShape(pTemp);
+
+        pSpherePhysProps->setShape( new sPhsyicsProperties::sSphere(1.0f) );
         ::g_pPhysics->AddShape(pSpherePhysProps);
 
 

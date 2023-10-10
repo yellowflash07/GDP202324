@@ -51,8 +51,10 @@ bool cPhysics::m_Sphere_TriMeshIndirect_IntersectionTest(sPhsyicsProperties* pSp
 	}
 
 	// Get the info about this shape, specifically
-	sPhsyicsProperties::sMeshOfTriangles_Indirect* pTriangleMesh = (sPhsyicsProperties::sMeshOfTriangles_Indirect*)pTriMesh_General;
-	sPhsyicsProperties::sSphere* pSphere = (sPhsyicsProperties::sSphere*)pSphere_General;
+	sPhsyicsProperties::sMeshOfTriangles_Indirect* pTriangleMesh = 
+						(sPhsyicsProperties::sMeshOfTriangles_Indirect*)(pTriMesh_General->pShape);
+
+	sPhsyicsProperties::sSphere* pSphere = (sPhsyicsProperties::sSphere*)(pSphere_General->pShape);
 
 	sModelDrawInfo theMeshDrawInfo;
 

@@ -208,6 +208,8 @@ int main(void)
     // This handles the phsyics objects
     ::g_pPhysics = new cPhysics();
 
+    ::g_pPhysics->setVAOManager(::g_pMeshManager);
+
     // 
     LoadModels();
 

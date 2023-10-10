@@ -30,6 +30,13 @@ public:
 	// Returns false if none found
 	bool findShapesByType(sPhsyicsProperties::eShape shapeType, std::vector<sPhsyicsProperties*> &vecShapes);
 
+	// There's a ray cast code in chapter 5 of Ericson's book.
+	// What does this return? 
+	// It could return all the things that the ray hit.
+	// You could add some methods that only ray cast through specific objects (like only meshes)
+	// You could also do something where it returns the "closest" object (maybe form the startXYZ)
+	bool rayCast(glm::vec3 startXYZ, glm::vec3 endXYZ, std::vector<sPhsyicsProperties*>& vecObjectsHit);
+
 private:
 	std::vector< sPhsyicsProperties* > m_vec_pPhysicalProps;
 	
